@@ -27,14 +27,14 @@ interface UserNavbarProps {
 }
 
 export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header
       className=" fixed top-0 right-0 left-0 z-50 bg-white border-b"
       dir="rtl"
     >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className=" w-full px-10 text-xl h-20 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <svg
@@ -105,18 +105,18 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
           </DropdownMenu>
 
           {/* Mobile Menu Button */}
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="md:hidden"
             onClick={() => setIsMobileMenuOpen((p) => !p)}
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </Button>
+          </Button> */}
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white px-4 py-3 space-y-3 border-t">
           <NavLink
@@ -132,7 +132,7 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
             onClick={() => setIsMobileMenuOpen(false)}
           />
         </div>
-      )}
+      )} */}
     </header>
   );
 }
