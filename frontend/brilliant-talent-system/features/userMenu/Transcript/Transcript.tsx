@@ -21,7 +21,8 @@ const profileData: ProfileInfo[] = [
 
 export default function Transcript() {
   return (
-    <div className="p-4 sm:p-6 space-y-6" dir="rtl">
+    // The `w-full` class was added here to ensure the component expands
+    <div className="w-full p-4 sm:p-6 space-y-6" dir="rtl">
       <Card className="bg-card border border-border rounded-lg shadow-md">
         <CardContent className="p-4 sm:p-6 space-y-4 text-right">
           {/* Header */}
@@ -32,16 +33,15 @@ export default function Transcript() {
             {profileData.map((item, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center border-b border-muted/30 pb-1 last:border-0"
+                className="grid grid-cols-2 items-center border-b border-muted/30 pb-1 last:border-0"
               >
-                <span className="text-primary font-medium">{item.label}</span>
+                <span className="font-medium text-primary">{item.label}</span>
                 <span className="text-foreground">{item.value}</span>
               </div>
             ))}
           </div>
-
           {/* Priority Cards */}
-          <div className="space-y-4">
+          <div className="space-y-4 pt-4 grid grid-cols-2">
             <PriorityCard
               priorityLabel="اولویت اول"
               status="error"

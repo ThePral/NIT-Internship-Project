@@ -23,7 +23,7 @@ export default function PriorityCard({
 
   return (
     <Card
-      className="bg-card border border-border rounded-lg shadow-sm"
+      className="bg-card border border-border rounded-lg shadow-sm w-lg"
       dir="rtl"
     >
       <CardContent className="p-4 sm:p-5 space-y-3 text-right">
