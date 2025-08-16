@@ -67,12 +67,12 @@ export const FileUploadDashboard = () => {
 
   return (
     <div className="flex w-full items-center justify-center bg-background px-8 font-primary text-foreground">
-      <Card className="w-full">
+      <Card className="w-full border-primary bg-card">
         <CardHeader className="text-right">
           <CardTitle className="text-2xl font-bold text-primary">
             عملیات جدید
           </CardTitle>
-          <CardDescription className="pt-1 text-xl font-extrabold">
+          <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4">
             آپلود جداول
           </CardDescription>
         </CardHeader>
@@ -89,7 +89,10 @@ export const FileUploadDashboard = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button size="lg" className="px-10 py-6 text-base">
+          <Button
+            size="lg"
+            className="px-10 py-6 text-card bg-primary hover:bg-primary/90"
+          >
             پردازش
           </Button>
         </CardFooter>

@@ -41,8 +41,7 @@ const modalVariants = cva(
       position: {
         center: cn(
           "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-          "w-[95vw] max-w-md md:max-w-lg",
-          "max-h-[85vh]",
+          "w-[95vw] max-h-[85vh]",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         ),
@@ -68,12 +67,16 @@ const modalVariants = cva(
         md: "max-w-md",
         lg: "max-w-lg",
         xl: "max-w-2xl",
-        full: "w-[95vw] h-[95vh]",
+        "2xl": "max-w-3xl",
+        "3xl": "max-w-4xl",
+        "4xl": "max-w-5xl",
+        "5xl": "max-w-6xl w-[95vw] h-auto",
+        full: "w-[100vw] h-[100vh] max-w-none",
       },
     },
     defaultVariants: {
       position: "center",
-      size: "md",
+      size: "full",
     },
   }
 );

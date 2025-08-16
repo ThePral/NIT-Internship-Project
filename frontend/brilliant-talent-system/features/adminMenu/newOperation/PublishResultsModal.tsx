@@ -18,14 +18,17 @@ export const PublishResultsModal = () => {
       <ResponsiveModalTrigger asChild>
         <Button
           size="lg"
-          className="rounded-md bg-green-500 px-10 py-6 text-base font-bold text-white hover:bg-green-600"
+          className="rounded-md bg-success px-8 py-4 font-bold text-card hover:bg-green-600"
         >
           تایید و انتشار نتایج
         </Button>
       </ResponsiveModalTrigger>
 
       {/* محتوای مودال */}
-      <ResponsiveModalContent className="sm:max-w-lg rounded-lg shadow-md">
+      <ResponsiveModalContent
+        className="sm:max-w-lg rounded-lg shadow-md"
+        size="md"
+      >
         {/* هدر مودال */}
         <ResponsiveModalHeader className="text-right">
           <ResponsiveModalTitle className="text-lg font-bold text-primary text-right">
@@ -39,9 +42,11 @@ export const PublishResultsModal = () => {
 
         {/* جعبه خاکستری تاریخ */}
         <div className="px-6 pt-4">
-          <div className="flex w-full items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm">
-            <span className="text-muted-foreground">نتایج</span>
-            <span className="font-semibold">۱۴۰۴/۰۶/۱۲</span>
+          <div className="flex w-full items-center rounded-md border border-border bg-background px-4 py-2 text-sm">
+            <span className="font-semibold text-card-foreground">نتایج</span>
+            <span className="font-semibold text-card-foreground">
+              ۱۴۰۴/۰۶/۱۲
+            </span>
           </div>
         </div>
 
@@ -49,13 +54,13 @@ export const PublishResultsModal = () => {
         <ResponsiveModalFooter className="flex flex-row-reverse justify-start gap-4 pt-6">
           <Button
             type="button"
-            className="rounded-md bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
+            className="rounded-md bg-danger px-6 py-2 font-bold text-card hover:bg-red-600"
           >
             لغو
           </Button>
           <Button
             type="button"
-            className="rounded-md bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600"
+            className="rounded-md bg-success px-6 py-2 font-bold text-card hover:bg-green-600"
           >
             تایید و انتشار نتایج
           </Button>

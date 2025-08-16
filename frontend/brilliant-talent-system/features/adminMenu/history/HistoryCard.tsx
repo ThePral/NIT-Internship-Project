@@ -2,6 +2,7 @@
 
 import { ChevronLeft } from "lucide-react";
 import { UploadTableModal } from "../newOperation/UploadTableModal";
+import { Button } from "@/components/ui/button";
 
 const historyItems = [
   {
@@ -26,15 +27,21 @@ export const HistoryCard = () => {
           if (item.title && item.fullTitle) {
             return (
               <UploadTableModal key={item.id} title={item.fullTitle}>
-                <button className="flex w-full items-center justify-between rounded-lg bg-muted p-4 text-sm font-semibold text-card-foreground transition-colors hover:bg-accent">
+                <Button
+                  variant="ghost"
+                  className="flex w-full items-center justify-between rounded-lg bg-muted p-6 text-sm font-semibold text-card-foreground hover:bg-accent"
+                >
                   <div dir="">
                     <span>{item.title}</span>
-                    <span dir="" className="mr-2 font-mono ">
+                    <span
+                      dir=""
+                      className="mr-2 font-mono text-muted-foreground"
+                    >
                       {item.date}
                     </span>
                   </div>
                   <ChevronLeft className="h-5 w-5 text-muted-foreground" />
-                </button>
+                </Button>
               </UploadTableModal>
             );
           }

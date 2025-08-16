@@ -20,16 +20,16 @@ interface UploadTableModalProps {
 }
 
 const TablePlaceholder = () => (
-  <div className="w-full rounded-lg border border-border ">
+  <div className="w-full rounded-lg border border-border overflow-hidden">
     <table className="w-full border-collapse">
       <thead>
-        <tr className="bg-[#f0f5ff] text-center text-sm font-semibold text-foreground">
+        <tr className="bg-input text-center text-sm font-semibold text-foreground">
           {Array.from({ length: 6 }).map((_, i) => (
             <th
               key={i}
-              className={`h-12 border border-[#e0e0e0] ${
-                i === 0 ? "rounded-tl-lg" : ""
-              } ${i === 5 ? "rounded-tr-lg" : ""}`}
+              className={`h-12 border border-border
+                ${i === 0 ? "rounded-tr-lg" : ""} 
+                ${i === 5 ? "rounded-tl-lg" : ""}`}
             >
               {
                 [
@@ -51,7 +51,10 @@ const TablePlaceholder = () => (
             {Array.from({ length: 6 }).map((_, cellIndex) => (
               <td
                 key={cellIndex}
-                className="h-16 border border-[#e0e0e0] text-[#666]"
+                className={`h-16 border border-border text-foreground
+                  ${rowIndex === 3 && cellIndex === 0 ? "rounded-br-lg" : ""}
+                  ${rowIndex === 3 && cellIndex === 5 ? "rounded-bl-lg" : ""}
+                `}
               >
                 {cellIndex === 0 ? rowIndex + 1 : "—"}
               </td>
@@ -71,25 +74,24 @@ export const UploadTableModal = ({
     <ResponsiveModal>
       <ResponsiveModalTrigger asChild>{children}</ResponsiveModalTrigger>
 
-      <ResponsiveModalContent className="sm:max-w-5xl rounded-lg">
+      <ResponsiveModalContent className="rounded-lg" size="5xl">
         {/* Header */}
-        <ResponsiveModalHeader className="flex items-center justify-between border-b border-[#e0e0e0] py-4 px-6">
-          <div className="flex items-center justify-between gap-6 ">
-            <ResponsiveModalTitle2 className="text-lg font-bold text-[#1e40af]">
-              {title}
-            </ResponsiveModalTitle2>
+        <ResponsiveModalHeader className="grid grid-cols-2 items-center border-b border-border py-4 px-6">
+          {/* Title */}
+          <ResponsiveModalTitle2 className="text-lg font-bold text-primary">
+            {title}
+          </ResponsiveModalTitle2>
 
-            {/* Print & Download buttons - now horizontal */}
-            <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 text-sm text-[#ef4444] hover:text-[#1e40af] transition-colors">
-                <Download className="h-5 w-5" />
-                <span>دانلود</span>
-              </button>
-              <button className="flex items-center gap-2 text-sm text-[#22c55e] hover:text-[#1e40af] transition-colors">
-                <Printer className="h-5 w-5" />
-                <span>پرینت</span>
-              </button>
-            </div>
+          {/* Buttons */}
+          <div className="flex items-center justify-end gap-4">
+            <button className="flex items-center gap-2 text-sm text-danger hover:text-primary transition-colors">
+              <Download className="h-5 w-5" />
+              <span>دانلود</span>
+            </button>
+            <button className="flex items-center gap-2 text-sm text-success hover:text-primary transition-colors">
+              <Printer className="h-5 w-5" />
+              <span>پرینت</span>
+            </button>
           </div>
         </ResponsiveModalHeader>
 
@@ -99,11 +101,11 @@ export const UploadTableModal = ({
         </div>
 
         {/* Footer */}
-        <ResponsiveModalFooter className="justify-start gap-3 border-t border-[#e0e0e0] py-4 px-6">
+        <ResponsiveModalFooter className="justify-start gap-3 border-t border-border py-4 px-6">
           <ResponsiveModalClose asChild>
             <Button
               type="button"
-              className="rounded-md bg-[#1e40af] px-6 py-2 font-bold text-white hover:bg-[#1e40af]/90 transition-colors"
+              className="rounded-md bg-primary px-6 py-2 font-bold text-card hover:bg-[#1e40af]/90 transition-colors"
             >
               بستن
             </Button>
