@@ -1,34 +1,66 @@
+"use client";
+
 import { GraduationCap, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { PublishResultsModal } from "./PublishResultsModal";
-import { UploadTableModal } from "./UploadTableModal";
 
-const ActionLink = ({
-  Icon,
-  label,
-  modalTitle,
-}: {
-  Icon: React.ElementType;
-  label: string;
-  modalTitle: string;
-}) => (
-  <UploadTableModal title={modalTitle}>
-    <div className="flex cursor-pointer flex-col items-center gap-4 text-primary transition-transform hover:scale-105">
-      <Icon className="h-12 w-12 text-primary/80" strokeWidth={1.5} />
-      <span className="text-base font-semibold">{label}</span>
-    </div>
-  </UploadTableModal>
-);
+import {
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalDescription,
+  ResponsiveModalFooter,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from "@/components/ui/responsiveModal";
+import { useState } from "react";
+import { acceptedStudentsColumns, majorsColumns } from "./dataTable/columns";
+import { GenericDataTable } from "@/features/adminMenu/newOperation/dataTable/GenericDataTable";
+import { ActionLink } from "./dataTable/ActiveLink";
 
 export const OperationResultPage = () => {
+  const [sampleData] = useState({
+    students: [
+      {
+        national_id: "1234567890",
+        full_name: "علی محمدی",
+        field: "مهندسی کامپیوتر",
+        acceptance_type: "قطعی",
+        score: 18.75,
+      },
+      {
+        national_id: "0987654321",
+        full_name: "فاطمه احمدی",
+        field: "مهندسی برق",
+        acceptance_type: "پذیرش مشروط",
+        score: 16.25,
+      },
+    ],
+    fields: [
+      {
+        field_code: "CE-101",
+        field_name: "مهندسی کامپیوتر",
+        degree: "کارشناسی",
+        capacity: 50,
+        faculty: "فنی مهندسی",
+      },
+      {
+        field_code: "EE-201",
+        field_name: "مهندسی برق",
+        degree: "کارشناسی ارشد",
+        capacity: 30,
+        faculty: "فنی مهندسی",
+      },
+    ],
+  });
+
   return (
     <div className="flex w-full items-center justify-center bg-background px-8 font-primary text-foreground mt-4">
       <Card className="w-full border-primary">
@@ -52,16 +84,36 @@ export const OperationResultPage = () => {
               Icon={GraduationCap}
               label="لیست پذیرفته شدگان"
               modalTitle="لیست پذیرفته شدگان"
-            />
+              modalDescription="لیست کامل دانشجویان پذیرفته شده در دوره"
+              onClose={() => console.log("Modal closed")}
+              onPrint={() => window.print()}
+            >
+              <GenericDataTable
+                data={sampleData.students}
+                columns={acceptedStudentsColumns}
+                emptyMessage="هیچ پذیرفته‌شده‌ای یافت نشد"
+                searchPlaceholder="جستجوی پذیرفته‌شدگان..."
+              />
+            </ActionLink>
             <ActionLink
               Icon={ClipboardList}
               label="لیست رشته ها"
-              modalTitle="لیست رشته‌ها"
-            />
+              modalTitle="لیست رشته‌های تحصیلی"
+              modalDescription="لیست کامل رشته‌های ارائه شده در این دوره"
+              onClose={() => console.log("Modal closed")}
+              onPrint={() => window.print()}
+            >
+              <GenericDataTable
+                data={sampleData.fields}
+                columns={majorsColumns}
+                emptyMessage="هیچ رشته‌ای ثبت نشده است"
+                searchPlaceholder="جستجوی رشته‌ها..."
+              />
+            </ActionLink>
           </section>
         </CardContent>
 
-        <CardFooter className="justify-end gap-4">
+        <div className="flex justify-end gap-4 p-6 border-t">
           <Button
             variant="destructive"
             size="lg"
@@ -70,7 +122,7 @@ export const OperationResultPage = () => {
             لغو
           </Button>
           <PublishResultsModal />
-        </CardFooter>
+        </div>
       </Card>
     </div>
   );

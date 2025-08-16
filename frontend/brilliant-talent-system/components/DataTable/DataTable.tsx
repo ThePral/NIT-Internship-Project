@@ -128,7 +128,7 @@ export function DataTable<TData>({
                         key={column.id}
                         className="capitalize"
                         checked={column.getIsVisible()}
-                        onCheckedChange={(value: any) =>
+                        onCheckedChange={(value) =>
                           column.toggleVisibility(!!value)
                         }
                       >
