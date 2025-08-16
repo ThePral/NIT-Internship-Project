@@ -70,7 +70,6 @@ export const UserSidebar = () => {
     <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen  p-5 pr-0 overflow-auto">
       {items.map((item, index) => (
         <div key={index}>
-          <Separator />
           <div className="flex gap-2 items-center">
             <div
               className={`w-2 rounded-l-lg h-10 ${
@@ -89,6 +88,7 @@ export const UserSidebar = () => {
               {item.title}
             </Link>
           </div>
+          <Separator />
         </div>
       ))}
     </Card>

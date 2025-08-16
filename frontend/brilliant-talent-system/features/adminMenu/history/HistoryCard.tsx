@@ -16,7 +16,7 @@ const historyItems = [
 
 export const HistoryCard = () => {
   return (
-    <div className="w-full max-w-lg rounded-xl border-2 border-primary bg-card p-6 font-primary shadow-sm">
+    <div className="w-full rounded-xl border-2 border-primary bg-card p-6 font-primary shadow-sm">
       <header className="mb-4 flex justify-start">
         <h2 className="text-xl font-bold text-primary">تاریخچه</h2>
       </header>

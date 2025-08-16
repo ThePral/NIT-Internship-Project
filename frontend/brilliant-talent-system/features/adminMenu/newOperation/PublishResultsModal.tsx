@@ -14,48 +14,48 @@ import {
 export const PublishResultsModal = () => {
   return (
     <ResponsiveModal>
+      {/* دکمه اصلی باز کردن مودال */}
       <ResponsiveModalTrigger asChild>
         <Button
           size="lg"
-          className="bg-green-500 px-12 py-7 text-base font-bold text-primary-foreground hover:bg-success/90"
+          className="rounded-md bg-green-500 px-10 py-6 text-base font-bold text-white hover:bg-green-600"
         >
           تایید و انتشار نتایج
         </Button>
       </ResponsiveModalTrigger>
 
-      <ResponsiveModalContent className="sm:max-w-lg">
-        {/* Header with the main title */}
+      {/* محتوای مودال */}
+      <ResponsiveModalContent className="sm:max-w-lg rounded-lg shadow-md">
+        {/* هدر مودال */}
         <ResponsiveModalHeader className="text-right">
-          <ResponsiveModalTitle className="text-xl font-bold">
+          <ResponsiveModalTitle className="text-lg font-bold text-primary text-right">
             تایید و انتشار نتایج
           </ResponsiveModalTitle>
-          <ResponsiveModalDescription className="pt-4 text-muted-foreground">
+          <ResponsiveModalDescription className="pt-3 text-sm text-muted-foreground leading-relaxed text-right">
             با تایید و انتشار نتایج دانشجویان میتوانند از پذیرفته شدن یا نشدن
             خود اطلاع یافته و کارنامه خود را مشاهده نمایند
           </ResponsiveModalDescription>
         </ResponsiveModalHeader>
 
-        {/* The gray box showing the results date */}
-        <div className="px-6 py-4">
-          <div className="flex w-full items-center justify-between rounded-md border bg-muted px-4 py-3 text-sm">
+        {/* جعبه خاکستری تاریخ */}
+        <div className="px-6 pt-4">
+          <div className="flex w-full items-center justify-between rounded-md border border-border bg-background px-4 py-2 text-sm">
             <span className="text-muted-foreground">نتایج</span>
-            <span dir="ltr" className="font-semibold">
-              ۱۴۰۴/۰۶/۱۲
-            </span>
+            <span className="font-semibold">۱۴۰۴/۰۶/۱۲</span>
           </div>
         </div>
 
-        {/* Footer with the action buttons */}
-        <ResponsiveModalFooter className="flex-row-reverse justify-start gap-4 pt-4">
+        {/* فوتر با دکمه‌ها */}
+        <ResponsiveModalFooter className="flex flex-row-reverse justify-start gap-4 pt-6">
           <Button
             type="button"
-            className="bg-danger font-bold text-primary-foreground hover:bg-danger/90"
+            className="rounded-md bg-red-500 px-6 py-2 font-bold text-white hover:bg-red-600"
           >
             لغو
           </Button>
           <Button
             type="button"
-            className="bg-success font-bold text-primary-foreground hover:bg-success/90"
+            className="rounded-md bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-600"
           >
             تایید و انتشار نتایج
           </Button>

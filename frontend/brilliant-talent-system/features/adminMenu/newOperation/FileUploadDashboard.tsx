@@ -66,8 +66,8 @@ export const FileUploadDashboard = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center bg-background px-8 font-primary text-foreground">
-      <Card className="w-full max-w-4xl">
+    <div className="flex w-full items-center justify-center bg-background px-8 font-primary text-foreground">
+      <Card className="w-full">
         <CardHeader className="text-right">
           <CardTitle className="text-2xl font-bold text-primary">
             عملیات جدید

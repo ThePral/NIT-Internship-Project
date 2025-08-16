@@ -1,8 +1,7 @@
 "use client";
 import AdminNavbar from "@/components/Admin/AdminNavbar";
 import { AdminSidebar } from "@/components/Admin/AdminSidebar";
-import UserNavbar from "@/components/User/UserNavbar";
-import { UserSidebar } from "@/components/User/UserSidebar";
+import "@/app/globals.css";
 
 export default function AdminLayout({
   children,

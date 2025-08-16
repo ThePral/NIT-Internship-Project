@@ -1,18 +1,15 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { X } from 'lucide-react';
+import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 const ResponsiveModal = DialogPrimitive.Root;
-
 const ResponsiveModalTrigger = DialogPrimitive.Trigger;
-
 const ResponsiveModalClose = DialogPrimitive.Close;
-
 const ResponsiveModalPortal = DialogPrimitive.Portal;
 
 const ResponsiveModalOverlay = React.forwardRef<
@@ -20,55 +17,84 @@ const ResponsiveModalOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
+    ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-      className,
+      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out",
+      "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
     )}
     {...props}
-    ref={ref}
   />
 ));
 ResponsiveModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-const ResponsiveModalVariants = cva(
+const modalVariants = cva(
   cn(
-    'fixed  z-50 gap-4 bg-background p-6 shadow-md transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 overflow-y-auto',
-    'md:left-[50%] md:top-[50%] md:w-full md:max-w-lg md:start-1/2 md:top-1/2 md:translate-x-1/2 md:-translate-y-1/2 md:border md:duration-200 md:data-[state=open]:animate-in md:data-[state=closed]:animate-out md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-left-1/2 md:data-[state=closed]:slide-out-to-top-[48%] md:data-[state=open]:slide-in-from-left-1/2 md:data-[state=open]:slide-in-from-top-[48%] md:rounded-xl inset-x-0 bottom-0 border-t md:h-fit max-h-[80dvh] rounded-t-xl data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
+    "fixed z-50 gap-4 bg-muted p-6 shadow-lg rounded-lg",
+    "overflow-y-auto",
+    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+    "data-[state=closed]:duration-300 data-[state=open]:duration-500"
   ),
   {
     variants: {
-      side: {
-        top: 'inset-x-0 top-0 border-b rounded-b-xl max-h-[80dvh] md:h-fit data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
-        bottom:
-          'inset-x-0 bottom-0 border-t md:h-fit max-h-[80dvh] rounded-t-xl data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-        left: 'inset-y-0 left-0 h-full md:h-fit w-3/4 border-r rounded-r-xl data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm',
-        right:
-          'inset-y-0 right-0 h-full md:h-fit w-3/4 border-l rounded-l-xl data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
+      position: {
+        center: cn(
+          "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+          "w-[95vw] max-w-md md:max-w-lg",
+          "max-h-[85vh]",
+          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        ),
+        top: cn(
+          "inset-x-0 top-0 mx-auto mt-4 w-[95vw] max-w-md rounded-b-lg border-b",
+          "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top"
+        ),
+        bottom: cn(
+          "inset-x-0 bottom-0 mx-auto mb-4 w-[95vw] max-w-md rounded-t-lg border-t",
+          "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom"
+        ),
+        left: cn(
+          "inset-y-0 left-0 h-full w-3/4 max-w-sm rounded-r-lg border-r",
+          "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
+        ),
+        right: cn(
+          "inset-y-0 right-0 h-full w-3/4 max-w-sm rounded-l-lg border-l",
+          "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right"
+        ),
+      },
+      size: {
+        sm: "max-w-xs",
+        md: "max-w-md",
+        lg: "max-w-lg",
+        xl: "max-w-2xl",
+        full: "w-[95vw] h-[95vh]",
       },
     },
     defaultVariants: {
-      side: 'bottom',
+      position: "center",
+      size: "md",
     },
-  },
+  }
 );
 
 interface ResponsiveModalContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
-    VariantProps<typeof ResponsiveModalVariants> {}
+    VariantProps<typeof modalVariants> {}
 
 const ResponsiveModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   ResponsiveModalContentProps
->(({ side = 'bottom', className, children, ...props }, ref) => (
+>(({ className, position, size, children, ...props }, ref) => (
   <ResponsiveModalPortal>
     <ResponsiveModalOverlay />
     <DialogPrimitive.Content
       ref={ref}
-      className={cn(ResponsiveModalVariants({ side }), className)}
+      className={cn(modalVariants({ position, size }), className)}
       {...props}
     >
       {children}
-      <ResponsiveModalClose className="absolute left-4 top-6 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+      <ResponsiveModalClose className="absolute left-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </ResponsiveModalClose>
@@ -77,18 +103,33 @@ const ResponsiveModalContent = React.forwardRef<
 ));
 ResponsiveModalContent.displayName = DialogPrimitive.Content.displayName;
 
-const ResponsiveModalHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('flex flex-col space-y-2 text-center sm:text-right mb-6', className)} {...props} />
-);
-ResponsiveModalHeader.displayName = 'ResponsiveModalHeader';
-
-const ResponsiveModalFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+const ResponsiveModalHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className
+    )}
     {...props}
   />
 );
-ResponsiveModalFooter.displayName = 'ResponsiveModalFooter';
+ResponsiveModalHeader.displayName = "ResponsiveModalHeader";
+
+const ResponsiveModalFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
+    )}
+    {...props}
+  />
+);
+ResponsiveModalFooter.displayName = "ResponsiveModalFooter";
 
 const ResponsiveModalTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -96,11 +137,29 @@ const ResponsiveModalTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn('text-md font-semibold text-foreground', className)}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className
+    )}
     {...props}
   />
 ));
 ResponsiveModalTitle.displayName = DialogPrimitive.Title.displayName;
+
+const ResponsiveModalTitle2 = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight flex justify-between",
+      className
+    )}
+    {...props}
+  />
+));
+ResponsiveModalTitle2.displayName = DialogPrimitive.Title.displayName;
 
 const ResponsiveModalDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
@@ -108,11 +167,12 @@ const ResponsiveModalDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
-ResponsiveModalDescription.displayName = DialogPrimitive.Description.displayName;
+ResponsiveModalDescription.displayName =
+  DialogPrimitive.Description.displayName;
 
 export {
   ResponsiveModal,
@@ -125,4 +185,5 @@ export {
   ResponsiveModalFooter,
   ResponsiveModalTitle,
   ResponsiveModalDescription,
+  ResponsiveModalTitle2,
 };

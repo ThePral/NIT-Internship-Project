@@ -9,30 +9,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PublishResultsModal } from "./PublishResultsModal";
+import { UploadTableModal } from "./UploadTableModal";
 
-// ActionLink now uses text and icon sizes from the UploadCard component
 const ActionLink = ({
   Icon,
   label,
+  modalTitle,
 }: {
   Icon: React.ElementType;
   label: string;
+  modalTitle: string;
 }) => (
-  <a
-    href="#"
-    className="flex flex-col items-center gap-4 text-primary transition-transform hover:scale-105"
-  >
-    {/* Icon size changed to h-12 w-12 */}
-    <Icon className="h-12 w-12 text-primary/80" strokeWidth={1.5} />
-    {/* Text size changed to text-base */}
-    <span className="text-base font-semibold">{label}</span>
-  </a>
+  <UploadTableModal title={modalTitle}>
+    <div className="flex flex-col items-center gap-4 text-primary transition-transform hover:scale-105 cursor-pointer">
+      <Icon className="h-12 w-12 text-primary/80" strokeWidth={1.5} />
+      <span className="text-base font-semibold">{label}</span>
+    </div>
+  </UploadTableModal>
 );
 
 export const OperationResultPage = () => {
   return (
     <div className="flex w-full items-center justify-center bg-background px-8 mt-2 font-primary text-foreground">
-      <Card className="w-full max-w-4xl">
+      <Card className="w-full ">
         <CardHeader className="items-end text-right">
           {/* CardTitle changed to text-2xl */}
           <CardTitle className="text-2xl font-bold text-primary">
@@ -50,8 +49,16 @@ export const OperationResultPage = () => {
 
         <CardContent className="py-4">
           <section className="flex items-center justify-right gap-24">
-            <ActionLink Icon={GraduationCap} label="لیست پذیرفته شدگان" />
-            <ActionLink Icon={ClipboardList} label="لیست رشته ها" />
+            <ActionLink
+              Icon={GraduationCap}
+              label="لیست پذیرفته شدگان"
+              modalTitle="لیست پذیرفته شدگان"
+            />
+            <ActionLink
+              Icon={ClipboardList}
+              label="لیست رشته ها"
+              modalTitle="لیست رشته‌ها"
+            />
           </section>
         </CardContent>
 

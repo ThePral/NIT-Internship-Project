@@ -1,30 +1,22 @@
-'use client'
+"use client";
 import InnerLayout from "@/layouts/InnerLayout/InnerLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-
+import "@/app/globals.css";
 
 const queryClient = new QueryClient();
 
-export default  function ServerLayout({
+export default function ServerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-    return (
-      <html lang="en" dir="rtl">
-        <body className={`$ antialiased `}>
-          {/* <ClientLayout generalSettings={generalSettings}> */}
-          <QueryClientProvider client={queryClient}>
+  return (
+    <html lang="en" dir="rtl">
+      <body className={`$ antialiased `}>
+        <QueryClientProvider client={queryClient}>
           <InnerLayout>{children}</InnerLayout>
-
-          {/* {children} */}
-
-          </QueryClientProvider>
-          {/* </ClientLayout> */}
-        </body>
-      </html>
-    );
-
+        </QueryClientProvider>
+      </body>
+    </html>
+  );
 }
