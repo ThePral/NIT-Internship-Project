@@ -2,7 +2,7 @@
 import InnerLayout from "@/layouts/InnerLayout/InnerLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
-import "@/app/globals.css";
+import "@/globals.css";
 
 const queryClient = new QueryClient();
 
@@ -16,9 +16,9 @@ export default function ClientLayout({
     <html lang="en" dir="rtl">
       <body className={`$ antialiased `}>
         {/* <FormProvider {...formMethods}> */}
-          <QueryClientProvider client={queryClient}>
-            <InnerLayout>{children}</InnerLayout>
-          </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <InnerLayout>{children}</InnerLayout>
+        </QueryClientProvider>
         {/* </FormProvider> */}
       </body>
     </html>

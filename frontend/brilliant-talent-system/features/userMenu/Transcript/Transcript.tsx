@@ -21,7 +21,6 @@ const profileData: ProfileInfo[] = [
 
 export default function Transcript() {
   return (
-    // The `w-full` class was added here to ensure the component expands
     <div className="w-full p-4 sm:p-6 space-y-6" dir="rtl">
       <Card className="bg-card border border-border rounded-lg shadow-md">
         <CardContent className="p-4 sm:p-6 space-y-4 text-right">
@@ -49,6 +48,22 @@ export default function Transcript() {
               capacity={5}
               rank={8}
               lastAccepted={7}
+            />
+            <PriorityCard
+              priorityLabel="اولویت دوم"
+              status="success"
+              title="مهندسی کامپیوتر - نرم‌افزار - روزانه"
+              capacity={7}
+              rank={2}
+              lastAccepted={5}
+            />
+            <PriorityCard
+              priorityLabel="اولویت دوم"
+              status="success"
+              title="مهندسی کامپیوتر - نرم‌افزار - روزانه"
+              capacity={7}
+              rank={2}
+              lastAccepted={5}
             />
             <PriorityCard
               priorityLabel="اولویت دوم"

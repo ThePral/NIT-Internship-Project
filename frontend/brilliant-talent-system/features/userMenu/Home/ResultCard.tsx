@@ -12,9 +12,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   acceptedMajor,
 }) => {
   return (
-    <Card className="bg-card text-card-foreground w-full max-w-md rounded-lg shadow text-center">
+    <Card className="bg-sidebar text-sidebar-foreground w-full max-w-md rounded-lg shadow text-center">
       <CardHeader>
-        <CardTitle className="text-primary text-lg font-bold text-right">
+        <CardTitle className="text-sidebar-primary text-lg font-bold text-right">
           نتیجه
         </CardTitle>
       </CardHeader>
@@ -36,20 +36,20 @@ export const ResultCard: React.FC<ResultCardProps> = ({
           </svg>
         </div>
 
-        <p className="mb-6 text-sm sm:text-base">
+        <p className="mb-6 text-sm sm:text-base text-foreground">
           شما در اولویت{" "}
           <span className="text-success font-semibold">{priority}</span> خود
           پذیرفته شدید!
         </p>
 
-        <hr className="border-border mb-4" />
+        <hr className="border-sidebar-border mb-4" />
 
-        <p className="text-primary font-bold mb-2">رشته ی قبولی</p>
-        <p className="text-foreground mb-6 text-sm sm:text-base leading-relaxed">
+        <p className="text-sidebar-foreground font-bold mb-2">رشته ی قبولی</p>
+        <p className="text-sidebar-foreground mb-6 text-sm sm:text-base leading-relaxed">
           {acceptedMajor}
         </p>
 
-        <Button className="bg-primary text-primary-foreground hover:opacity-90">
+        <Button className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90">
           مشاهده ی کارنامه
         </Button>
       </CardContent>

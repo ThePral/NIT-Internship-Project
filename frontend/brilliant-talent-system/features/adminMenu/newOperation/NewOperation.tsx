@@ -1,6 +1,5 @@
 import { FileUploadDashboard } from "./FileUploadDashboard";
 import { OperationResultPage } from "./OperationResultPage";
-import "@/app/globals.css";
 
 export const NewOperation = () => {
   return (

@@ -26,7 +26,7 @@ export default function PriorityCard({
       className="bg-card border border-border rounded-lg shadow-sm w-lg"
       dir="rtl"
     >
-      <CardContent className="p-4 sm:p-5 space-y-3 text-right">
+      <CardContent className="px-4 sm:px-5 space-y-3 text-right">
         {/* Priority Label */}
         <div className="flex items-center gap-2">
           <Icon

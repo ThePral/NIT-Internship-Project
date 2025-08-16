@@ -1,7 +1,7 @@
 "use client";
 import UserNavbar from "@/components/User/UserNavbar";
 import { UserSidebar } from "@/components/User/UserSidebar";
-import "@/app/globals.css";
+import "@/globals.css";
 
 export default function UserLayout({
   children,

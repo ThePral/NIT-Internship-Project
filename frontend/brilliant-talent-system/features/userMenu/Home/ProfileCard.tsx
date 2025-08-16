@@ -31,9 +31,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   ];
 
   return (
-    <Card className="bg-card text-card-foreground w-full max-w-md rounded-lg shadow">
+    <Card className="bg-sidebar text-sidebar-foreground w-full max-w-md rounded-lg shadow">
       <CardHeader>
-        <CardTitle className="text-primary text-lg font-bold text-right">
+        <CardTitle className="text-sidebar-primary text-lg font-bold text-right">
           پروفایل
         </CardTitle>
       </CardHeader>
@@ -41,14 +41,14 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="grid grid-cols-2 gap-y-4 text-sm sm:text-base text-right">
           {info.map((item, idx) => (
             <React.Fragment key={idx}>
-              <span className="text-foreground">{item.value}</span>
               <span
-                className={`text-primary font-medium ${
+                className={`text-sidebar-accent-foreground font-medium ${
                   item.label ? "block" : "hidden"
                 }`}
               >
                 {item.label}
               </span>
+              <span className="text-foreground">{item.value}</span>
             </React.Fragment>
           ))}
         </div>
