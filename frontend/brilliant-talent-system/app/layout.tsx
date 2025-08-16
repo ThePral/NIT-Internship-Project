@@ -1,6 +1,12 @@
-import ClientLayout from "./clientLayout";
+'use client'
+import InnerLayout from "@/layouts/InnerLayout/InnerLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export default async function ServerLayout({
+
+
+const queryClient = new QueryClient();
+
+export default  function ServerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -9,9 +15,14 @@ export default async function ServerLayout({
     return (
       <html lang="en" dir="rtl">
         <body className={`$ antialiased `}>
-          <ClientLayout >
-            {children}
-          </ClientLayout>
+          {/* <ClientLayout generalSettings={generalSettings}> */}
+          <QueryClientProvider client={queryClient}>
+          <InnerLayout>{children}</InnerLayout>
+
+          {/* {children} */}
+
+          </QueryClientProvider>
+          {/* </ClientLayout> */}
         </body>
       </html>
     );

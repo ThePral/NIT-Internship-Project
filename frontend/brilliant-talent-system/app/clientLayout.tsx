@@ -11,15 +11,15 @@ export default function ClientLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const formMethods = useForm();
+  // const formMethods = useForm();
   return (
     <html lang="en" dir="rtl">
       <body className={`$ antialiased `}>
-        <FormProvider {...formMethods}>
+        {/* <FormProvider {...formMethods}> */}
           <QueryClientProvider client={queryClient}>
             <InnerLayout>{children}</InnerLayout>
           </QueryClientProvider>
-        </FormProvider>
+        {/* </FormProvider> */}
       </body>
     </html>
   );
