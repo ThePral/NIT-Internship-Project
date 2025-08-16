@@ -71,7 +71,7 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
             />
           </svg>
 
-          <span className="text-base font-bold text-gray-800">
+          <span className="text-base font-bold text-foreground">
             سامانه استعداد درخشان
           </span>
         </div>
@@ -80,22 +80,27 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
         <div className="flex items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
-              <Avatar className="w-8 h-8 border border-dashed border-gray-300">
+              <Avatar className="w-8 h-8 border border-dashed border-border">
                 <AvatarImage src="" alt={userName} />
                 <AvatarFallback>?</AvatarFallback>
               </Avatar>
               <div className="text-right">
-                <p className="text-sm font-medium">{userName}</p>
-                <p className="text-xs text-gray-500">{userMajor}</p>
+                <p className="text-sm font-medium text-foreground">
+                  {userName}
+                </p>
+                <p className="text-xs text-muted-foreground">{userMajor}</p>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rtl">
+            <DropdownMenuContent
+              align="end"
+              className="rtl bg-popover text-popover-foreground"
+            >
               <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2">
                 پروفایل
                 <User className="w-4 h-4" />
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="bg-border" />
 
               <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
                 خروج از حساب کاربری
@@ -137,31 +142,31 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
   );
 }
 
-function NavLink({
-  href,
-  icon,
-  text,
-  active = false,
-  onClick,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  text: string;
-  active?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-        active
-          ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-          : "text-gray-700 hover:text-blue-600"
-      }`}
-    >
-      {icon}
-      {text}
-    </Link>
-  );
-}
+// function NavLink({
+//   href,
+//   icon,
+//   text,
+//   active = false,
+//   onClick,
+// }: {
+//   href: string;
+//   icon: React.ReactNode;
+//   text: string;
+//   active?: boolean;
+//   onClick?: () => void;
+// }) {
+//   return (
+//     <Link
+//       href={href}
+//       onClick={onClick}
+//       className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+//         active
+//           ? "text-primary border-b-2 border-primary pb-1"
+//           : "text-muted-foreground hover:text-primary"
+//       }`}
+//     >
+//       {icon}
+//       {text}
+//     </Link>
+//   );
+// }

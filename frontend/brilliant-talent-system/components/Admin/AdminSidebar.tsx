@@ -74,13 +74,13 @@ export const AdminSidebar = () => {
   }
 
   return (
-    <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen  p-5 pr-0 overflow-auto">
+    <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen  p-5 pr-0 overflow-auto bg-sidebar">
       {items.map((item, index) => (
         <div key={index}>
           <div className="flex gap-2 items-center">
             <div
               className={`w-2 rounded-l-lg h-10 ${
-                pathname != item.link ? "bg-content" : "bg-primary-color"
+                pathname != item.link ? "bg-transparent" : "bg-sidebar-primary"
               } `}
             ></div>
 
@@ -89,13 +89,13 @@ export const AdminSidebar = () => {
               onClick={() => {
                 handleClick(item.link);
               }}
-              className="flex gap-2 py-4 w-full hover:bg-gray-superlight transition-colors"
+              className="flex gap-2 py-4 w-full hover:bg-sidebar-accent transition-colors text-sidebar-foreground"
             >
-              {item.icon}
-              {item.title}
+              <p className="text-primary">{item.icon}</p>
+              <p className="text-primary "> {item.title}</p>
             </Link>
           </div>
-          <Separator />
+          <Separator className="bg-sidebar-border" />
         </div>
       ))}
     </Card>
