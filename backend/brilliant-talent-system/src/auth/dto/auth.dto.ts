@@ -55,7 +55,7 @@ export class SuperAdminLoginDto {
     password: string;
 }
 
-export class TokenDto {
+export class TokensDto {
     @ApiProperty({
         description: "access_token"
     })
@@ -64,7 +64,16 @@ export class TokenDto {
     access_token: string;
 
     @ApiProperty({
-        description: "access_token"
+        description: "refresh_token"
+    })
+    @IsString()
+    @IsNotEmpty()
+    refresh_token: string;
+}
+
+export class RefreshTokenDto {
+    @ApiProperty({
+        description: "refresh_token"
     })
     @IsString()
     @IsNotEmpty()

@@ -8,8 +8,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - .env.test:/app/.env.test:ro
     env_file:
       - .env
-      - .env.test
     environment:
       - NODE_ENV=development
