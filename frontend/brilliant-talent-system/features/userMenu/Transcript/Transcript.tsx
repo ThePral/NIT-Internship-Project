@@ -21,26 +21,33 @@ const profileData: ProfileInfo[] = [
 
 export default function Transcript() {
   return (
-    <div className="w-full p-4 sm:p-6 space-y-6" dir="rtl">
+    <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6" dir="rtl">
       <Card className="bg-card border border-border rounded-lg shadow-md">
-        <CardContent className="p-4 sm:p-6 space-y-4 text-right">
+        <CardContent className="p-4 sm:p-6 lg:p-8 space-y-4 md:space-y-6 text-right">
           {/* Header */}
-          <h2 className="text-lg sm:text-xl font-bold text-primary">کارنامه</h2>
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-primary">
+            کارنامه
+          </h2>
 
           {/* Profile Info */}
-          <div className=" gap-y-1 gap-x-6 text-sm text-right">
+          <div className=" gap-y-2 gap-x-6 text-sm sm:text-base">
             {profileData.map((item, idx) => (
               <div
                 key={idx}
-                className="grid grid-cols-2 items-center border-b border-muted/30 pb-1 last:border-0"
+                className="grid grid-cols-3 md:grid-cols-4 items-center border-b border-muted/30 pb-1 last:border-0"
               >
-                <span className="font-medium text-primary">{item.label}</span>
-                <span className="text-foreground">{item.value}</span>
+                <span className="font-medium text-primary col-span-1">
+                  {item.label}
+                </span>
+                <span className="text-foreground col-span-2 md:col-span-3">
+                  {item.value}
+                </span>
               </div>
             ))}
           </div>
+
           {/* Priority Cards */}
-          <div className="space-y-4 pt-4 grid grid-cols-2">
+          <div className="space-y-4 pt-4 grid grid-cols-1 lg:grid-cols-2  gap-4">
             <PriorityCard
               priorityLabel="اولویت اول"
               status="error"

@@ -3,7 +3,7 @@ import { ResultCard } from "./ResultCard";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background flex flex-col md:flex-row gap-6 justify-center items-start p-6">
+    <main className="min-h-screen bg-background flex flex-col md:flex-row w-full gap-6 justify-center items-start p-6">
       <ProfileCard
         firstName="مهرداد"
         lastName="محسنی میانه"
