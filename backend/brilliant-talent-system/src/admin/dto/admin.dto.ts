@@ -31,6 +31,14 @@ export class AdminDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+
+    @ApiProperty({
+        example: "user role",
+        description: "User's role"
+    })
+    @IsString()
+    @IsNotEmpty()
+    role: string = "admin";
 }
 
 export class EditAdminDto {

@@ -31,6 +31,14 @@ export class UserDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+
+    @ApiProperty({
+        example: "user role",
+        description: "User's role"
+    })
+    @IsString()
+    @IsNotEmpty()
+    role: string = "user";
 }
 
 export class EditUserDto {
