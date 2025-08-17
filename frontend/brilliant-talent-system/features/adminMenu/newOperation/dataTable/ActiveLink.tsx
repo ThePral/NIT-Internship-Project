@@ -43,13 +43,13 @@ export const ActionLink = ({
       </div>
     </ResponsiveModalTrigger>
     <ResponsiveModalContent
-      className="sm:max-w-5xl rounded-lg shadow-md"
+      className="sm:max-w-5xl rounded-lg shadow-md bg-card"
       size="5xl"
     >
       <ResponsiveModalHeader className="flex flex-row items-center border-b border-border py-4 px-6 w-full">
         {/* Title - Right side (end in RTL) */}
         <div className="flex justify-start flex-1 min-w-0">
-          <ResponsiveModalTitle className="text-lg font-bold text-primary truncate text-right">
+          <ResponsiveModalTitle className="text-lg font-bold text-foreground truncate text-right">
             {modalTitle}
           </ResponsiveModalTitle>
         </div>

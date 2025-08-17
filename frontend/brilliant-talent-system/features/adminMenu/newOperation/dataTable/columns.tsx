@@ -27,8 +27,7 @@ const SortableHeader = ({
   return (
     <Button variant="ghost" onClick={() => setQueryParam("sort", sortKey)}>
       {label}
-      <ArrowUpDown className="ml-2 h-4 w-4" />{" "}
-      {/* Changed mr-2 to ml-2 for RTL */}
+      <ArrowUpDown className="mr-2 h-4 w-4" />
     </Button>
   );
 };
@@ -36,9 +35,7 @@ const SortableHeader = ({
 export const acceptedStudentsColumns: ColumnDef<any>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="id" label="شناسه" />
-    ),
+    header: "شناسه",
     cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
   },
   {
@@ -74,26 +71,14 @@ export const acceptedStudentsColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "major_name",
-    header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="major_name"
-        label="رشته پذیرفته شده"
-      />
-    ),
+    header: "رشته پذیرفته شده",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("major_name")}</div>
     ),
   },
   {
     accessorKey: "acceptance_type",
-    header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="acceptance_type"
-        label="نوع پذیرش"
-      />
-    ),
+    header: "نوع پذیرش",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("acceptance_type")}</div>
     ),
@@ -103,7 +88,6 @@ export const acceptedStudentsColumns: ColumnDef<any>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const student = row.original;
-      // Action cells implementation here
     },
   },
 ];
@@ -111,9 +95,7 @@ export const acceptedStudentsColumns: ColumnDef<any>[] = [
 export const majorsColumns: ColumnDef<any>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="id" label="شناسه" />
-    ),
+    header: "شناسه",
     cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
   },
   {
@@ -127,27 +109,21 @@ export const majorsColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "field",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="field" label="زمینه تحصیلی" />
-    ),
+    header: "زمینه تحصیلی",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("field")}</div>
     ),
   },
   {
     accessorKey: "degree",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="degree" label="مقطع" />
-    ),
+    header: "مقطع",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("degree")}</div>
     ),
   },
   {
     accessorKey: "capacity",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="capacity" label="ظرفیت" />
-    ),
+    header: "ظرفیت",
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("capacity")}</div>
     ),
@@ -157,7 +133,6 @@ export const majorsColumns: ColumnDef<any>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const major = row.original;
-      // Action cells implementation here
     },
   },
 ];

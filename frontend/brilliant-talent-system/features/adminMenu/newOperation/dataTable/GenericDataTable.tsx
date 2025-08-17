@@ -85,9 +85,13 @@ export function GenericDataTable<TData>({
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <p className="text-danger">خطا در دریافت داده‌ها</p>
+        <p className="text-error">خطا در دریافت داده‌ها</p>
         {onRefresh && (
-          <Button variant="outline" onClick={onRefresh}>
+          <Button
+            variant="outline"
+            onClick={onRefresh}
+            className="btn btn-error"
+          >
             تلاش مجدد
           </Button>
         )}
@@ -98,42 +102,56 @@ export function GenericDataTable<TData>({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin">
-          <RefreshCw className="h-8 w-8 text-primary" />
-        </div>
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4" dir="rtl">
-      <div className="flex justify-between items-center">
-        {title && <h2 className="text-xl font-bold">{title}</h2>}
+    <div className="space-y-4 w-full" dir="rtl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {title && (
+          <h2 className="text-xl font-bold text-base-content">{title}</h2>
+        )}
         {onRefresh && (
-          <Button variant="outline" size="icon" onClick={onRefresh}>
-            <RefreshCw className="h-4 w-4" />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onRefresh}
+            className="btn btn-ghost btn-sm sm:btn-md"
+          >
+            <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         )}
       </div>
 
-      <div className="w-full">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center w-full gap-4">
+      <div className="w-full overflow-x-auto">
+        <div className="flex flex-row items-center justify-between py-4 gap-4">
+          <div className="flex flex-row items-center w-full gap-4">
             <Input
               placeholder={searchPlaceholder}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(event.target.value)}
-              className="w-full sm:max-w-sm"
+              className="input input-bordered w-full sm:max-w-sm"
             />
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                ستون‌ها <ChevronDown className="mr-2 h-4 w-4" />
+              <Button
+                variant="outline"
+                className="btn btn-outline w-10 sm:w-auto"
+              >
+                <span className="hidden sm:inline text-foreground">
+                  ستون‌ها
+                </span>
+                <ChevronDown className="mr-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              className="menu dropdown-content p-2 shadow bg-card rounded-box w-52"
+            >
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
@@ -142,13 +160,16 @@ export function GenericDataTable<TData>({
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className="capitalize"
+                        className="menu-item hover:bg-muted"
                         checked={column.getIsVisible()}
                         onCheckedChange={(value) =>
                           column.toggleVisibility(!!value)
                         }
                       >
-                        {column.columnDef.header}
+                        <p className="text-foreground">
+                          {" "}
+                          {column.columnDef.header}
+                        </p>
                       </DropdownMenuCheckboxItem>
                     );
                   }
@@ -158,13 +179,13 @@ export function GenericDataTable<TData>({
           </DropdownMenu>
         </div>
 
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
+        <div className="rounded-box border border-border overflow-x-auto">
+          <Table className="table">
+            <TableHeader className="bg-accent">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -182,9 +203,10 @@ export function GenericDataTable<TData>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-base-200/50"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="text-foreground">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -197,7 +219,7 @@ export function GenericDataTable<TData>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className="h-24 text-center text-base-content/70"
                   >
                     {emptyMessage}
                   </TableCell>
@@ -207,17 +229,15 @@ export function GenericDataTable<TData>({
           </Table>
         </div>
 
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} از{" "}
-            {table.getFilteredRowModel().rows.length} ردیف انتخاب شده است.
-          </div>
-          <div className="space-x-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 py-4">
+          <div className="text-sm text-base-content/70"></div>
+          <div className="join">
             <Button
               variant="outline"
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
+              className="join-item btn btn-sm btn-outline"
             >
               قبلی
             </Button>
@@ -226,6 +246,7 @@ export function GenericDataTable<TData>({
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
+              className="join-item btn btn-sm btn-outline mr-1"
             >
               بعدی
             </Button>
