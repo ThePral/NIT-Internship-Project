@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface UserNavbarProps {
   userName: string;
@@ -118,6 +119,8 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </Button> */}
+
+          <SidebarTrigger className="block md:hidden"/>
         </div>
       </div>
 

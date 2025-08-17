@@ -1,7 +1,7 @@
 "use client";
 import InnerLayout from "@/layouts/InnerLayout/InnerLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "@/globals.css";
+import "@/app/globals.css";
 
 const queryClient = new QueryClient();
 
