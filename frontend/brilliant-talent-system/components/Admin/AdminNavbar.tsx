@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface AdminNavbarProps {
   userName: string;
@@ -114,9 +115,10 @@ export default function AdminNavbar({ userName, userMajor }: AdminNavbarProps) {
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </Button> */}
         </div>
+        <SidebarTrigger className="block md:hidden"/>
       </div>
+        {/* Mobile menu
 
-      {/* Mobile menu
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white px-4 py-3 space-y-3 border-t">
           <NavLink
@@ -133,6 +135,7 @@ export default function AdminNavbar({ userName, userMajor }: AdminNavbarProps) {
           />
         </div>
       )} */}
+
     </header>
   );
 }
