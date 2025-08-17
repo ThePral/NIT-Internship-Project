@@ -13,7 +13,7 @@ import { CreateUserDto, EditUserDto, UserDto } from 'src/user/dto/user.dto';
 export class AdminController {
     constructor(private adminService: AdminService) {}
     
-    @ApiOperation({ summary: 'Get admin' })
+    @ApiOperation({ summary: 'Get me' })
     @ApiResponse({ type: AdminDto })
     @Get('me')
     getMe(@GetUser() admin: Admin): AdminDto{
@@ -21,7 +21,7 @@ export class AdminController {
         return safeAdmin;
     }
 
-    @ApiOperation({ summary: 'Edit admin' })
+    @ApiOperation({ summary: 'Edit me' })
     @ApiBody({ type: EditAdminDto })
     @ApiResponse({ type: AdminDto })
     @Patch('me')

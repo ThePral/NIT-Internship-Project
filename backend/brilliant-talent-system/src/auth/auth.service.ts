@@ -4,7 +4,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import * as argon from 'argon2'
 import { AdminLoginDto, SuperAdminLoginDto, UserLoginDto } from "./dto";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
 @Injectable()
@@ -31,7 +30,7 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.createToken(user.id, user.username);
+        return this.generateTokens(user.id, user.username);
     }
 
     async adminLogin(dto: AdminLoginDto) {
@@ -51,7 +50,7 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.createToken(admin.id, admin.username);
+        return this.generateTokens(admin.id, admin.username);
     }
 
     async superAdminLogin(dto: SuperAdminLoginDto) {
@@ -71,30 +70,54 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.createToken(superAdmin.id, superAdmin.username);
+        return this.generateTokens(superAdmin.id, superAdmin.username);
     }
 
-    async createToken(
+    async generateTokens(
         userId: number,
         username: string
     ) {
+        const accessTokenPayload = {
+            sub: userId,
+            username
+        };
 
-        const payload = {
+        const refreshTokenPayload = {
             sub: userId,
             username,
+            isRefreshToken: true
         };
 
-        const token = await this.jwt.signAsync(
-            payload,
-            {
-                expiresIn: '100m',
-                secret: process.env.JWT_SECRET
-            },
-        );
+        const [access_token, refresh_token] = await Promise.all([
+            this.jwt.signAsync(accessTokenPayload, {
+                expiresIn: '15m',
+                secret: process.env.JWT_ACCESS_SECRET
+            }),
+            this.jwt.signAsync(refreshTokenPayload, {
+                expiresIn: '7d',
+                secret: process.env.JWT_REFRESH_SECRET
+            })
+        ]);
 
         return {
-            access_token: token,
-            refresh_token: token
+            access_token,
+            refresh_token
         };
+    }
+
+    async refreshTokens(refreshToken: string) {
+        try {
+            const payload = await this.jwt.verifyAsync(refreshToken, {
+                secret: process.env.JWT_REFRESH_SECRET
+            });
+
+            if (!payload.isRefreshToken) {
+                throw new ForbiddenException('Invalid token type');
+            }
+
+            return this.generateTokens(payload.sub, payload.username);
+        } catch (error) {
+            throw new ForbiddenException('Invalid or expired refresh token');
+        }
     }
 }

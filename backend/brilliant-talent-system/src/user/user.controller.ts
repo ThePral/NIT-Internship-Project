@@ -13,7 +13,7 @@ import { User } from '@prisma/client';
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @ApiOperation({ summary: 'Get user' })
+    @ApiOperation({ summary: 'Get me' })
     @ApiResponse({ type: UserDto })
     @Get('me')
     getMe(@GetUser() user: User): UserDto{
@@ -21,7 +21,7 @@ export class UserController {
         return safeUser;
     }
 
-    @ApiOperation({ summary: 'Edit user' })
+    @ApiOperation({ summary: 'Edit me' })
     @ApiBody({ type: EditUserDto })
     @ApiResponse({ type: UserDto })
     @Patch('me')

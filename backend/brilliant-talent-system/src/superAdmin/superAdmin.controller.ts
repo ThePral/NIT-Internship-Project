@@ -21,7 +21,7 @@ export class SuperAdminController {
     //     return this.superAdminService.addSuperAdmin(dto);
     // }
     
-    @ApiOperation({ summary: 'Get superAdmin' })
+    @ApiOperation({ summary: 'Get me' })
     @ApiResponse({ type: SuperAdminDto })
     @Get('me')
     getMe(@GetUser() superAdmin: SuperAdmin): SuperAdminDto{
@@ -29,7 +29,7 @@ export class SuperAdminController {
         return safeSuperAdmin;
     }
 
-    @ApiOperation({ summary: 'Edit superAdmin' })
+    @ApiOperation({ summary: 'Edit me' })
     @ApiBody({ type: EditSuperAdminDto })
     @ApiResponse({ type: SuperAdminDto })
     @Patch('me')
