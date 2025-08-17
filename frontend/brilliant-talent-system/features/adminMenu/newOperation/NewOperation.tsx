@@ -3,7 +3,7 @@ import { OperationResultPage } from "./OperationResultPage";
 
 export const NewOperation = () => {
   return (
-    <div className="bg-background font-primary w-full">
+    <div className="bg-background font-primary w-full mt-4">
       <FileUploadDashboard />
       <OperationResultPage />
     </div>

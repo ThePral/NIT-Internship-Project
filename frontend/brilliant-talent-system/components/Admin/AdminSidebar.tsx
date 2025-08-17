@@ -32,22 +32,22 @@ export const AdminSidebar = () => {
   const items: SidebarItem[] = [
     {
       title: "خانه",
-      link: "/home",
+      link: "/admin/home",
       icon: <User />,
     },
     {
       title: "عملیات جدید",
-      link: "/newOperation",
+      link: "/admin/newOperation",
       icon: <FilePlus className="h-5 w-5" />,
     },
     {
       title: "قوانین",
-      link: "/rules",
+      link: "/admin/rules",
       icon: <FileText className="h-5 w-5" />,
     },
     {
       title: "تاریخچه",
-      link: "/history",
+      link: "/admin/history",
       icon: <Clock className="h-5 w-5" />,
     },
     { title: "خروج", link: "/", icon: <LogOut /> },
@@ -74,7 +74,7 @@ export const AdminSidebar = () => {
   }
 
   return (
-    <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen  p-5 pr-0 overflow-auto bg-sidebar">
+    <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen pr-0 overflow-auto bg-sidebar">
       {items.map((item, index) => (
         <div key={index}>
           <div className="flex gap-2 items-center">

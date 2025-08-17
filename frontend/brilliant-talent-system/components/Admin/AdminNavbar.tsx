@@ -32,10 +32,10 @@ export default function AdminNavbar({ userName, userMajor }: AdminNavbarProps) {
 
   return (
     <header
-      className=" fixed top-0 right-0 left-0 z-50 bg-white border-b"
+      className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
       dir="rtl"
     >
-      <div className=" w-full px-10 text-xl h-20 flex items-center justify-between">
+      <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <svg
@@ -115,9 +115,9 @@ export default function AdminNavbar({ userName, userMajor }: AdminNavbarProps) {
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </Button> */}
         </div>
-        <SidebarTrigger className="block md:hidden"/>
+        <SidebarTrigger className="block md:hidden" />
       </div>
-        {/* Mobile menu
+      {/* Mobile menu
 
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white px-4 py-3 space-y-3 border-t">
@@ -135,36 +135,35 @@ export default function AdminNavbar({ userName, userMajor }: AdminNavbarProps) {
           />
         </div>
       )} */}
-
     </header>
   );
 }
 
-function NavLink({
-  href,
-  icon,
-  text,
-  active = false,
-  onClick,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  text: string;
-  active?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-        active
-          ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-          : "text-gray-700 hover:text-blue-600"
-      }`}
-    >
-      {icon}
-      {text}
-    </Link>
-  );
-}
+// function NavLink({
+//   href,
+//   icon,
+//   text,
+//   active = false,
+//   onClick,
+// }: {
+//   href: string;
+//   icon: React.ReactNode;
+//   text: string;
+//   active?: boolean;
+//   onClick?: () => void;
+// }) {
+//   return (
+//     <Link
+//       href={href}
+//       onClick={onClick}
+//       className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+//         active
+//           ? "text-primary border-b-2 border-primary pb-1"
+//           : "text-gray-700 hover:text-primary"
+//       }`}
+//     >
+//       {icon}
+//       {text}
+//     </Link>
+//   );
+// }

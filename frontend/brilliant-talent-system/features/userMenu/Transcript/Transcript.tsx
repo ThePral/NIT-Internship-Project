@@ -30,7 +30,7 @@ export default function Transcript() {
           </h2>
 
           {/* Profile Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-sm sm:text-base">
+          <div className=" gap-y-2 gap-x-6 text-sm sm:text-base">
             {profileData.map((item, idx) => (
               <div
                 key={idx}
@@ -47,7 +47,7 @@ export default function Transcript() {
           </div>
 
           {/* Priority Cards */}
-          <div className="space-y-4 pt-4 grid grid-cols-1 md:grid-cols-2  gap-4">
+          <div className="space-y-4 pt-4 grid grid-cols-1 lg:grid-cols-2  gap-4">
             <PriorityCard
               priorityLabel="اولویت اول"
               status="error"

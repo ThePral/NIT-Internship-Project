@@ -62,8 +62,8 @@ export const OperationResultPage = () => {
   });
 
   return (
-    <div className="flex w-full items-center justify-center bg-background px-8 font-primary text-foreground mt-4">
-      <Card className="w-full border-primary">
+    <div className="flex w-full items-center justify-center bg-background font-primary text-foreground mt-4">
+      <Card className="w-full shadow-primary">
         <CardHeader className="items-end text-right">
           <CardTitle className="text-2xl font-bold text-primary">
             نتیجه عملیات

@@ -32,10 +32,10 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
 
   return (
     <header
-      className=" fixed top-0 right-0 left-0 z-50 bg-white border-b"
+      className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
       dir="rtl"
     >
-      <div className=" w-full px-10 text-xl h-20 flex items-center justify-between">
+      <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <svg
@@ -120,7 +120,7 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </Button> */}
 
-          <SidebarTrigger className="block md:hidden"/>
+          <SidebarTrigger className="block md:hidden" />
         </div>
       </div>
 
