@@ -15,7 +15,6 @@ export function useUserCheckToken() {
         throw new Error(jsonResult.error);
       }
     },
-
     staleTime: 6 * 60 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,

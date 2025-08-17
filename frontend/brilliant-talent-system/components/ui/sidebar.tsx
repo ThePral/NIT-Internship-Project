@@ -273,7 +273,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <div className="inline-flex items-center justify-center h-4 w-4">
+      <div className="inline-flex items-center justify-center h-8 w-8">
         <Menu />
       </div>
       <span className="sr-only">Toggle Sidebar</span>
