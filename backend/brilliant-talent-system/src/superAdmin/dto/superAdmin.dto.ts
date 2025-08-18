@@ -33,12 +33,11 @@ export class SuperAdminDto {
     username: string;
 
     @ApiProperty({
-        example: "user role",
+        example: "superAdmin",
         description: "User's role"
     })
     @IsString()
-    @IsNotEmpty()
-    role?: string = "superAdmin";
+    role: string = "superAdmin";
 }
 
 export class EditSuperAdminDto {
