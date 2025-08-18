@@ -30,7 +30,7 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.generateTokens(user.id, user.username);
+        return this.generateTokens(user.id, user.username, 'user');
     }
 
     async adminLogin(dto: AdminLoginDto) {
@@ -50,7 +50,7 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.generateTokens(admin.id, admin.username);
+        return this.generateTokens(admin.id, admin.username, 'admin');
     }
 
     async superAdminLogin(dto: SuperAdminLoginDto) {
@@ -70,21 +70,23 @@ export class AuthService{
             throw new ForbiddenException('Creditentioal incorrrect');
         }
 
-        return this.generateTokens(superAdmin.id, superAdmin.username);
+        return this.generateTokens(superAdmin.id, superAdmin.username, 'superAdmin');
     }
 
     async generateTokens(
         userId: number,
-        username: string
+        username: string,
+        role: string
     ) {
         const accessTokenPayload = {
             sub: userId,
-            username
+            username, role
         };
 
         const refreshTokenPayload = {
             sub: userId,
             username,
+            role,
             isRefreshToken: true
         };
 
@@ -115,7 +117,7 @@ export class AuthService{
                 throw new ForbiddenException('Invalid token type');
             }
 
-            return this.generateTokens(payload.sub, payload.username);
+            return this.generateTokens(payload.sub, payload.username, payload.role);
         } catch (error) {
             throw new ForbiddenException('Invalid or expired refresh token');
         }

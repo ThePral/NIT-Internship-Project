@@ -23,8 +23,10 @@ export class UserJwtStrategy extends PassportStrategy(
 
     async validate(payload: {
         sub: number,
-        username: string
+        username: string,
+        role: string
     }) {
+        if(payload.role !== 'user') throw new UnauthorizedException();
         
         const user = await this.prisma.user.findUnique({
             where: {
@@ -56,8 +58,10 @@ export class AdminJwtStrategy extends PassportStrategy(
 
     async validate(payload: {
         sub: number,
-        username: string
+        username: string,
+        role: string
     }) {
+        if(payload.role !== 'admin') throw new UnauthorizedException();
         
         const admin = await this.prisma.admin.findUnique({
             where: {
@@ -89,8 +93,10 @@ export class SuperAdminJwtStrategy extends PassportStrategy(
 
     async validate(payload: {
         sub: number,
-        username: string
+        username: string,
+        role: string
     }) {
+        if(payload.role !== 'superAdmin') throw new UnauthorizedException();
         
         const superAdmin = await this.prisma.superAdmin.findUnique({
             where: {
