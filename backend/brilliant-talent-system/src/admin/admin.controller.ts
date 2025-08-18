@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, EditAdminDto } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { CreateUserDto, EditUserDto, UserDto } from 'src/user/dto/user.dto';
@@ -14,11 +14,11 @@ export class AdminController {
     constructor(private adminService: AdminService) {}
     
     @ApiOperation({ summary: 'Get me' })
-    @ApiResponse({ type: AdminDto })
+    @ApiResponse({ type: AdminWithRoleDto })
     @Get('me')
-    getMe(@GetUser() admin: Admin): AdminDto{
+    getMe(@GetUser() admin: Admin): AdminWithRoleDto{
         const { hash_password, ...safeAdmin} = admin;
-        return safeAdmin;
+        return {...safeAdmin , role : "admin"};
     }
 
     @ApiOperation({ summary: 'Edit me' })

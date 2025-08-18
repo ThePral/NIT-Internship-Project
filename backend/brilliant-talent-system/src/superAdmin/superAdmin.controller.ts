@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SuperAdminJwtGuard } from 'src/auth/guard';
 import { SuperAdminService } from './superAdmin.service';
-import { EditSuperAdminDto, SuperAdminDto } from './dto';
+import { EditSuperAdminDto, SuperAdminDto, SuperAdminWithRoleDto } from './dto';
 import { SuperAdmin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { AdminDto, CreateAdminDto, EditAdminDto } from 'src/admin/dto';
@@ -22,11 +22,11 @@ export class SuperAdminController {
     // }
     
     @ApiOperation({ summary: 'Get me' })
-    @ApiResponse({ type: SuperAdminDto })
+    @ApiResponse({ type: SuperAdminWithRoleDto })
     @Get('me')
-    getMe(@GetUser() superAdmin: SuperAdmin): SuperAdminDto{
+    getMe(@GetUser() superAdmin: SuperAdmin): SuperAdminWithRoleDto{
         const { hash_password, ...safeSuperAdmin} = superAdmin;
-        return safeSuperAdmin;
+        return {...safeSuperAdmin , role : "superAdmin"};
     }
 
     @ApiOperation({ summary: 'Edit me' })
