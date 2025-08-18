@@ -31,13 +31,16 @@ export class UserDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+}
 
+export class UserWithRoleDto extends UserDto{
     @ApiProperty({
         example: "user",
         description: "User's role"
     })
     @IsString()
-    role: string = "user";
+    @IsNotEmpty()
+    role: string;
 }
 
 export class EditUserDto {

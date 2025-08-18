@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Patch, Body, } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/decorator';
-import { EditUserDto, UserDto } from './dto/user.dto';
+import { EditUserDto, UserDto, UserWithRoleDto } from './dto';
 import { UserJwtGuard } from 'src/auth/guard';
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { UserService } from './user.service';
@@ -14,11 +14,11 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @ApiOperation({ summary: 'Get me' })
-    @ApiResponse({ type: UserDto })
+    @ApiResponse({ type: UserWithRoleDto })
     @Get('me')
-    getMe(@GetUser() user: User): UserDto{
+    getMe(@GetUser() user: User): UserWithRoleDto{
         const { hash_password, ...safeUser} = user;
-        return safeUser;
+        return {...safeUser , role : "user"};
     }
 
     @ApiOperation({ summary: 'Edit me' })

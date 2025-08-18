@@ -31,13 +31,16 @@ export class SuperAdminDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+}
 
+export class SuperAdminWithRoleDto extends SuperAdminDto{
     @ApiProperty({
         example: "superAdmin",
         description: "User's role"
     })
     @IsString()
-    role: string = "superAdmin";
+    @IsNotEmpty()
+    role: string;
 }
 
 export class EditSuperAdminDto {
