@@ -38,7 +38,7 @@ export class UserDto {
     })
     @IsString()
     @IsNotEmpty()
-    role: string = "user";
+    role?: string = "user";
 }
 
 export class EditUserDto {

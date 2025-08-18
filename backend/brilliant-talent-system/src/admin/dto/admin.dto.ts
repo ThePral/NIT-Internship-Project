@@ -38,7 +38,7 @@ export class AdminDto {
     })
     @IsString()
     @IsNotEmpty()
-    role: string = "admin";
+    role?: string = "admin";
 }
 
 export class EditAdminDto {
