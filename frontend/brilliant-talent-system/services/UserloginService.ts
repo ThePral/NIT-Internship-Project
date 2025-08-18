@@ -14,8 +14,8 @@ export async function UserLoginService(username: string, password: string) {
   const jsonResult = await result.json();
 
   if (result.ok) {
-    toast.success("آدرس با موفقیت اضافه شد", {
-      description: "آدرس جدید شما با موفقیت ثبت گردید",
+    toast.success("ورود با موفقیت انجام شد", {
+      description: "شما با موفقیت به سیستم وارد شدید",
     });
     return jsonResult;
   } else {
@@ -23,27 +23,28 @@ export async function UserLoginService(username: string, password: string) {
     switch (result.status) {
       case 400:
         toast.error("خطای درخواست", {
-          description: jsonResult.message || "درخواست نامعتبر است.",
+          description:
+            jsonResult.message || "نام کاربری یا رمز عبور نامعتبر است.",
         });
         break;
       case 401:
-        toast.error("عدم دسترسی", {
-          description: "شما مجوز انجام این عمل را ندارید.",
+        toast.error("عدم احراز هویت", {
+          description: "نام کاربری یا رمز عبور اشتباه است.",
         });
         break;
       case 403:
-        toast.error("ممنوع", {
-          description: "دسترسی به این عملیات ممنوع است.",
+        toast.error("حساب غیرفعال", {
+          description: "حساب کاربری شما غیرفعال شده است.",
         });
         break;
       case 404:
-        toast.error("یافت نشد", {
-          description: "منبع درخواستی یافت نشد.",
+        toast.error("کاربر یافت نشد", {
+          description: "کاربری با این مشخصات وجود ندارد.",
         });
         break;
       case 409:
-        toast.error("تضاد", {
-          description: "این آدرس قبلاً ثبت شده است.",
+        toast.error("حساب قفل شده", {
+          description: "حساب شما به دلیل تلاشهای ناموفق متعدد قفل شده است.",
         });
         break;
       case 500:
@@ -53,7 +54,8 @@ export async function UserLoginService(username: string, password: string) {
         break;
       default:
         toast.error("خطای ناشناخته", {
-          description: jsonResult.error || "خطای نامشخصی رخ داده است.",
+          description:
+            jsonResult.error || "خطای نامشخصی در هنگام ورود رخ داده است.",
         });
     }
     throw new Error(jsonResult.error || "خطای نامشخص");
