@@ -14,7 +14,7 @@ export default function ServerLayout({
     <html lang="en" dir="rtl">
       <body className={`$ antialiased `}>
         <QueryClientProvider client={queryClient}>
-          <InnerLayout>{children}</InnerLayout>
+          {children}
         </QueryClientProvider>
       </body>
     </html>

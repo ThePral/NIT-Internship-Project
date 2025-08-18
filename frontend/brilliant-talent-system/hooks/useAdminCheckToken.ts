@@ -2,11 +2,11 @@ import { Admin, User } from "@/interfaces/user";
 import { getFetch, postFetch } from "@/lib/fetch";
 import { useQuery } from "@tanstack/react-query";
 
-export function useUserCheckToken() {
-  return useQuery<User, Error>({
+export function useAdminCheckToken() {
+  return useQuery<Admin, Error>({
     queryKey: ["myaccount"],
     queryFn: async () => {
-      const result = await getFetch(`users/me`);
+      const result = await getFetch(`admins/me`);
       const jsonResult = await result.json();
       if (result.ok) {
         console.log(jsonResult, "success");
@@ -29,7 +29,7 @@ export function useUserCheckToken() {
                 "refreshToken",
                 refreshJsonResult.refresh_token
               );
-              const retryResult = await getFetch(`users/me`);
+              const retryResult = await getFetch(`admins/me`);
               const retryJsonResult = await result.json();
               if (retryResult.ok) {
                 return retryJsonResult;

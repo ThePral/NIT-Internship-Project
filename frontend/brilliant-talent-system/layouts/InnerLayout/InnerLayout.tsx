@@ -8,19 +8,52 @@ import { Toaster } from "sonner";
 import { Spinner } from "../../components/ui/spinner";
 import { User } from "@/interfaces/user";
 import { useUserCheckToken } from "@/hooks";
+import { useAdminCheckToken } from "@/hooks/useAdminCheckToken";
+import { useSuperAdminCheckToken } from "@/hooks/useSuperAdminCheckToken";
 
-const InnerLayout = ({ children }: { children: React.ReactNode }) => {
+const InnerLayout = ({
+  children,
+  role,
+}: {
+  children: React.ReactNode;
+  role: "user" | "admin" | "superAdmin";
+}) => {
   let [user, setUser] = useState<User>();
   let [loading, setLoading] = useState<any>(true);
-  let { data: serverUser, error, isLoading } = useUserCheckToken();
+  let serverUser: User | undefined;
+  let error;
+  let isLoading;
+  if (role == "user") {
+    let { data: serverUser, error, isLoading } = useUserCheckToken();
+  } else if (role == "admin") {
+    let { data: serverUser, error, isLoading } = useAdminCheckToken();
+  } else if (role == "superAdmin") {
+    let { data: serverUser, error, isLoading } = useSuperAdminCheckToken();
+  }
   const router = useRouter();
 
   useEffect(() => {
-    // setLoading(isLoading);
+    setLoading(isLoading);
     if (error) {
       setUser(undefined);
-      //   router.push("/authentication");
-    } else if (serverUser?.user_id && !_.isEqual(serverUser, user)) {
+      if (role == "user") {
+        router.push("/user/auth");
+      } else if (role == "admin") {
+        router.push("/admin/auth");
+      } else if (role == "superAdmin") {
+        router.push("/admin/auth");
+      }
+    } else if (serverUser?.id && !_.isEqual(serverUser, user)) {
+      if (serverUser.role != role) {
+        setUser(undefined);
+        if (role == "user") {
+          router.push("/user/auth");
+        } else if (role == "admin") {
+          router.push("/admin/auth");
+        } else if (role == "superAdmin") {
+          router.push("/admin/auth");
+        }
+      }
       setUser(serverUser);
     }
 

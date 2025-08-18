@@ -1,9 +1,15 @@
 export interface User {
-  user_id: number;
+  id: number;
+  username: string;
+  role: string;
 }
 export interface Admin {
-  admin_id: number;
+  id: number;
+  username: string;
+  role: string;
 }
 export interface SuperAdmin {
-  superAdmin_id: number;
+  id: number;
+  username: string;
+  role: string;
 }
