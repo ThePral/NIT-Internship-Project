@@ -22,10 +22,7 @@ export default function PriorityCard({
   const Icon = isSuccess ? CheckCircle : XCircle;
 
   return (
-    <Card
-      className="bg-card border border-border rounded-lg shadow-sm w-full hover:shadow-md transition-shadow duration-200"
-      dir="rtl"
-    >
+    <Card className="bg-card border border-border rounded-lg shadow-sm w-full hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-3 sm:p-4 md:p-5 space-y-3 md:space-y-4 text-right">
         {/* Priority Label */}
         <div className="flex items-center gap-2">

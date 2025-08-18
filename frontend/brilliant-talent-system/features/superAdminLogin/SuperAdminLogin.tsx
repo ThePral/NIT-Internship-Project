@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import loginImage from "@/asset/login.png";
 import { AdminLoginService } from "@/services/AdminloginService";
+import { SuperAdminLoginService } from "@/services/SuperAdminloginService";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,14 +28,14 @@ export default function LoginPage() {
     }: {
       username: string;
       password: string;
-    }) => UserLoginService(username, password),
+    }) => SuperAdminLoginService(username, password),
     onSuccess: (res) => {
       console.log("res", res);
       queryClient.invalidateQueries({ queryKey: ["myaccount"] });
       localStorage.setItem("authToken", res.access_token);
       localStorage.setItem("refreshToken", res.refresh_token);
       setIsLoading(false);
-      router.push("/user/home");
+      router.push("/superadmin/home");
     },
     onError: (error) => {
       console.log("error12");

@@ -24,19 +24,19 @@ export const UserSidebar = () => {
   const items: SidebarItem[] = [
     { title: "خانه", link: "/home", icon: <User size={18} /> },
     { title: "کارنامه", link: "/transcript", icon: <ScrollText size={18} /> },
-    { title: "خروج", link: "/authentication", icon: <LogOut size={18} /> },
+    { title: "خروج", link: "/user/auth", icon: <LogOut size={18} /> },
   ];
 
   const logOut = useMutation({
     mutationFn: async () => {},
     onSuccess: () => {
       setUser(undefined);
-      router.push("/authentication");
+      router.push("/user/auth");
     },
   });
 
   function handleClick(link: string) {
-    if (link === "/authentication") {
+    if (link === "/user/auth") {
       logOut.mutate();
     }
   }

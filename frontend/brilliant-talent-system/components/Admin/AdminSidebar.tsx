@@ -58,7 +58,7 @@ export const AdminSidebar = () => {
     mutationFn: async () => {},
     onSuccess: () => {
       setUser(undefined);
-      router.push("/authentication");
+      router.push("/user/auth");
     },
     onError: (error) => {
       console.log(error);
@@ -68,7 +68,7 @@ export const AdminSidebar = () => {
 
   function handleClick(link: string) {
     console.log(user);
-    if (link == "/authentication") {
+    if (link == "/user/auth") {
       logOut.mutate();
     }
   }

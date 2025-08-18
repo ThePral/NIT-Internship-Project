@@ -27,14 +27,14 @@ export default function LoginPage() {
     }: {
       username: string;
       password: string;
-    }) => UserLoginService(username, password),
+    }) => AdminLoginService(username, password),
     onSuccess: (res) => {
       console.log("res", res);
       queryClient.invalidateQueries({ queryKey: ["myaccount"] });
       localStorage.setItem("authToken", res.access_token);
       localStorage.setItem("refreshToken", res.refresh_token);
       setIsLoading(false);
-      router.push("/user/home");
+      router.push("/admin/home");
     },
     onError: (error) => {
       console.log("error12");
