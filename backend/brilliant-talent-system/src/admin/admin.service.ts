@@ -37,32 +37,32 @@ export class AdminService {
         return safeAdmin;
     }
 
-    async addUser(dto: CreateUserDto) {
+    // async addUser(dto: CreateUserDto) {
 
-        const hash = await argon.hash(dto.password);
+    //     const hash = await argon.hash(dto.password);
 
-        const {password, ...userdto} = dto;
+    //     const {password, ...userdto} = dto;
 
-        try {
-            const user = await this.prisma.user.create({
-                data: {
-                    hash_password: hash,
-                    ...userdto
-                }
-            });    
+    //     try {
+    //         const user = await this.prisma.user.create({
+    //             data: {
+    //                 hash_password: hash,
+    //                 ...userdto
+    //             }
+    //         });    
 
-            const { hash_password, ...safeUser} = user;
-            return safeUser;
+    //         const { hash_password, ...safeUser} = user;
+    //         return safeUser;
 
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials Taken");
-                }
-            }
-            throw error;
-        }
-    }
+    //     } catch (error) {
+    //         if (error instanceof PrismaClientKnownRequestError) {
+    //             if (error.code === "P2002") {
+    //                 throw new ForbiddenException("Credentials Taken");
+    //             }
+    //         }
+    //         throw error;
+    //     }
+    // }
 
     async getUsers() {
         return await this.prisma.user.findMany({
@@ -134,5 +134,9 @@ export class AdminService {
                 id: userId
             }
         });
+    }
+
+    async calculateUsersPoints() {
+
     }
 }

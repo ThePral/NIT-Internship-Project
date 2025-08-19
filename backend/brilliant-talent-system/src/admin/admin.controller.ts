@@ -1,14 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
 import { AdminDto, AdminWithRoleDto, EditAdminDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { CreateUserDto, EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { basename, extname } from 'path';
 
-@ApiBearerAuth('access_token')
-@UseGuards(AdminJwtGuard)
+// @ApiBearerAuth('access_token')
+// @UseGuards(AdminJwtGuard)
 @Controller('admins')
 export class AdminController {
     constructor(private adminService: AdminService) {}
@@ -29,13 +32,13 @@ export class AdminController {
         return this.adminService.editAdmin(admin, dto);
     }
 
-    @ApiOperation({ summary: 'Add user' })
-    @ApiBody({ type: CreateUserDto })
-    @ApiResponse({ type: UserDto })
-    @Post('users')
-    addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
-        return this.adminService.addUser(dto);
-    }
+    // @ApiOperation({ summary: 'Add user' })
+    // @ApiBody({ type: CreateUserDto })
+    // @ApiResponse({ type: UserDto })
+    // @Post('users')
+    // addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
+    //     return this.adminService.addUser(dto);
+    // }
 
     @ApiOperation({ summary: 'Get users' })
     @ApiResponse({ type: UserDto, isArray: true })
@@ -67,6 +70,43 @@ export class AdminController {
     @Delete('users/{:id}')
     deleteUserById(@Param('id') userId: number){
         return this.adminService.deleteUserById(userId);
+    }
+
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, callback) => {
+                // create unique filename: originalname + timestamp
+                const originalName = basename(file.originalname);
+                callback(null, originalName);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(xlsx|xls)$/)) {
+                return callback(new Error('Only Excel files are allowed!'), false);
+            }
+            callback(null, true);
+        },
+    }))
+    @ApiConsumes('multipart/form-data')
+    @Post("/upload")
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                type: 'string',
+                format: 'binary',
+                },
+            },
+        },
+    })
+    uploadExcel(@UploadedFile() file: Express.Multer.File) {
+        return {
+            message: 'File uploaded successfully!',
+            filename: file.filename,
+            path: file.path,
+        };
     }
     
 }
