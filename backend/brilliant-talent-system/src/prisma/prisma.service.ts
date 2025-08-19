@@ -7,11 +7,11 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit{
     private readonly logger = new Logger(PrismaService.name);
 
-    constructor(config: ConfigService){
+    constructor(){
         super({
             datasources: {
                 db: {
-                    url: config.get("DATABASE_URL")
+                    url: process.env.DATABASE_URL
                 }
             }
         })
