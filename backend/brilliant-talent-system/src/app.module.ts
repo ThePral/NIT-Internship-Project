@@ -5,9 +5,18 @@ import { LoggerMiddleware } from './logger';
 import { UserModule } from './user/user.module';
 import { SuperAdminModule } from './superAdmin/superAdmin.mudule';
 import { AdminModule } from './admin/admin.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, SuperAdminModule, AdminModule]
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    AuthModule, 
+    PrismaModule, 
+    UserModule, 
+    SuperAdminModule, 
+    AdminModule]
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
