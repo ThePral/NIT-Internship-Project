@@ -1,21 +1,22 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AdminJwtGuard } from 'src/auth/guard';
+import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
 import { AdminDto, AdminWithRoleDto, EditAdminDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { CreateUserDto, EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { basename, extname } from 'path';
+import { basename } from 'path';
 
-// @ApiBearerAuth('access_token')
-// @UseGuards(AdminJwtGuard)
+@ApiBearerAuth('access_token')
+@UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
 export class AdminController {
     constructor(private adminService: AdminService) {}
     
+    @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Get me' })
     @ApiResponse({ type: AdminWithRoleDto })
     @Get('me')
@@ -24,6 +25,7 @@ export class AdminController {
         return {...safeAdmin , role : "admin"};
     }
 
+    @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Edit me' })
     @ApiBody({ type: EditAdminDto })
     @ApiResponse({ type: AdminDto })
