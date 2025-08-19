@@ -19,7 +19,6 @@ export class SuperAdminJwtGuard extends AuthGuard('superAdmin_jwt') {
     };
 }
 
-@Injectable()
 export class AnyAdminJwtGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const adminGuard = new AdminJwtGuard;
