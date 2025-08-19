@@ -21,8 +21,44 @@ model User {
 
   username String @unique
   hash_password String
+  firstname String
+  lastname String
 
+  points Int
+
+  Student_Priorities Student_Priority[]
   @@map("users")
+}
+
+model University {
+  id Int @id @default(autoincrement())
+  name String
+  grade Int
+
+  @@map("universities")
+}
+
+model Minor {
+  id Int @id @default(autoincrement())
+  name String @unique
+  req String
+  capacity Int
+
+  Student_Priority Student_Priority[]
+  @@map("minors")
+}
+
+model Student_Priority {
+  id Int @id @default(autoincrement())
+  student_id Int
+  minor_id Int
+  priority Int
+  is_accepted Boolean?
+
+  student User @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  minor Minor @relation(fields: [minor_id], references: [id], onDelete: Cascade)
+
+  @@map("Student_Priorities")
 }
 
 model Admin {
