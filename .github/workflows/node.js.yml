@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: backend
+        working-directory: backend/brilliant-talent-system
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -60,8 +60,8 @@ jobs:
 
       - name: Run e2e tests
         run: npm run test:e2e -- --ci --watch=false --coverage --coverageThreshold='{"global":{"branches":0,"functions":0,"lines":0,"statements":0}}'
-        working-directory: backend
+        working-directory: backend/brilliant-talent-system
 
       - name: Build project
         run: npm run build
-        working-directory: backend
+        working-directory: backend/brilliant-talent-system
