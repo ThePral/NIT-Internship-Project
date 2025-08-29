@@ -2,13 +2,11 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, AdminWithRoleDto, EditAdminDto } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { basename } from 'path';
+import { ExcelUploadDecorator } from './decorators';
 
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
@@ -74,35 +72,10 @@ export class AdminController {
         return this.adminService.deleteUserById(userId);
     }
 
-    @UseInterceptors(FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, callback) => {
-                // create unique filename: originalname + timestamp
-                const originalName = basename(file.originalname);
-                callback(null, originalName);
-            },
-        }),
-        fileFilter: (req, file, callback) => {
-            if (!file.originalname.match(/\.(xlsx|xls)$/)) {
-                return callback(new Error('Only Excel files are allowed!'), false);
-            }
-            callback(null, true);
-        },
-    }))
-    @ApiConsumes('multipart/form-data')
-    @Post("/upload")
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                file: {
-                type: 'string',
-                format: 'binary',
-                },
-            },
-        },
-    })
+    @ApiOperation({ summary: "upload Excel files" })
+    @ExcelUploadDecorator('file')
+    @ApiResponse( { type: UploadResponseDto})
+    @Post("/upload/:type")
     uploadExcel(@UploadedFile() file: Express.Multer.File) {
         return {
             message: 'File uploaded successfully!',

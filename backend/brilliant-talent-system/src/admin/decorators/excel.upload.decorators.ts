@@ -1,0 +1,50 @@
+import { applyDecorators, BadRequestException, UseInterceptors} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+
+const destination = './resources'
+
+export function ExcelUploadDecorator(fieldName = 'file') {
+    return applyDecorators(
+        UseInterceptors(
+            FileInterceptor(fieldName, {
+                storage: diskStorage({
+                    destination: destination,
+                    filename: (req, file, callback) => {
+                        const type = req.params.type;
+                        const nameMap = {
+                            A: 'Students1',
+                            B: 'Students2',
+                            C: 'minors',
+                            D: 'universities',
+                        };
+                        const baseName = nameMap[type];
+                        if (!baseName) callback(new BadRequestException('Invalid or missing type field'), "null");
+                        const fileName = baseName + extname(file.originalname);
+                        callback(null, fileName);
+                    },
+                }),
+                fileFilter: (req, file, callback) => {
+                    if (!file.originalname.match(/\.(xlsx|xls)$/)) {
+                        return callback(new Error('Only Excel files are allowed!'), false);
+                    }
+                    callback(null, true);
+                },
+            }),
+        ),
+        ApiConsumes('multipart/form-data'),
+        ApiBody({
+            schema: {
+                type: 'object',
+                properties: {
+                    [fieldName]: {
+                        type: 'string',
+                        format: 'binary',
+                    },
+                },
+            },
+        }),
+    );
+}
