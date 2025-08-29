@@ -2,7 +2,7 @@ import { applyDecorators, BadRequestException, UseInterceptors} from '@nestjs/co
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 
 const destination = './resources'
 
@@ -35,6 +35,12 @@ export function ExcelUploadDecorator(fieldName = 'file') {
             }),
         ),
         ApiConsumes('multipart/form-data'),
+        ApiParam({
+            name: 'type',
+            required: true,
+            description: 'The type of Excel file to upload',
+            schema: { type: 'string' },
+        }),
         ApiBody({
             schema: {
                 type: 'object',
