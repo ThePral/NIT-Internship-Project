@@ -28,7 +28,7 @@ export class AdminController {
     @ApiBody({ type: EditAdminDto })
     @ApiResponse({ type: AdminDto })
     @Patch('me')
-    ediAdmin(@GetUser() admin: Admin, @Body() dto: EditAdminDto): Promise<AdminDto>{
+    editMe(@GetUser() admin: Admin, @Body() dto: EditAdminDto): Promise<AdminDto>{
         return this.adminService.editAdmin(admin, dto);
     }
 
@@ -49,7 +49,7 @@ export class AdminController {
 
     @ApiOperation({ summary: 'Get user by id' })
     @ApiResponse({ type: UserDto })
-    @Get('users/{:id}')
+    @Get('users/:id')
     getUserById(@Param('id') userId: number): Promise<UserDto>{
         return this.adminService.getUserById(userId);
     }
@@ -57,7 +57,7 @@ export class AdminController {
     @ApiOperation({ summary: 'Edit user by id' })
     @ApiBody({ type: EditUserDto })
     @ApiResponse({ type: UserDto })
-    @Patch('users/{:id}')
+    @Patch('users/:id')
     editUserById(
         @Body() dto: EditUserDto,
         @Param('id') userId: number
@@ -67,7 +67,7 @@ export class AdminController {
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete user by id' })
-    @Delete('users/{:id}')
+    @Delete('users/:id')
     deleteUserById(@Param('id') userId: number){
         return this.adminService.deleteUserById(userId);
     }

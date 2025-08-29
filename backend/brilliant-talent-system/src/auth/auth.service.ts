@@ -21,13 +21,13 @@ export class AuthService{
         });
 
         if (!user) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         const pwMatches = await argon.verify(user.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         return this.generateTokens(user.id, user.username, 'user');
@@ -41,13 +41,13 @@ export class AuthService{
         });
 
         if (!admin) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         const pwMatches = await argon.verify(admin.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         return this.generateTokens(admin.id, admin.username, 'admin');
@@ -61,13 +61,13 @@ export class AuthService{
         });
 
         if (!superAdmin) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         const pwMatches = await argon.verify(superAdmin.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Creditentioal incorrrect');
+            throw new ForbiddenException('Credentials incorrrect');
         }
 
         return this.generateTokens(superAdmin.id, superAdmin.username, 'superAdmin');

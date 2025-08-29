@@ -33,7 +33,7 @@ export class SuperAdminController {
     @ApiBody({ type: EditSuperAdminDto })
     @ApiResponse({ type: SuperAdminDto })
     @Patch('me')
-    editSuperAdmin(@GetUser() superAdmin: SuperAdmin, @Body() dto: EditSuperAdminDto): Promise<SuperAdminDto>{
+    editMe(@GetUser() superAdmin: SuperAdmin, @Body() dto: EditSuperAdminDto): Promise<SuperAdminDto>{
         return this.superAdminService.editSuperAdmin(superAdmin, dto);
     }
 
@@ -54,7 +54,7 @@ export class SuperAdminController {
 
     @ApiOperation({ summary: 'Get admin by id' })
     @ApiResponse({ type: AdminDto })
-    @Get('admins/{:id}')
+    @Get('admins/:id')
     getAdminById(@Param('id') adminId: number): Promise<AdminDto>{
         return this.superAdminService.getAdminById(adminId);
     }
@@ -62,7 +62,7 @@ export class SuperAdminController {
     @ApiOperation({ summary: 'Edit admin by id' })
     @ApiBody({ type: EditAdminDto })
     @ApiResponse({ type: AdminDto })
-    @Patch('admins/{:id}')
+    @Patch('admins/:id')
     editAdminById(
         @Body() dto: EditAdminDto,
         @Param('id') adminId: number
@@ -72,7 +72,7 @@ export class SuperAdminController {
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete admin by id' })
-    @Delete('admins/{:id}')
+    @Delete('admins/:id')
     deleteAdminById(@Param('id') adminId: number){
         return this.superAdminService.deleteAdminById(adminId);
     }

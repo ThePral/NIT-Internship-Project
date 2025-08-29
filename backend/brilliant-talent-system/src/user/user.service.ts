@@ -14,7 +14,7 @@ export class UserService {
 
         if (dto.current_password && dto.new_password) {
             const pwMatches = await argon.verify(user.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Creditentioal incorrrect');
+            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
 
             hash = await argon.hash(dto.new_password);
         }

@@ -25,7 +25,7 @@ export class UserController {
     @ApiBody({ type: EditUserDto })
     @ApiResponse({ type: UserDto })
     @Patch('me')
-    editUser(@GetUser() user: User, @Body() dto: EditUserDto): Promise<UserDto>{
+    editMe(@GetUser() user: User, @Body() dto: EditUserDto): Promise<UserDto>{
         return this.userService.editUser(user, dto);
     }
 }
