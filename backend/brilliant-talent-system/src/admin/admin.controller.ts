@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
 import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
@@ -74,7 +74,7 @@ export class AdminController {
 
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
-    @ApiResponse( { type: UploadResponseDto})
+    @ApiOkResponse( { type: UploadResponseDto})
     @Post("/upload/:type")
     uploadExcel(@UploadedFile() file: Express.Multer.File) {
         return {

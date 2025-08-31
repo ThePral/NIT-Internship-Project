@@ -37,23 +37,34 @@ export class UserDto {
         description: "User's firstname"
     })
     @IsString()
-    @IsNotEmpty()
-    firstname: string;
+    firstname: string | null;
 
     @ApiProperty({
         example: "lastname",
         description: "User's lastname"
     })
     @IsString()
+    lastname: string | null;
+
+    @ApiProperty({
+        description: "User's grade"
+    })
+    @IsNumber()
     @IsNotEmpty()
-    lastname: string;
+    grade: number;
 
     @ApiProperty({
         description: "User's points"
     })
     @IsNumber()
+    points: number | null;
+
+    @ApiProperty({
+        description: "User's university"
+    })
+    @IsNumber()
     @IsNotEmpty()
-    points: number;
+    universityId: number;
 }
 
 export class UserWithRoleDto extends UserDto{

@@ -15,10 +15,10 @@ export function ExcelUploadDecorator(fieldName = 'file') {
                     filename: (req, file, callback) => {
                         const type = req.params.type;
                         const nameMap = {
-                            A: 'Students1',
-                            B: 'Students2',
-                            C: 'minors',
-                            D: 'universities',
+                            students1: 'Students1',
+                            students2: 'Students2',
+                            minors: 'minors',
+                            universities: 'universities',
                         };
                         const baseName = nameMap[type];
                         if (!baseName) callback(new BadRequestException('Invalid or missing type field'), "null");
@@ -40,6 +40,7 @@ export function ExcelUploadDecorator(fieldName = 'file') {
             required: true,
             description: 'The type of Excel file to upload',
             schema: { type: 'string' },
+            enum: ['students1','students2','minors','universities'] 
         }),
         ApiBody({
             schema: {
