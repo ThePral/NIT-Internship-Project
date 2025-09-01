@@ -76,9 +76,10 @@ export class AdminController {
     @ExcelUploadDecorator('file')
     @ApiOkResponse( { type: UploadResponseDto})
     @Post("/upload/:type")
-    uploadExcel(@UploadedFile() file: Express.Multer.File) {
+    async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
+        const result = await this.adminService.importDocs(file.path, type);
         return {
-            message: 'File uploaded successfully!',
+            result,
             filename: file.filename,
             path: file.path,
         };

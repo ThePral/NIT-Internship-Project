@@ -5,10 +5,11 @@ import * as argon from 'argon2'
 import { EditAdminDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
+import { ImportService } from 'src/import/import.service';
 
 @Injectable()
 export class AdminService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private importService: ImportService) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
 
@@ -141,7 +142,19 @@ export class AdminService {
         });
     }
 
-    async calculateUsersPoints() {
-
+    async importDocs(filePath: string, type: string) {
+        switch (type) {
+            case "universities":
+                return await this.importService.importUniversities(filePath);
+            case "minors":
+                return await this.importService.importMinors(filePath);
+            case "students1":
+                return await this.importService.importStudents(filePath, 1, {hashPassword: true});
+            case "students2":
+                return await this.importService.importStudents(filePath, 2, {hashPassword: true});
+            default:
+                break;
+        }
     }
+
 }

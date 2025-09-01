@@ -28,13 +28,14 @@ model User {
   universityId  Int                   
   university    University @relation(fields: [universityId], references: [id])
 
-  points        Float?             
+  points        Float?      
+  cohort        Int? // 1 or 2
 
   priorities    StudentPriority[]
   acceptances   Acceptance[]
 
-  @@map("users")
-  @@index([points])
+  @@map("users")    
+  @@index([cohort, points])
 }
 
 model University {
