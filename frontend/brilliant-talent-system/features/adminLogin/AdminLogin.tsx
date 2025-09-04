@@ -31,6 +31,7 @@ export default function LoginPage() {
     onSuccess: (res) => {
       console.log("res", res);
       queryClient.invalidateQueries({ queryKey: ["myaccount"] });
+      console.group("res.access_token",res.access_token)
       localStorage.setItem("authToken", res.access_token);
       localStorage.setItem("refreshToken", res.refresh_token);
       setIsLoading(false);

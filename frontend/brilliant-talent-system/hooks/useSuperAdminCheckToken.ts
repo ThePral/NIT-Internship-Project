@@ -1,3 +1,4 @@
+import { APIURL } from "@/data/consts";
 import { Admin, SuperAdmin, User } from "@/interfaces/user";
 import { getFetch, postFetch } from "@/lib/fetch";
 import { useQuery } from "@tanstack/react-query";
@@ -6,7 +7,7 @@ export function useSuperAdminCheckToken() {
   return useQuery<SuperAdmin, Error>({
     queryKey: ["myaccount"],
     queryFn: async () => {
-      const result = await getFetch(`superAdmins/me`);
+      const result = await getFetch(APIURL+`superAdmins/me`);
       const jsonResult = await result.json();
       if (result.ok) {
         console.log(jsonResult, "success");
@@ -17,7 +18,7 @@ export function useSuperAdminCheckToken() {
           const refreshToken = localStorage.getItem("refreshToken");
           if (refreshToken) {
             const refreshResult = await postFetch(
-              "auth/refreshTokens",
+              APIURL+"auth/refreshTokens",
               JSON.stringify({
                 refresh_token: refreshToken,
               })
@@ -29,7 +30,7 @@ export function useSuperAdminCheckToken() {
                 "refreshToken",
                 refreshJsonResult.refresh_token
               );
-              const retryResult = await getFetch(`superAdmins/me`);
+              const retryResult = await getFetch(APIURL+`superAdmins/me`);
               const retryJsonResult = await result.json();
               if (retryResult.ok) {
                 return retryJsonResult;

@@ -21,19 +21,37 @@ const InnerLayout = ({
   let [user, setUser] = useState<User>();
   let [loading, setLoading] = useState<any>(true);
   let serverUser: User | undefined;
-  let error;
-  let isLoading;
-  if (role == "user") {
-    let { data: serverUser, error, isLoading } = useUserCheckToken();
-  } else if (role == "admin") {
-    let { data: serverUser, error, isLoading } = useAdminCheckToken();
-  } else if (role == "superAdmin") {
-    let { data: serverUser, error, isLoading } = useSuperAdminCheckToken();
+  let error : any;
+  let isLoading : boolean = false;
+  if (role === "user") {
+    const userHookResult = useUserCheckToken();
+    serverUser = userHookResult.data;
+    error = userHookResult.error;
+    isLoading = userHookResult.isLoading;
+  } else if (role === "admin") {
+    const adminHookResult = useAdminCheckToken();
+    serverUser = adminHookResult.data;
+    error = adminHookResult.error;
+    isLoading = adminHookResult.isLoading;
+  } else if (role === "superAdmin") {
+    const superAdminHookResult = useSuperAdminCheckToken();
+    serverUser = superAdminHookResult.data;
+    error = superAdminHookResult.error;
+    isLoading = superAdminHookResult.isLoading;
   }
   const router = useRouter();
 
   useEffect(() => {
     setLoading(isLoading);
+    if(!isLoading && !serverUser){
+      if (role == "user") {
+        router.push("/user/auth");
+      } else if (role == "admin") {
+        router.push("/admin/auth");
+      } else if (role == "superAdmin") {
+        router.push("/admin/auth");
+      }
+    }
     if (error) {
       setUser(undefined);
       if (role == "user") {
