@@ -6,10 +6,15 @@ import { EditAdminDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
+import { AllocationService } from 'src/admissions/allocation.service';
 
 @Injectable()
 export class AdminService {
-    constructor(private prisma: PrismaService, private importService: ImportService) {}
+    constructor(
+        private prisma: PrismaService, 
+        private importService: ImportService, 
+        private allocationService: AllocationService
+    ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
 
@@ -155,6 +160,14 @@ export class AdminService {
             default:
                 break;
         }
+    }
+
+    async allocateUserAcceptances() {
+        const result = await this.allocationService.runAllocation(1);
+        return {
+            message: "User Acceptance Calculated",
+            data: result
+        };
     }
 
 }

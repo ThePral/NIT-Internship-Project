@@ -75,7 +75,7 @@ export class AdminController {
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
     @ApiOkResponse( { type: UploadResponseDto})
-    @Post("/upload/:type")
+    @Post("upload/:type")
     async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
         const result = await this.adminService.importDocs(file.path, type);
         return {
@@ -83,6 +83,12 @@ export class AdminController {
             filename: file.filename,
             path: file.path,
         };
+    }
+
+    @ApiOperation({ summary: "Allocates Users Minor Acceptance" })
+    @Post("allocation/run")
+    async caclulateUserAcceptance() {
+        return await this.adminService.allocateUserAcceptances();
     }
     
 }
