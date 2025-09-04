@@ -23,7 +23,6 @@ export function getFetch(
 
   return fetch(url + (queryString ? "" : "") + queryString, {
     method: "GET",
-    credentials: credentials,
     headers: {
       ...defaultHeaders,
       ...headers,
@@ -40,7 +39,6 @@ export function postFetch(
 
   return fetch(url + "?" + queryString, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -59,7 +57,6 @@ export function updateFetch(
 
   return fetch(url + "?" + queryString, {
     method: method,
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -73,7 +70,6 @@ export function deleteFetch(url: string, params?: { [key: string]: string }) {
 
   return fetch(url + "?" + queryString, {
     method: "DELETE",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
