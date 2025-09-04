@@ -5,7 +5,7 @@ import * as argon from 'argon2'
 import { EditAdminDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
-import { ImportService } from 'src/import/import.service';
+import { ImportService } from 'src/admissions/import.service';
 
 @Injectable()
 export class AdminService {

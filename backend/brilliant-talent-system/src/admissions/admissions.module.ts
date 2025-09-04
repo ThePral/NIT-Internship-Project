@@ -5,4 +5,4 @@ import { ImportService } from './import.service';
   providers: [ImportService],
   exports: [ImportService]
 })
-export class ImportModule {}
+export class AdmissionsModule {}
