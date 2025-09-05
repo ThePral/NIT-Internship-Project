@@ -19,7 +19,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import _ from "lodash";
 
-export const AdminSidebar = () => {
+export const SuperAdminSidebar = () => {
   const pathname = usePathname();
   const { user, setUser } = useUser();
 
@@ -32,27 +32,27 @@ export const AdminSidebar = () => {
   const items: SidebarItem[] = [
     {
       title: "خانه",
-      link: "/admin/home",
+      link: "/superAdmin/home",
       icon: <User />,
     },
     {
       title: "مدیریت ادمین‌ها",
-      link: "/superAdmin/adminManagement",
+      link: "/superAdmin/adminManagemant",
       icon: <FilePlus className="h-5 w-5" />,
     },
     {
       title: "عملیات جدید",
-      link: "/admin/newOperation",
+      link: "/superAdmin/newOperation",
       icon: <FilePlus className="h-5 w-5" />,
     },
     {
       title: "قوانین",
-      link: "/admin/rules",
+      link: "/superAdmin/rules",
       icon: <FileText className="h-5 w-5" />,
     },
     {
       title: "تاریخچه",
-      link: "/admin/history",
+      link: "/superAdmin/history",
       icon: <Clock className="h-5 w-5" />,
     },
     { title: "خروج", link: "/user/auth", icon: <LogOut /> },

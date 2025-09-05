@@ -1,87 +1,48 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Menu,
+  X,
+  GraduationCap,
+  Home,
+  FileText,
+  LogOut,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { User, Lock, Eye, EyeOff } from "lucide-react";
-import { useRef, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserLoginService } from "@/services/UserloginService";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import loginImage from "@/asset/login.png";
-import { AdminLoginService } from "@/services/AdminloginService";
-import { SuperAdminLoginService } from "@/services/SuperAdminloginService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "../ui/sidebar";
 
-export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const queryClient = useQueryClient();
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+interface SuperAdminNavbarProps {
+  userName: string;
+  userMajor: string;
+}
 
-  const loginMutate = useMutation({
-    mutationFn: async ({
-      username,
-      password,
-    }: {
-      username: string;
-      password: string;
-    }) => SuperAdminLoginService(username, password),
-    onSuccess: (res) => {
-      console.log("res", res);
-      queryClient.invalidateQueries({ queryKey: ["myaccount"] });
-      localStorage.setItem("authToken", res.access_token);
-      localStorage.setItem("refreshToken", res.refresh_token);
-      setIsLoading(false);
-      router.push("/superAdmin/home");
-    },
-    onError: (error) => {
-      console.log("error12");
-      setIsLoading(false);
-    },
-  });
-
-  const handleClick = () => {
-    if (isLoading) {
-      return;
-    }
-    if (!usernameRef.current?.value) {
-      return;
-    }
-    if (!passwordRef.current?.value) {
-      return;
-    }
-    setIsLoading(true);
-    loginMutate.mutate({
-      username: usernameRef.current?.value,
-      password: passwordRef.current?.value,
-    });
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+export default function SuperAdminNavbar({ userName, userMajor }: SuperAdminNavbarProps) {
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center bg-fixed">
-      <div className="fixed inset-0 -z-10">
-        <img
-          src={loginImage.src}
-          alt="Login Background"
-          className="w-full h-full object-cover"
-          style={{ opacity: 0.5 }}
-        />
-      </div>
-      <div className="fixed inset-0 bg-black/30" />
-      <Card className="relative z-10 w-full max-w-md shadow-lg mx-4 ">
-        <div className="flex justify-center mb-4">
+    <header
+      className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
+      dir="rtl"
+    >
+      <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
-            width="100"
-            height="100"
+            width="32"
+            height="38.5"
             viewBox="0 0 128 154"
           >
             <path
@@ -110,60 +71,99 @@ export default function LoginPage() {
               transform="translate(116,153)"
             />
           </svg>
+
+          <span className="text-base font-bold text-gray-800">
+            سامانه استعداد درخشان
+          </span>
         </div>
-        <CardHeader>
-          <CardTitle className="text-center text-foreground text-lg font-bold md:text-xl lg:text-2xl">
-            <p>سامانه استعداد درخشان</p>
-            <p>دانشگاه صنعتی نوشیروانی بابل</p>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleClick();
-            }}
+
+        {/* User Info */}
+        <div className="flex items-center gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
+              <Avatar className="w-8 h-8 border border-dashed border-gray-300">
+                <AvatarImage src="" alt={userName} />
+                <AvatarFallback>?</AvatarFallback>
+              </Avatar>
+              <div className="text-right">
+                <p className="text-sm font-medium">{userName}</p>
+                <p className="text-xs text-gray-500">{userMajor}</p>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="rtl">
+              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2">
+                پروفایل
+                <User className="w-4 h-4" />
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
+                خروج از حساب کاربری
+                <LogOut className="w-4 h-4" />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Mobile Menu Button */}
+          {/* <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen((p) => !p)}
           >
-            <div className="relative">
-              <Input
-                ref={usernameRef}
-                placeholder="نام کاربری"
-                className="pr-10 text-sm md:text-foreground"
-              />
-              <User className="absolute right-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
-            </div>
-            <div className="relative">
-              <Input
-                ref={passwordRef}
-                type={showPassword ? "text" : "password"}
-                placeholder="رمز عبور"
-                className="pr-10 text-sm md:text-foreground"
-              />
-              <Lock className="absolute right-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
-              <button
-                type="button"
-                className="absolute left-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-muted-foreground"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
-                ) : (
-                  <Eye className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
-                )}
-              </button>
-            </div>
-            <Button
-              type="submit"
-              className="w-full text-sm md:text-card"
-              variant="default"
-              disabled={isLoading}
-            >
-              {isLoading ? "در حال ورود..." : "ورود"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </Button> */}
+        </div>
+        <SidebarTrigger className="block md:hidden" />
+      </div>
+      {/* Mobile menu
+
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white px-4 py-3 space-y-3 border-t">
+          <NavLink
+            href="/"
+            icon={<Home size={18} />}
+            text="خانه"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <NavLink
+            href="/transcript"
+            icon={<FileText size={18} />}
+            text="کارنامه"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        </div>
+      )} */}
+    </header>
   );
 }
+
+// function NavLink({
+//   href,
+//   icon,
+//   text,
+//   active = false,
+//   onClick,
+// }: {
+//   href: string;
+//   icon: React.ReactNode;
+//   text: string;
+//   active?: boolean;
+//   onClick?: () => void;
+// }) {
+//   return (
+//     <Link
+//       href={href}
+//       onClick={onClick}
+//       className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+//         active
+//           ? "text-primary border-b-2 border-primary pb-1"
+//           : "text-gray-700 hover:text-primary"
+//       }`}
+//     >
+//       {icon}
+//       {text}
+//     </Link>
+//   );
+// }
