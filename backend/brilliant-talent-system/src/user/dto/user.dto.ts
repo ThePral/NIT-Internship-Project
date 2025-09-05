@@ -31,6 +31,40 @@ export class UserDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+
+    @ApiProperty({
+        example: "firstname",
+        description: "User's firstname"
+    })
+    @IsString()
+    firstname: string | null;
+
+    @ApiProperty({
+        example: "lastname",
+        description: "User's lastname"
+    })
+    @IsString()
+    lastname: string | null;
+
+    @ApiProperty({
+        description: "User's grade"
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    grade: number;
+
+    @ApiProperty({
+        description: "User's points"
+    })
+    @IsNumber()
+    points: number | null;
+
+    @ApiProperty({
+        description: "User's university"
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    universityId: number;
 }
 
 export class UserWithRoleDto extends UserDto{
@@ -71,6 +105,30 @@ export class EditUserDto {
     @MinLength(8)
     @IsNotEmpty({ message: 'new_password is required when changing password' })
     new_password?: string;
+
+    @ApiProperty({
+        example: "firstname",
+        description: "User's firstname"
+    })
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    firstname?: string;
+
+    @ApiProperty({
+        example: "lastname",
+        description: "User's lastname"
+    })
+    @IsString()
+    @IsOptional()
+    lastname?: string;
+
+    @ApiProperty({
+        description: "User's points"
+    })
+    @IsNumber()
+    @IsOptional()
+    points?: number;
 }
 
 export class CreateUserDto {
@@ -91,4 +149,27 @@ export class CreateUserDto {
     @MinLength(8)
     @IsNotEmpty()
     password: string;
+
+    @ApiProperty({
+        example: "firstname",
+        description: "User's firstname"
+    })
+    @IsString()
+    @IsNotEmpty()
+    firstname: string;
+
+    @ApiProperty({
+        example: "lastname",
+        description: "User's lastname"
+    })
+    @IsString()
+    @IsNotEmpty()
+    lastname: string;
+
+    @ApiProperty({
+        description: "User's points"
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    points: number;
 }

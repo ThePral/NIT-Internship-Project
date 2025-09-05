@@ -2,7 +2,7 @@
 import InnerLayout from "@/layouts/InnerLayout/InnerLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@/app/globals.css";
-import AdminLayout from "./AdminLayout";
+import SuperAdminLayout from "./SuperAdminLayout";
 
 const queryClient = new QueryClient();
 
@@ -12,8 +12,8 @@ export default function ServerLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <InnerLayout role="admin">
-      <AdminLayout children={children} />
+    <InnerLayout role="superAdmin">
+      <SuperAdminLayout children={children} />
     </InnerLayout>
   );
 }

@@ -1,18 +1,20 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AdminJwtGuard } from 'src/auth/guard';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, AdminWithRoleDto, EditAdminDto } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { CreateUserDto, EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { ExcelUploadDecorator } from './decorators';
 
 @ApiBearerAuth('access_token')
-@UseGuards(AdminJwtGuard)
+@UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
 export class AdminController {
     constructor(private adminService: AdminService) {}
     
+    @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Get me' })
     @ApiResponse({ type: AdminWithRoleDto })
     @Get('me')
@@ -21,21 +23,22 @@ export class AdminController {
         return {...safeAdmin , role : "admin"};
     }
 
+    @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Edit me' })
     @ApiBody({ type: EditAdminDto })
     @ApiResponse({ type: AdminDto })
     @Patch('me')
-    ediAdmin(@GetUser() admin: Admin, @Body() dto: EditAdminDto): Promise<AdminDto>{
+    editMe(@GetUser() admin: Admin, @Body() dto: EditAdminDto): Promise<AdminDto>{
         return this.adminService.editAdmin(admin, dto);
     }
 
-    @ApiOperation({ summary: 'Add user' })
-    @ApiBody({ type: CreateUserDto })
-    @ApiResponse({ type: UserDto })
-    @Post('users')
-    addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
-        return this.adminService.addUser(dto);
-    }
+    // @ApiOperation({ summary: 'Add user' })
+    // @ApiBody({ type: CreateUserDto })
+    // @ApiResponse({ type: UserDto })
+    // @Post('users')
+    // addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
+    //     return this.adminService.addUser(dto);
+    // }
 
     @ApiOperation({ summary: 'Get users' })
     @ApiResponse({ type: UserDto, isArray: true })
@@ -46,7 +49,7 @@ export class AdminController {
 
     @ApiOperation({ summary: 'Get user by id' })
     @ApiResponse({ type: UserDto })
-    @Get('users/{:id}')
+    @Get('users/:id')
     getUserById(@Param('id') userId: number): Promise<UserDto>{
         return this.adminService.getUserById(userId);
     }
@@ -54,7 +57,7 @@ export class AdminController {
     @ApiOperation({ summary: 'Edit user by id' })
     @ApiBody({ type: EditUserDto })
     @ApiResponse({ type: UserDto })
-    @Patch('users/{:id}')
+    @Patch('users/:id')
     editUserById(
         @Body() dto: EditUserDto,
         @Param('id') userId: number
@@ -64,9 +67,28 @@ export class AdminController {
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete user by id' })
-    @Delete('users/{:id}')
+    @Delete('users/:id')
     deleteUserById(@Param('id') userId: number){
         return this.adminService.deleteUserById(userId);
+    }
+
+    @ApiOperation({ summary: "upload Excel files" })
+    @ExcelUploadDecorator('file')
+    @ApiOkResponse( { type: UploadResponseDto})
+    @Post("upload/:type")
+    async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
+        const result = await this.adminService.importDocs(file.path, type);
+        return {
+            result,
+            filename: file.filename,
+            path: file.path,
+        };
+    }
+
+    @ApiOperation({ summary: "Allocates Users Minor Acceptance" })
+    @Post("allocation/run")
+    async caclulateUserAcceptance() {
+        return await this.adminService.allocateUserAcceptances();
     }
     
 }

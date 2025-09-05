@@ -5,10 +5,16 @@ import * as argon from 'argon2'
 import { EditAdminDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
+import { ImportService } from 'src/admissions/import.service';
+import { AllocationService } from 'src/admissions/allocation.service';
 
 @Injectable()
 export class AdminService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService, 
+        private importService: ImportService, 
+        private allocationService: AllocationService
+    ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
 
@@ -16,7 +22,7 @@ export class AdminService {
 
         if (dto.current_password && dto.new_password) {
             const pwMatches = await argon.verify(admin.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Creditentioal incorrrect');
+            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
 
             hash = await argon.hash(dto.new_password);
         }
@@ -37,32 +43,32 @@ export class AdminService {
         return safeAdmin;
     }
 
-    async addUser(dto: CreateUserDto) {
+    // async addUser(dto: CreateUserDto) {
 
-        const hash = await argon.hash(dto.password);
+    //     const hash = await argon.hash(dto.password);
 
-        const {password, ...userdto} = dto;
+    //     const {password, ...userdto} = dto;
 
-        try {
-            const user = await this.prisma.user.create({
-                data: {
-                    hash_password: hash,
-                    ...userdto
-                }
-            });    
+    //     try {
+    //         const user = await this.prisma.user.create({
+    //             data: {
+    //                 hash_password: hash,
+    //                 ...userdto
+    //             }
+    //         });    
 
-            const { hash_password, ...safeUser} = user;
-            return safeUser;
+    //         const { hash_password, ...safeUser} = user;
+    //         return safeUser;
 
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials Taken");
-                }
-            }
-            throw error;
-        }
-    }
+    //     } catch (error) {
+    //         if (error instanceof PrismaClientKnownRequestError) {
+    //             if (error.code === "P2002") {
+    //                 throw new ForbiddenException("Credentials Taken");
+    //             }
+    //         }
+    //         throw error;
+    //     }
+    // }
 
     async getUsers() {
         return await this.prisma.user.findMany({
@@ -70,7 +76,12 @@ export class AdminService {
                 id: true,
                 createdAt: true,
                 updatedAt: true,
-                username: true
+                username: true,
+                firstname: true,
+                lastname: true,
+                points: true,
+                grade: true,
+                universityId: true
             }
         });
     }
@@ -100,7 +111,7 @@ export class AdminService {
 
         if (dto.current_password && dto.new_password) {
             const pwMatches = await argon.verify(user.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Creditentioal incorrrect');
+            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
 
             hash = await argon.hash(dto.new_password);
         }
@@ -135,4 +146,28 @@ export class AdminService {
             }
         });
     }
+
+    async importDocs(filePath: string, type: string) {
+        switch (type) {
+            case "universities":
+                return await this.importService.importUniversities(filePath);
+            case "minors":
+                return await this.importService.importMinors(filePath);
+            case "students1":
+                return await this.importService.importStudents(filePath, 1, {hashPassword: true});
+            case "students2":
+                return await this.importService.importStudents(filePath, 2, {hashPassword: true});
+            default:
+                break;
+        }
+    }
+
+    async allocateUserAcceptances() {
+        const result = await this.allocationService.runAllocation(1);
+        return {
+            message: "User Acceptance Calculated",
+            data: result
+        };
+    }
+
 }

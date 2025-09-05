@@ -17,13 +17,15 @@ export function getFetch(
   credentials: "include" | "omit" | "same-origin" = "include"
 ) {
   const queryString = MakeQueryString(params ?? {});
+  const token = localStorage.getItem("authToken")
+  console.log("token",token)
   const defaultHeaders = {
     "Content-Type": "application/json",
+    "Authorization": token? ("Bearer " + token) : ""
   };
 
   return fetch(url + (queryString ? "" : "") + queryString, {
     method: "GET",
-    credentials: credentials,
     headers: {
       ...defaultHeaders,
       ...headers,
@@ -37,12 +39,15 @@ export function postFetch(
   params?: { [key: string]: string }
 ) {
   const queryString = MakeQueryString(params ?? {});
-
+  const token = localStorage.getItem("authToken")
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": token? ("Bearer " + token) : ""
+  };
   return fetch(url + "?" + queryString, {
     method: "POST",
-    credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...defaultHeaders
     },
 
     body: data,
@@ -56,12 +61,15 @@ export function updateFetch(
   params?: { [key: string]: string }
 ) {
   const queryString = MakeQueryString(params ?? {});
-
+  const token = localStorage.getItem("authToken")
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": token? ("Bearer " + token) : ""
+  };
   return fetch(url + "?" + queryString, {
     method: method,
-    credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...defaultHeaders
     },
 
     body: data,
@@ -70,12 +78,15 @@ export function updateFetch(
 
 export function deleteFetch(url: string, params?: { [key: string]: string }) {
   const queryString = MakeQueryString(params ?? {});
-
+  const token = localStorage.getItem("authToken")
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    "Authorization": token? ("Bearer " + token) : ""
+  };
   return fetch(url + "?" + queryString, {
     method: "DELETE",
-    credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...defaultHeaders
     },
   });
 }
