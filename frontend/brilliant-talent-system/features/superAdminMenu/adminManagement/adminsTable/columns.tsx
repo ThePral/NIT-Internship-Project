@@ -64,7 +64,31 @@ export const adminsColumns: ColumnDef<any>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const student = row.original;
+      const admin = row.original; // دیتای سطر
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => {
+                // اینجا دیالوگ حذف رو باز می‌کنیم
+                const event = new CustomEvent("open-delete-dialog", {
+                  detail: admin,
+                });
+                window.dispatchEvent(event);
+              }}
+            >
+              حذف
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
     },
   },
 ];
