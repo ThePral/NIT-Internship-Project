@@ -16,7 +16,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <InnerLayout role="admin">
+    <InnerLayout role="superAdmin">
       <SuperAdminLayout children={children} />
     </InnerLayout>
   );
