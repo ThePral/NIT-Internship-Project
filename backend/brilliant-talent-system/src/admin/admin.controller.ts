@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
@@ -7,6 +7,7 @@ import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
+import fs from "fs";
 
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
@@ -89,6 +90,18 @@ export class AdminController {
     @Post("allocation/run")
     async caclulateUserAcceptance() {
         return await this.adminService.allocateUserAcceptances();
+    }
+
+    @Get("results/pdf/sr0")
+    async generateSr0PDF() {
+        return this.adminService.buildSr0();
+        // const outHtml = './tmp/sr0.html';
+        // const outPdf = './tmp/sr0.pdf';
+        // await this.adminService.srPdfService.generateSr0(outHtml, outPdf, 'Vazir', { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }, runId ? Number(runId) : undefined);
+        // res.headers.set('Content-Type', 'application/pdf');
+        // res.headers.set('Content-Disposition', 'attachment; filename="sr0.pdf"');
+        // const stream = fs.createReadStream(outPdf);
+        // stream.pipe(res);
     }
     
 }
