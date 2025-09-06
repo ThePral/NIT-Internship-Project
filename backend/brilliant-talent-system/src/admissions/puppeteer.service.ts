@@ -105,15 +105,19 @@ export class PuppeteerService implements OnModuleDestroy {
       }
       this.browser = null;
     }
-
+    console.log("aaaa")
+    
     if (this.tempDir) {
-      try {
-        await fs.rm(this.tempDir, { recursive: true, force: true });
-        this.logger.log(`Removed puppeteer temp dir: ${this.tempDir}`);
-      } catch (err) {
-        this.logger.warn('Failed to remove puppeteer temp dir: ' + String(err));
-      }
-      this.tempDir = undefined;
+        console.log("bbbb")
+        try {
+            console.log("cccc")
+            await fs.rm(this.tempDir, { recursive: true, force: true });
+            console.log("dddd")
+            this.logger.log(`Removed puppeteer temp dir: ${this.tempDir}`);
+        } catch (err) {
+            this.logger.warn('Failed to remove puppeteer temp dir: ' + String(err));
+        }
+        this.tempDir = undefined;
     }
   }
 }

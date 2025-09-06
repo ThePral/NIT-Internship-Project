@@ -66,7 +66,7 @@ export class SrPdfService {
                 path: outPath,
                 format: 'A4',
                 printBackground: true,
-                margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
+                margin: { top: '15mm', bottom: '15mm', left: '10mm', right: '10mm' },
             });
 
             this.logger.log(`sr0 PDF written to ${outPath}`);
@@ -107,34 +107,51 @@ export class SrPdfService {
         // Filter minors with at least one accepted user
         const used = minors.filter(m => Array.isArray(m.accepted) && m.accepted.length > 0);
 
-        // Build table rows: each accepted user is a physical row;
-        // first accepted user for minor has ردیف and رشته قبولی, others have blanks in those columns
+        // Build table rows - only show minor name for first student in each minor
         let rowsHtml = '';
         let index = 1;
         for (const m of used) {
             for (let i = 0; i < m.accepted.length; i++) {
                 const a = m.accepted[i];
                 rowsHtml += '<tr>';
+                
+                // First column (ردیف) - only show for first student in each minor
                 if (i === 0) {
-                    rowsHtml += `<td style="text-align:center; vertical-align:top;">${index}</td>`;
-                    rowsHtml += `<td style="text-align:right; vertical-align:top;">${this.escapeHtml(m.minorName)}</td>`;
+                    rowsHtml += `<td style="text-align:center; vertical-align:middle;">${index}</td>`;
                 } else {
-                    rowsHtml += `<td></td><td></td>`;
+                    rowsHtml += '<td></td>';
                 }
-                rowsHtml += `<td style="text-align:right; vertical-align:top;">${this.escapeHtml(a.fullName)}</td>`;
-                rowsHtml += `<td style="text-align:right; vertical-align:top;">${this.escapeHtml(a.university)}</td>`;
-                rowsHtml += `<td style="text-align:center; vertical-align:top;">${this.escapeHtml(String(a.uniGrade))}</td>`;
-                rowsHtml += `<td style="text-align:center; vertical-align:top;">${this.escapeHtml(String(a.points))}</td>`;
+                
+                // Second column (رشته قبولی) - only show for first student in each minor
+                if (i === 0) {
+                    rowsHtml += `<td style="text-align:right; vertical-align:middle;">${this.escapeHtml(m.minorName)}</td>`;
+                } else {
+                    rowsHtml += '<td></td>';
+                }
+                
+                // Third column (افراد قبول شده)
+                rowsHtml += `<td style="text-align:right; vertical-align:middle;">${this.escapeHtml(a.fullName)}</td>`;
+                
+                // Fourth column (دانشگاه) - include university grade if available
+                let universityDisplay = a.university;
+                if (a.uniGrade) {
+                    universityDisplay += ` (${a.uniGrade})`;
+                }
+                rowsHtml += `<td style="text-align:right; vertical-align:middle;">${this.escapeHtml(universityDisplay)}</td>`;
+                
+                // Fifth column (امتیاز)
+                rowsHtml += `<td style="text-align:center; vertical-align:middle;">${this.escapeHtml(String(a.points))}</td>`;
+                
                 rowsHtml += '</tr>';
             }
             index++;
         }
 
         if (used.length === 0) {
-            rowsHtml = `<tr><td colspan="6" style="text-align:center">-</td></tr>`;
+            rowsHtml = `<tr><td colspan="5" style="text-align:center">-</td></tr>`;
         }
 
-        // Full HTML with RTL direction and embedded font
+        // Full HTML with improved styling
         const html = `
             <!doctype html>
             <html lang="fa">
@@ -147,39 +164,66 @@ export class SrPdfService {
                             font-family: '${fontFamily}', sans-serif;
                             direction: rtl;
                             text-align: right;
-                            margin: 20px;
+                            margin: 0;
+                            padding: 15mm 10mm;
                             color: #000;
+                            line-height: 1.5;
                         }
-                        h1 { text-align: center; margin-bottom: 12px; font-weight: bold; }
-                        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 10px;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 22px;
+                            font-weight: bold;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            border: 2px solid #333;
+                            font-size: 12px;
+                        }
                         th, td {
-                            border: 1px solid #ddd;
-                            padding: 6px 8px;
+                            border: 1px solid #333;
+                            padding: 8px 5px;
                             word-break: break-word;
                         }
                         th {
-                            background: #f5f5f5;
+                            background-color: #e0e0e0;
                             font-weight: bold;
                             text-align: center;
+                            padding: 10px 5px;
                         }
-                        td { font-size: 11px; }
-                        /* make sure rows can break across pages but avoid splitting a cell's content awkwardly */
-                        tr { page-break-inside: avoid; }
-                        thead { display: table-header-group; }
-                        tfoot { display: table-footer-group; }
+                        /* Column widths */
+                        th:nth-child(1), td:nth-child(1) { width: 8%; }  /* ردیف */
+                        th:nth-child(2), td:nth-child(2) { width: 32%; } /* رشته قبولی */
+                        th:nth-child(3), td:nth-child(3) { width: 25%; } /* افراد قبول شده */
+                        th:nth-child(4), td:nth-child(4) { width: 25%; } /* دانشگاه */
+                        th:nth-child(5), td:nth-child(5) { width: 10%; } /* امتیاز */
+                        
+                        /* Ensure proper RTL alignment */
+                        td:empty {
+                            border-left: 1px solid #333;
+                            border-right: 1px solid #333;
+                        }
                     </style>
                 </head>
                 <body>
-                    <h1>نتایج قبولی رشته‌ها</h1>
+                    <div class="header">
+                        <h1>بسمه تعالی</h1>
+                        <h1>نتایج قبولی رشته‌ها</h1>
+                    </div>
                     <table>
                         <thead>
                             <tr>
-                                <th style="width:6%">ردیف</th>
-                                <th style="width:22%">رشته قبولی</th>
-                                <th style="width:30%">افراد قبول شده</th>
-                                <th style="width:22%">دانشگاه</th>
-                                <th style="width:10%">ضریب</th>
-                                <th style="width:10%">امتیاز</th>
+                                <th>ردیف</th>
+                                <th>رشته‌ی قبولی</th>
+                                <th>افراد قبول شده</th>
+                                <th>دانشگاه</th>
+                                <th>امتیاز</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -220,37 +264,35 @@ export class SrPdfService {
         // fetch acceptances for the run, include student + minor + student.university (explicit select)
         const acceptances = await this.prisma.acceptance.findMany({
             where: { runId: run.id },
-            orderBy: [{ minorId: 'asc' }, { points: 'desc' }, { studentId: 'asc' }],
+            orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
             select: {
                 id: true,
-                runId: true,
-                studentId: true,
-                minorId: true,
-                priority: true,
                 points: true,
-                cohort: true,
-                createdAt: true,
                 student: {
                     select: {
-                        id: true,
                         firstname: true,
                         lastname: true,
-                        university: { select: { id: true, name: true, grade: true } },
+                        university: { 
+                            select: { 
+                                name: true, 
+                                grade: true 
+                            } 
+                        },
                     },
                 },
-                minor: { select: { id: true, name: true } },
+                minor: { select: { name: true } },
             },
         });
 
         // group by minor name
         const minorMap = new Map<string, AcceptedUser[]>();
         for (const a of acceptances) {
-            const minorName = a.minor?.name ?? String(a.minorId);
+            const minorName = a.minor?.name ?? 'نامشخص';
             const s = a.student;
-            const fullName = [s?.firstname, s?.lastname].filter(Boolean).join(' ').trim() || String(a.studentId);
-            const uniName = s?.university?.name ?? '';
+            const fullName = [s?.firstname, s?.lastname].filter(Boolean).join(' ').trim() || 'نامشخص';
+            const uniName = s?.university?.name ?? 'نامشخص';
             const uniGrade = s?.university?.grade ?? '';
-            const points = a.points ?? '';
+            const points = a.points ?? 0;
 
             if (!minorMap.has(minorName)) minorMap.set(minorName, []);
             minorMap.get(minorName)!.push({
