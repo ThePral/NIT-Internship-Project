@@ -95,13 +95,11 @@ export class AdminController {
     @Get("results/pdf/sr0")
     async generateSr0PDF() {
         return this.adminService.buildSr0();
-        // const outHtml = './tmp/sr0.html';
-        // const outPdf = './tmp/sr0.pdf';
-        // await this.adminService.srPdfService.generateSr0(outHtml, outPdf, 'Vazir', { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }, runId ? Number(runId) : undefined);
-        // res.headers.set('Content-Type', 'application/pdf');
-        // res.headers.set('Content-Disposition', 'attachment; filename="sr0.pdf"');
-        // const stream = fs.createReadStream(outPdf);
-        // stream.pipe(res);
+    }
+
+    @Get("results/pdf/sr4")
+    async generateSr4PDF() {
+        return this.adminService.buildSr4();
     }
     
 }

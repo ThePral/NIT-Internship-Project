@@ -178,14 +178,14 @@ export class AdminService {
             'Vazir',
             { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
         );
-        // const outHtml = './tmp/sr0.html';
-        // const outPdf = './tmp/sr0.pdf';
-        // return await this.srv.generateSr0(
-        //     outHtml, 
-        //     outPdf, 
-        //     'Vazir', 
-        //     { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
-        // );
+    }
+
+    async buildSr4() {
+        return this.srv.generateSr4(
+            './output/sr4.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
     }
 
 }
