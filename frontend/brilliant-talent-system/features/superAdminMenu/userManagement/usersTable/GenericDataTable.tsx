@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, MoreHorizontal, RefreshCw, Plus } from "lucide-react";
+import { ChevronDown, MoreHorizontal, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,8 +39,6 @@ interface GenericDataTableProps<TData> {
   isLoading?: boolean;
   isError?: boolean;
   onRefresh?: () => void;
-  onAdd?: () => void; // New prop for add action
-  addButtonLabel?: string; // New prop for add button text
   searchPlaceholder?: string;
 }
 
@@ -52,8 +50,6 @@ export function GenericDataTable<TData>({
   isLoading = false,
   isError = false,
   onRefresh,
-  onAdd,
-  addButtonLabel = "افزودن",
   searchPlaceholder = "جستجو...",
 }: GenericDataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -117,6 +113,16 @@ export function GenericDataTable<TData>({
         {title && (
           <h2 className="text-xl font-bold text-base-content">{title}</h2>
         )}
+        {onRefresh && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onRefresh}
+            className="btn btn-ghost btn-sm sm:btn-md"
+          >
+            <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5" />
+          </Button>
+        )}
       </div>
 
       <div className="w-full overflow-x-auto">
@@ -130,60 +136,47 @@ export function GenericDataTable<TData>({
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            {onAdd && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                onClick={onAdd}
-                className="btn btn-primary bg-primary hidden sm:flex"
-                size="sm"
+                variant="outline"
+                className="btn btn-outline w-10 sm:w-auto"
               >
-                <Plus className="h-4 w-4 ml-2 text-card" />
-                <p className=" text-card"> {addButtonLabel}</p>
+                <span className="hidden sm:inline text-foreground">
+                  ستون‌ها
+                </span>
+                <ChevronDown className="mr-2 h-4 w-4" />
               </Button>
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="btn btn-outline w-10 sm:w-auto"
-                >
-                  <span className="hidden sm:inline text-foreground">
-                    ستون‌ها
-                  </span>
-                  <ChevronDown className="mr-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="menu dropdown-content p-2 shadow bg-card rounded-box w-52"
-              >
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    if (typeof column.columnDef.header === "string") {
-                      return (
-                        <DropdownMenuCheckboxItem
-                          key={column.id}
-                          className="menu-item hover:bg-muted"
-                          checked={column.getIsVisible()}
-                          onCheckedChange={(value) =>
-                            column.toggleVisibility(!!value)
-                          }
-                        >
-                          <p className="text-foreground">
-                            {" "}
-                            {column.columnDef.header}
-                          </p>
-                        </DropdownMenuCheckboxItem>
-                      );
-                    }
-                    return null;
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="menu dropdown-content p-2 shadow bg-card rounded-box w-52"
+            >
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  if (typeof column.columnDef.header === "string") {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="menu-item hover:bg-muted"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        <p className="text-foreground">
+                          {" "}
+                          {column.columnDef.header}
+                        </p>
+                      </DropdownMenuCheckboxItem>
+                    );
+                  }
+                  return null;
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="rounded-box border border-border overflow-x-auto">

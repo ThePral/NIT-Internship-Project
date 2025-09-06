@@ -32,7 +32,7 @@ const SortableHeader = ({
   );
 };
 
-export const adminsColumns: ColumnDef<any>[] = [
+export const usersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "id",
     header: "شناسه",
@@ -64,7 +64,7 @@ export const adminsColumns: ColumnDef<any>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const admin = row.original;
+      const user = row.original;
 
       return (
         <DropdownMenu>
@@ -81,7 +81,7 @@ export const adminsColumns: ColumnDef<any>[] = [
             <DropdownMenuItem
               onClick={() => {
                 const event = new CustomEvent("open-edit-dialog", {
-                  detail: admin,
+                  detail: user,
                 });
                 window.dispatchEvent(event);
               }}
@@ -94,7 +94,7 @@ export const adminsColumns: ColumnDef<any>[] = [
               className="text-destructive focus:text-destructive"
               onClick={() => {
                 const event = new CustomEvent("open-delete-dialog", {
-                  detail: admin,
+                  detail: user,
                 });
                 window.dispatchEvent(event);
               }}

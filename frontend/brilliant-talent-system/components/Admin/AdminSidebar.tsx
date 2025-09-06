@@ -9,6 +9,8 @@ import {
   Clock,
   FilePlus,
   FileText,
+  GraduationCap,
+  Home,
   LogOut,
   PlusCircle,
   ScrollText,
@@ -33,12 +35,12 @@ export const AdminSidebar = () => {
     {
       title: "خانه",
       link: "/admin/home",
-      icon: <User />,
+      icon: <Home className="h-5 w-5" />,
     },
     {
-      title: "مدیریت ادمین‌ها",
-      link: "/superAdmin/adminManagement",
-      icon: <FilePlus className="h-5 w-5" />,
+      title: "مدیریت دانشجویان",
+      link: "/admin/userManagement",
+      icon: <GraduationCap className="h-5 w-5" />,
     },
     {
       title: "عملیات جدید",
@@ -73,7 +75,7 @@ export const AdminSidebar = () => {
 
   function handleClick(link: string) {
     console.log(user);
-    if (link == "/user/auth") {
+    if (link == "/admin/auth") {
       logOut.mutate();
     }
   }

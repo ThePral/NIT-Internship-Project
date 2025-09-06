@@ -9,10 +9,13 @@ import {
   Clock,
   FilePlus,
   FileText,
+  GraduationCap,
+  Home,
   LogOut,
   PlusCircle,
   ScrollText,
   User,
+  UserCog,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -33,12 +36,17 @@ export const SuperAdminSidebar = () => {
     {
       title: "خانه",
       link: "/superAdmin/home",
-      icon: <User />,
+      icon: <Home className="h-5 w-5" />,
     },
     {
       title: "مدیریت ادمین‌ها",
-      link: "/superAdmin/adminManagemant",
-      icon: <FilePlus className="h-5 w-5" />,
+      link: "/superAdmin/adminManagement",
+      icon: <UserCog className="h-5 w-5" />, // Represents admin users with settings
+    },
+    {
+      title: "مدیریت دانشجویان",
+      link: "/superAdmin/userManagement",
+      icon: <GraduationCap className="h-5 w-5" />, // Represents students/learners
     },
     {
       title: "عملیات جدید",
@@ -55,7 +63,7 @@ export const SuperAdminSidebar = () => {
       link: "/superAdmin/history",
       icon: <Clock className="h-5 w-5" />,
     },
-    { title: "خروج", link: "/user/auth", icon: <LogOut /> },
+    { title: "خروج", link: "/superAdmin/auth", icon: <LogOut /> },
   ];
   const router = useRouter();
 
