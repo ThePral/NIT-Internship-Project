@@ -3,7 +3,7 @@ import { SuperAdmin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
 import { CreateSuperAdminDto, EditSuperAdminDto } from './dto';
-import { CreateAdminDto, EditAdminDto } from 'src/admin/dto';
+import { CreateAdminDto, EditAdminBySuperAdminDto, EditAdminDto } from 'src/admin/dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 
@@ -31,7 +31,7 @@ export class SuperAdminService {
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials Taken");
+                    throw new ForbiddenException('اطلاعات وارد شده مورد استفاده قرار گرفته اند');
                 }
             }
             throw error;
@@ -44,7 +44,7 @@ export class SuperAdminService {
 
         if (dto.current_password && dto.new_password) {
             const pwMatches = await argon.verify(superAdmin.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
+            if (!pwMatches) throw new ForbiddenException('رمز فعلی وارد شده نادرست می‌باشد');
 
             hash = await argon.hash(dto.new_password);
         }
@@ -86,7 +86,7 @@ export class SuperAdminService {
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    throw new ForbiddenException("Credentials Taken");
+                    throw new ForbiddenException('اطلاعات وارد شده مورد استفاده قرار گرفته اند');
                 }
             }
             throw error;
@@ -110,31 +110,28 @@ export class SuperAdminService {
                 id: adminId
             }
         });
-        if (!admin) throw new NotFoundException();
+        if (!admin) throw new NotFoundException('یافت نشد');
 
         const { hash_password, ...safeAdmin} = admin;
         return safeAdmin;
     }
 
-    async editAdminById(adminId: number, dto: EditAdminDto) {
+    async editAdminById(adminId: number, dto: EditAdminBySuperAdminDto) {
 
         const admin = await this.prisma.admin.findUnique({
             where: {
                 id: adminId
             }
         });
-        if (!admin) throw new NotFoundException();
+        if (!admin) throw new NotFoundException('یافت نشد');
 
         let hash: string | undefined;
 
-        if (dto.current_password && dto.new_password) {
-            const pwMatches = await argon.verify(admin.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
-
+        if (dto.new_password) {
             hash = await argon.hash(dto.new_password);
         }
 
-        const {current_password, new_password, ...admindto} = dto;
+        const {new_password, ...admindto} = dto;
 
         const updatedAdmin = await this.prisma.admin.update({
             where: {
@@ -156,7 +153,7 @@ export class SuperAdminService {
                 id: adminId
             }
         });
-        if (!admin) throw new NotFoundException();
+        if (!admin) throw new NotFoundException('یافت نشد');
 
         await this.prisma.admin.delete({
             where: {

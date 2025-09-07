@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
 import { EditAdminDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
+import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
 import { AllocationService } from 'src/admissions/allocation.service';
 import { SrPdfService } from 'src/admissions/srpdf.service';
@@ -24,7 +24,7 @@ export class AdminService {
 
         if (dto.current_password && dto.new_password) {
             const pwMatches = await argon.verify(admin.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
+            if (!pwMatches) throw new ForbiddenException('رمز فعلی وارد شده نادرست می‌باشد');
 
             hash = await argon.hash(dto.new_password);
         }
@@ -45,32 +45,32 @@ export class AdminService {
         return safeAdmin;
     }
 
-    // async addUser(dto: CreateUserDto) {
+    async addUser(dto: CreateUserDto) {
 
-    //     const hash = await argon.hash(dto.password);
+        const hash = await argon.hash(dto.password);
 
-    //     const {password, ...userdto} = dto;
+        const {password, ...userdto} = dto;
 
-    //     try {
-    //         const user = await this.prisma.user.create({
-    //             data: {
-    //                 hash_password: hash,
-    //                 ...userdto
-    //             }
-    //         });    
+        try {
+            const user = await this.prisma.user.create({
+                data: {
+                    hash_password: hash,
+                    ...userdto
+                }
+            });    
 
-    //         const { hash_password, ...safeUser} = user;
-    //         return safeUser;
+            const { hash_password, ...safeUser} = user;
+            return safeUser;
 
-    //     } catch (error) {
-    //         if (error instanceof PrismaClientKnownRequestError) {
-    //             if (error.code === "P2002") {
-    //                 throw new ForbiddenException("Credentials Taken");
-    //             }
-    //         }
-    //         throw error;
-    //     }
-    // }
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    throw new ForbiddenException('اطلاعات وارد شده مورد استفاده قرار گرفته اند');
+                }
+            }
+            throw error;
+        }
+    }
 
     async getUsers() {
         return await this.prisma.user.findMany({
@@ -94,31 +94,28 @@ export class AdminService {
                 id: userId
             }
         });
-        if (!user) throw new NotFoundException();
+        if (!user) throw new NotFoundException('یافت نشد');
 
         const { hash_password, ...safeUser} = user;
         return safeUser;
     }
 
-    async editUserById(userId: number, dto: EditUserDto) {
+    async editUserById(userId: number, dto: EditUserByAdminDto) {
 
         const user = await this.prisma.user.findUnique({
             where: {
                 id: userId
             }
         });
-        if (!user) throw new NotFoundException();
+        if (!user) throw new NotFoundException('یافت نشد');
 
         let hash: string | undefined;
 
-        if (dto.current_password && dto.new_password) {
-            const pwMatches = await argon.verify(user.hash_password, dto.current_password);
-            if (!pwMatches) throw new ForbiddenException('Credentials incorrrect');
-
+        if (dto.new_password) {
             hash = await argon.hash(dto.new_password);
         }
 
-        const {current_password, new_password, ...userdto} = dto;
+        const {new_password, ...userdto} = dto;
 
         const updatedUser = await this.prisma.user.update({
             where: {
@@ -140,7 +137,7 @@ export class AdminService {
                 id: userId
             }
         });
-        if (!user) throw new NotFoundException();
+        if (!user) throw new NotFoundException('یافت نشد');
 
         await this.prisma.user.delete({
             where: {
