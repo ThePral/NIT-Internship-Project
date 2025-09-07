@@ -10,6 +10,7 @@ import {
   FileText,
   LogOut,
   User,
+  User2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "../ui/sidebar";
+import UserDropDown from "./UserDropDown";
 
 interface UserNavbarProps {
   userName: string;
@@ -35,7 +37,7 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
       className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
       dir="rtl"
     >
-      <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
+      <div className=" w-full px-5 text-xl h-20 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <svg
@@ -78,50 +80,11 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
         </div>
 
         {/* User Info */}
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
-              <Avatar className="w-8 h-8 border border-dashed border-border">
-                <AvatarImage src="" alt={userName} />
-                <AvatarFallback>?</AvatarFallback>
-              </Avatar>
-              <div className="text-right">
-                <p className="text-sm font-medium text-foreground">
-                  {userName}
-                </p>
-                <p className="text-xs text-muted-foreground">{userMajor}</p>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="rtl bg-popover text-popover-foreground"
-            >
-              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2">
-                پروفایل
-                <User className="w-4 h-4" />
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-border" />
-
-              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
-                خروج از حساب کاربری
-                <LogOut className="w-4 h-4" />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Mobile Menu Button */}
-          {/* <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen((p) => !p)}
-          >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </Button> */}
-
-          <SidebarTrigger className="block md:hidden" />
+        <div className="md:flex hidden items-center gap-3 border rounded-full  w-44 bg-accent ps-5 pe-1 py-2">
+         <UserDropDown/>
         </div>
+
+        <SidebarTrigger  className="block md:hidden " />
       </div>
 
       {/* Mobile menu

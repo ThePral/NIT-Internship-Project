@@ -16,7 +16,7 @@ export default function UserLayout({
           <UserNavbar userName={"آرسام"} userMajor={"کامپیوتر"} />
           <div className="flex flex-col md:flex-row w-full">
             
-            <div className="md:block hidden top-0 right-0">
+            <div className="md:block hidden top-0 right-4 me-4">
               <UserSidebar/>
             </div>
             <div className="md:hidden flex">

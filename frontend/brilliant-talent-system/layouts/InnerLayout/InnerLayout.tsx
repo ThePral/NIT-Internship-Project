@@ -95,7 +95,7 @@ const InnerLayout = ({
             <MainFooter />
           </>
         )}
-        <Toaster />
+        {/* <Toaster /> */}
       </div>
     </userContext.Provider>
   );

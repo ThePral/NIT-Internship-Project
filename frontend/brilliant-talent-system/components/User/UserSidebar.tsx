@@ -9,6 +9,7 @@ import { LogOut, ScrollText, User, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import UserDropDown from "./UserDropDown";
 
 export const UserSidebar = () => {
   const pathname = usePathname();
@@ -42,30 +43,39 @@ export const UserSidebar = () => {
   }
 
   return (
-    <Card className="flex rounded-none md:pt-20  flex-col gap-2 shadow-none md:w-80 w-full h-screen  pr-0 overflow-auto">
-      {items.map((item, index) => (
-        <div key={index}>
-          <div className="flex gap-2 items-center">
-            <div
-              className={`w-2 rounded-l-lg h-10 ${
-                pathname != item.link ? "bg-content" : "bg-primary-color"
-              } `}
-            ></div>
+    <div className="h-screen flex items-start  w-full">
+      <Card className="flex md:rounded-xl p-4 border-0 md:border rounded-none flex-col gap-2 md:mt-24 shadow-none md:w-80 w-full overflow-auto">
+        {items.map((item, index) => (
+          <div key={index} className={`${index != items.length -1? 'border-b' : ''}`}>
+            <div className="flex gap-2 items-center">
+              <div
+                className={`w-2 rounded-l-lg h-10 ${
+                  pathname != item.link ? "bg-content" : "bg-primary-color"
+                } `}
+              ></div>
 
-            <Link
-              href={item.link}
-              onClick={() => {
-                handleClick(item.link);
-              }}
-              className="flex gap-2 py-4 w-full hover:bg-gray-superlight transition-colors"
-            >
-              <p className="text-primary">{item.icon}</p>
-              <p className="text-primary "> {item.title}</p>
-            </Link>
+              <Link
+                href={item.link}
+                onClick={() => {
+                  handleClick(item.link);
+                }}
+                className="flex gap-2 py-4 w-full hover:bg-gray-superlight transition-colors"
+              >
+                <p className="text-primary">{item.icon}</p>
+                <p className="text-primary "> {item.title}</p>
+              </Link>
+            </div>
+            {/* {index != items.length -1 &&
+              <Separator />
+            } */}
           </div>
-          <Separator />
+        ))}
+        <Separator className="mb-5" />
+        
+        <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
+          <UserDropDown/>
         </div>
-      ))}
-    </Card>
+      </Card>
+    </div>
   );
 };
