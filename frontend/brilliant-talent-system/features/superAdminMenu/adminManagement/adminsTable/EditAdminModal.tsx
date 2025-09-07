@@ -86,7 +86,7 @@ export default function EditAdminModal({
             variant="ghost"
             size="icon"
             onClick={handleClose}
-            className="h-8 w-8 p-0 hover:bg-gray-200"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -102,7 +102,7 @@ export default function EditAdminModal({
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="نام ادمین"
-              className="w-full"
+              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
             />
@@ -117,7 +117,7 @@ export default function EditAdminModal({
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="نام خانوادگی ادمین"
-              className="w-full"
+              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
             />
@@ -128,14 +128,14 @@ export default function EditAdminModal({
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="flex-1"
+              className="flex-1 border-border hover:bg-muted"
               disabled={isSubmitting}
             >
               انصراف
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-primary text-card hover:bg-primary/90"
+              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={isSubmitting || !firstName.trim() || !lastName.trim()}
             >
               {isSubmitting ? "در حال ویرایش..." : "ذخیره تغییرات"}

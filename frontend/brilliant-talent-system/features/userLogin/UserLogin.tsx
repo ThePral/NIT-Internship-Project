@@ -34,7 +34,7 @@ export default function LoginPage() {
       localStorage.setItem("authToken", res.access_token);
       localStorage.setItem("refreshToken", res.refresh_token);
       setIsLoading(false);
-      router.push("/user/home");
+      router.push("/home");
     },
     onError: (error) => {
       console.log("error12");
