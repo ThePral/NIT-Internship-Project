@@ -21,13 +21,13 @@ export class AuthService{
         });
 
         if (!user) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         const pwMatches = await argon.verify(user.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         return this.generateTokens(user.id, user.username, 'user');
@@ -41,13 +41,13 @@ export class AuthService{
         });
 
         if (!admin) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         const pwMatches = await argon.verify(admin.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         return this.generateTokens(admin.id, admin.username, 'admin');
@@ -61,13 +61,13 @@ export class AuthService{
         });
 
         if (!superAdmin) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         const pwMatches = await argon.verify(superAdmin.hash_password, dto.password);
         
         if (!pwMatches) {
-            throw new ForbiddenException('Credentials incorrrect');
+            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
         }
 
         return this.generateTokens(superAdmin.id, superAdmin.username, 'superAdmin');
@@ -114,12 +114,12 @@ export class AuthService{
             });
 
             if (!payload.isRefreshToken) {
-                throw new ForbiddenException('Invalid token type');
+                throw new ForbiddenException('نوع توکن نامعتبر می‌باشد');
             }
 
             return this.generateTokens(payload.sub, payload.username, payload.role);
         } catch (error) {
-            throw new ForbiddenException('Invalid or expired refresh token');
+            throw new ForbiddenException('توکن رفرش منقضی شده یا نامعتبر می‌باشد');
         }
     }
 }

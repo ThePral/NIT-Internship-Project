@@ -5,7 +5,7 @@ import { AdminService } from './admin.service';
 import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
 import fs from "fs";
 
@@ -56,11 +56,11 @@ export class AdminController {
     }
 
     @ApiOperation({ summary: 'Edit user by id' })
-    @ApiBody({ type: EditUserDto })
+    @ApiBody({ type: EditUserByAdminDto })
     @ApiResponse({ type: UserDto })
     @Patch('users/:id')
     editUserById(
-        @Body() dto: EditUserDto,
+        @Body() dto: EditUserByAdminDto,
         @Param('id') userId: number
     ): Promise<UserDto>{
         return this.adminService.editUserById(userId, dto);
