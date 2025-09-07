@@ -80,38 +80,17 @@ export default function UserNavbar({
             />
           </svg>
 
-            <span className="text-base font-bold text-foreground">
-              سامانه استعداد درخشان
-            </span>
-          </div>
+          <span className="text-base font-bold text-foreground">
+            سامانه استعداد درخشان
+          </span>
+        </div>
 
         {/* User Info */}
         <div className="md:flex hidden items-center gap-3 border rounded-full  w-44 bg-accent ps-5 pe-1 py-2">
-          <UserDropDown/>
+          <UserDropDown />
         </div>
         <SidebarTrigger className="block md:hidden" />
       </div>
-
-      {/* Mobile menu
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white px-4 py-3 space-y-3 border-t">
-          <NavLink
-            href="/"
-            icon={<Home size={18} />}
-            text="خانه"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <NavLink
-            href="/transcript"
-            icon={<FileText size={18} />}
-            text="کارنامه"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        </div>
-      </header>
-
-      {/* Account Management Modal */}
-
     </header>
   );
 }
