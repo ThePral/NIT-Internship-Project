@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
@@ -7,6 +7,7 @@ import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
+import fs from "fs";
 
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
@@ -89,6 +90,16 @@ export class AdminController {
     @Post("allocation/run")
     async caclulateUserAcceptance() {
         return await this.adminService.allocateUserAcceptances();
+    }
+
+    @Get("results/pdf/sr0")
+    async generateSr0PDF() {
+        return this.adminService.buildSr0();
+    }
+
+    @Get("results/pdf/sr4")
+    async generateSr4PDF() {
+        return this.adminService.buildSr4();
     }
     
 }

@@ -7,13 +7,15 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
 import { AllocationService } from 'src/admissions/allocation.service';
+import { SrPdfService } from 'src/admissions/srpdf.service';
 
 @Injectable()
 export class AdminService {
     constructor(
         private prisma: PrismaService, 
         private importService: ImportService, 
-        private allocationService: AllocationService
+        private allocationService: AllocationService,
+        private srv: SrPdfService
     ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
@@ -168,6 +170,22 @@ export class AdminService {
             message: "User Acceptance Calculated",
             data: result
         };
+    }
+
+    async buildSr0() {
+        return this.srv.generateSr0(
+            './output/sr0.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
+
+    async buildSr4() {
+        return this.srv.generateSr4(
+            './output/sr4.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
     }
 
 }
