@@ -104,10 +104,9 @@ const AccountManagementModal = ({
 
   return (
     <ResponsiveModal open={isOpen} onOpenChange={handleOpenChange}>
-      {trigger && (
-        <ResponsiveModalTrigger asChild>{trigger} ubhbhhubuhybhubuhy</ResponsiveModalTrigger>
-      )}
-
+  
+      <ResponsiveModalTrigger asChild><Button>{trigger}</Button></ResponsiveModalTrigger>
+ 
       <ResponsiveModalContent
         position="center"
         size="md"

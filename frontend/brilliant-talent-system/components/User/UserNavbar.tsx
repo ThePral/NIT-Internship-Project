@@ -111,11 +111,7 @@ export default function UserNavbar({
       </header>
 
       {/* Account Management Modal */}
-      <AccountManagementModal
-        role={userRole}
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-      />
+
     </header>
   );
 }

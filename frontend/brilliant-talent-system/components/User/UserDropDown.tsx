@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { LogOut, User, User2 } from 'lucide-react'
 import { useUser } from '@/hooks'
+import AccountManagementModal from '../AccountManagementModal/AccountManagementModal'
 
 const UserDropDown = () => {
     const {user} = useUser()
+    const [isAccountModalOpen , setIsAccountModalOpen] = useState(false)
     return (
           <DropdownMenu>
             <DropdownMenuTrigger className=" focus:border-none rounded-full flex items-center gap-2 w-full">
@@ -27,7 +29,13 @@ const UserDropDown = () => {
               className="rtl bg-popover text-popover-foreground"
             >
               <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2">
-                پروفایل
+                    <AccountManagementModal
+                        role={"user"}
+                        isOpen={isAccountModalOpen}
+                        onClose={() => setIsAccountModalOpen(false)}
+                        trigger={"ویرایش رمز عبور"}
+                    />
+
                 <User className="w-4 h-4" />
               </DropdownMenuItem>
 
