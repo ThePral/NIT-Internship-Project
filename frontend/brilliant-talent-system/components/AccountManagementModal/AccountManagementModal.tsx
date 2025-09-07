@@ -13,6 +13,8 @@ import {
 } from "../ui/responsiveModal";
 import { Button } from "../ui/button";
 import { Edit } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { EditMyPasswordService } from "@/services/EditMyPassword";
 
 interface AccountManagementModalProps {
   role: "user" | "admin" | "superadmin";
@@ -34,6 +36,34 @@ const AccountManagementModal = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+
+  const editPasswordMutate = useMutation({
+    mutationFn: async ({
+      oldPassword,
+      newPassword,
+    }: {
+      oldPassword: string;
+      newPassword: string;
+    }) => EditMyPasswordService({
+      current_password: oldPassword,
+      new_password: newPassword
+    },role == "superadmin"? "superAdmin" : role),
+    onSuccess: (res) => {
+      console.log("res", res);
+      setIsLoading(false);
+      setMessage({ text: "رمز عبور با موفقیت به روز شد", type: "success" });
+      setFormData({
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+    },
+    onError: (error) => {
+      console.log("error",error);
+      setMessage({ text: "خطایی رخ داده است", type: "error" });
+      setIsLoading(false);
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,24 +96,7 @@ const AccountManagementModal = ({
       return;
     }
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setMessage({ text: "رمز عبور با موفقیت به روز شد", type: "success" });
-      setFormData({
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-
-      setTimeout(() => {
-        onOpen(false);
-      }, 2000);
-    } catch (error) {
-      setMessage({ text: "خطایی رخ داده است", type: "error" });
-    } finally {
-      setIsLoading(false);
-    }
+    editPasswordMutate.mutate({oldPassword: formData.current_password,newPassword:formData.new_password});
   };
 
   const handleOpenChange = (open: boolean) => {
