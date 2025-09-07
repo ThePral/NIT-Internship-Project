@@ -26,16 +26,10 @@ import AccountManagementModal from "../AccountManagementModal/AccountManagementM
 import UserDropDown from "./UserDropDown";
 
 interface UserNavbarProps {
-  userName: string;
-  userMajor: string;
   userRole?: "user" | "admin" | "superadmin";
 }
 
-export default function UserNavbar({
-  userName,
-  userMajor,
-  userRole = "user",
-}: UserNavbarProps) {
+export default function UserNavbar({ userRole = "user" }: UserNavbarProps) {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   return (

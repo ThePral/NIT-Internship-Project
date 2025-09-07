@@ -23,14 +23,10 @@ import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
 
 interface SuperAdminNavbarProps {
-  userName: string;
-  userMajor: string;
   userRole?: "user" | "admin" | "superadmin";
 }
 
 export default function SuperAdminNavbar({
-  userName,
-  userMajor,
   userRole = "superadmin",
 }: SuperAdminNavbarProps) {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
@@ -88,14 +84,12 @@ export default function SuperAdminNavbar({
             <DropdownMenu>
               <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
                 <Avatar className="w-8 h-8 border border-dashed border-border">
-                  <AvatarImage src="" alt={userName} />
+                  <AvatarImage src="" alt={""} />
                   <AvatarFallback>?</AvatarFallback>
                 </Avatar>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-foreground">
-                    {userName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{userMajor}</p>
+                  <p className="text-sm font-medium text-foreground">{}</p>
+                  <p className="text-xs text-muted-foreground">{}</p>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
