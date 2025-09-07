@@ -120,7 +120,7 @@ export default function AdminNavbar({
       <AccountManagementModal
         role={userRole}
         isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
+        onOpen={setIsAccountModalOpen}
       />
     </>
   );

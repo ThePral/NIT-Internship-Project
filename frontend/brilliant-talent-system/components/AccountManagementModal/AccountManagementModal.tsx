@@ -12,18 +12,19 @@ import {
   ResponsiveModalTrigger,
 } from "../ui/responsiveModal";
 import { Button } from "../ui/button";
+import { Edit } from "lucide-react";
 
 interface AccountManagementModalProps {
   role: "user" | "admin" | "superadmin";
   isOpen: boolean;
-  onClose: () => void;
+  onOpen: (sth:boolean)=> void;
   trigger?: React.ReactNode;
 }
 
 const AccountManagementModal = ({
   role,
   isOpen,
-  onClose,
+  onOpen,
   trigger,
 }: AccountManagementModalProps) => {
   const [formData, setFormData] = useState({
@@ -76,7 +77,7 @@ const AccountManagementModal = ({
       });
 
       setTimeout(() => {
-        onClose();
+        onOpen(false);
       }, 2000);
     } catch (error) {
       setMessage({ text: "خطایی رخ داده است", type: "error" });
@@ -87,7 +88,7 @@ const AccountManagementModal = ({
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      onClose();
+      onOpen(false);
     }
   };
 
@@ -103,9 +104,15 @@ const AccountManagementModal = ({
   };
 
   return (
-    <ResponsiveModal open={isOpen} onOpenChange={handleOpenChange}>
+    <ResponsiveModal open={isOpen} onOpenChange={onOpen}>
   
-      <ResponsiveModalTrigger asChild><Button>{trigger}</Button></ResponsiveModalTrigger>
+            <ResponsiveModalTrigger asChild>
+        <div className="flex ">
+          <Button variant='ghost' className="p-1 has-[>svg]:px-1">
+            <Edit/>
+          </Button>
+        </div>
+      </ResponsiveModalTrigger>
  
       <ResponsiveModalContent
         position="center"

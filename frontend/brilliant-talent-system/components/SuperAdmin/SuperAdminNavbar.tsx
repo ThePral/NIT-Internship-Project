@@ -127,7 +127,7 @@ export default function SuperAdminNavbar({
       <AccountManagementModal
         role={userRole}
         isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
+        onOpen={setIsAccountModalOpen}
       />
     </>
   );

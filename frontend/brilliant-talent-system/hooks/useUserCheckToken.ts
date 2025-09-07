@@ -1,5 +1,5 @@
 import { APIURL } from "@/data/consts";
-import { Admin, User } from "@/interfaces/user";
+import { User } from "@/interfaces/user";
 import { getFetch, postFetch } from "@/lib/fetch";
 import { useQuery } from "@tanstack/react-query";
 
@@ -7,7 +7,7 @@ export function useUserCheckToken() {
   return useQuery<User, Error>({
     queryKey: ["myaccount"],
     queryFn: async () => {
-      const result = await getFetch(APIURL+`users/me`);
+      const result = await getFetch(APIURL + `users/me`);
       const jsonResult = await result.json();
       if (result.ok) {
         console.log(jsonResult, "success");
@@ -17,7 +17,7 @@ export function useUserCheckToken() {
         if (result.status == 401) {
           const refreshToken = localStorage.getItem("refreshToken");
           if (refreshToken) {
-            const refreshResult = await postFetch(APIURL+"auth/refreshTokens",
+            const refreshResult = await postFetch(APIURL + "auth/refreshTokens",
               JSON.stringify({
                 refresh_token: refreshToken,
               })
@@ -29,7 +29,7 @@ export function useUserCheckToken() {
                 "refreshToken",
                 refreshJsonResult.refresh_token
               );
-              const retryResult = await getFetch(APIURL+`users/me`);
+              const retryResult = await getFetch(APIURL + `users/me`);
               const retryJsonResult = await result.json();
               if (retryResult.ok) {
                 return retryJsonResult;

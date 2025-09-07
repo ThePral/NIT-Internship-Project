@@ -86,7 +86,7 @@ export default function UserNavbar({
         </div>
 
         {/* User Info */}
-        <div className="md:flex hidden items-center gap-3 border rounded-full  w-44 bg-accent ps-5 pe-1 py-2">
+        <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
           <UserDropDown />
         </div>
         <SidebarTrigger className="block md:hidden" />
