@@ -1,6 +1,4 @@
 "use client";
-import AdminNavbar from "@/components/Admin/AdminNavbar";
-import { AdminSidebar } from "@/components/Admin/AdminSidebar";
 import "@/app/globals.css";
 import {
   SidebarContent,
@@ -8,6 +6,7 @@ import {
   Sidebar,
 } from "@/components/ui/sidebar";
 import { SuperAdminSidebar } from "@/components/SuperAdmin/SuperAdminSidebar";
+import SuperAdminNavbar from "@/components/SuperAdmin/SuperAdminNavbar";
 
 export default function SuperAdminLayout({
   children,
@@ -18,7 +17,7 @@ export default function SuperAdminLayout({
     <div>
       <div className="bg-background  min-h-screen  flex flex-col">
         <SidebarProvider>
-          <AdminNavbar userName={"آرسام"} userMajor={"کامپیوتر"} />
+          <SuperAdminNavbar userName={"آرسام"} userMajor={"کامپیوتر"} />
           <div className="flex flex-col md:flex-row w-full">
             <div className="md:block hidden top-0 right-0">
               <SuperAdminSidebar />

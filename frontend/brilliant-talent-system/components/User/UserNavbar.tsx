@@ -22,22 +22,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "../ui/sidebar";
+import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
 import UserDropDown from "./UserDropDown";
 
 interface UserNavbarProps {
   userName: string;
   userMajor: string;
+  userRole?: "user" | "admin" | "superadmin";
 }
 
-export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
-  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default function UserNavbar({
+  userName,
+  userMajor,
+  userRole = "user",
+}: UserNavbarProps) {
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   return (
     <header
       className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
       dir="rtl"
     >
-      <div className=" w-full px-5 text-xl h-20 flex items-center justify-between">
+      <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <svg
@@ -74,17 +80,56 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
             />
           </svg>
 
-          <span className="text-base font-bold text-foreground">
-            سامانه استعداد درخشان
-          </span>
-        </div>
+            <span className="text-base font-bold text-foreground">
+              سامانه استعداد درخشان
+            </span>
+          </div>
 
         {/* User Info */}
-        <div className="md:flex hidden items-center gap-3 border rounded-full  w-44 bg-accent ps-5 pe-1 py-2">
-         <UserDropDown/>
-        </div>
+        <div className="flex items-center gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
+              <Avatar className="w-8 h-8 border border-dashed border-border">
+                <AvatarImage src="" alt={userName} />
+                <AvatarFallback>?</AvatarFallback>
+              </Avatar>
+              <div className="text-right">
+                <p className="text-sm font-medium text-foreground">
+                  {userName}
+                </p>
+                <p className="text-xs text-muted-foreground">{userMajor}</p>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="rtl bg-popover text-popover-foreground"
+            >
+              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2">
+                پروفایل
+                <User className="w-4 h-4" />
+              </DropdownMenuItem>
 
-        <SidebarTrigger  className="block md:hidden " />
+              <DropdownMenuSeparator className="bg-border" />
+
+              <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
+                خروج از حساب کاربری
+                <LogOut className="w-4 h-4" />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Mobile Menu Button */}
+          {/* <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen((p) => !p)}
+          >
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </Button> */}
+
+          <SidebarTrigger className="block md:hidden" />
+        </div>
       </div>
 
       {/* Mobile menu
@@ -103,36 +148,14 @@ export default function UserNavbar({ userName, userMajor }: UserNavbarProps) {
             onClick={() => setIsMobileMenuOpen(false)}
           />
         </div>
-      )} */}
+      </header>
+
+      {/* Account Management Modal */}
+      <AccountManagementModal
+        role={userRole}
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+      />
     </header>
   );
 }
-
-// function NavLink({
-//   href,
-//   icon,
-//   text,
-//   active = false,
-//   onClick,
-// }: {
-//   href: string;
-//   icon: React.ReactNode;
-//   text: string;
-//   active?: boolean;
-//   onClick?: () => void;
-// }) {
-//   return (
-//     <Link
-//       href={href}
-//       onClick={onClick}
-//       className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-//         active
-//           ? "text-primary border-b-2 border-primary pb-1"
-//           : "text-muted-foreground hover:text-primary"
-//       }`}
-//     >
-//       {icon}
-//       {text}
-//     </Link>
-//   );
-// }

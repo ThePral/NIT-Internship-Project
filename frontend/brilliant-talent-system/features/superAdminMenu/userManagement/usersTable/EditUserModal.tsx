@@ -85,7 +85,7 @@ export default function EditUserModal({
 
   return (
     <div
-      className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={handleOverlayClick}
     >
       <div className="bg-card rounded-lg shadow-lg w-full max-w-md border border-border">
@@ -95,7 +95,7 @@ export default function EditUserModal({
             variant="ghost"
             size="icon"
             onClick={handleClose}
-            className="h-8 w-8 p-0 hover:bg-gray-200"
+            className="h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -111,7 +111,7 @@ export default function EditUserModal({
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="نام دانشجو"
-              className="w-full"
+              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
             />
@@ -126,7 +126,7 @@ export default function EditUserModal({
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="نام خانوادگی دانشجو"
-              className="w-full"
+              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
             />
@@ -141,7 +141,7 @@ export default function EditUserModal({
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
               placeholder="شماره دانشجویی"
-              className="w-full"
+              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
             />
@@ -152,14 +152,14 @@ export default function EditUserModal({
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="flex-1"
+              className="flex-1 border-border hover:bg-muted"
               disabled={isSubmitting}
             >
               انصراف
             </Button>
             <Button
               type="submit"
-              className="flex-1 text-card bg-primary hover:bg-primary/90"
+              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={
                 isSubmitting ||
                 !firstName.trim() ||
