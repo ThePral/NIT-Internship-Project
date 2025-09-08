@@ -22,18 +22,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
+import UserDropDown from "../User/UserDropDown";
 
-interface AdminNavbarProps {
-  userName: string;
-  userMajor: string;
-  userRole?: "user" | "admin" | "superadmin";
-}
 
-export default function AdminNavbar({
-  userName,
-  userMajor,
-  userRole = "admin",
-}: AdminNavbarProps) {
+export default function AdminNavbar() {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   return (
@@ -42,7 +34,7 @@ export default function AdminNavbar({
         className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
         dir="rtl"
       >
-        <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
+        <div className=" w-full px-5 text-xl h-20 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <svg
@@ -85,43 +77,13 @@ export default function AdminNavbar({
           </div>
 
           {/* User Info */}
-          <div className="flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
-                <Avatar className="w-8 h-8 border border-dashed border-gray-300">
-                  <AvatarImage src="" alt={userName} />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{userName}</p>
-                  <p className="text-xs text-gray-500">{userMajor}</p>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rtl">
-                <DropdownMenuItem
-                  className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2"
-                  onClick={() => setIsAccountModalOpen(true)}
-                >
-                  ویرایش رمز عبور
-                  <User className="w-4 h-4" />
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
-                  خروج از حساب کاربری
-                  <LogOut className="w-4 h-4" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
+            <UserDropDown/>
           </div>
           <SidebarTrigger className="block md:hidden" />
         </div>
       </header>
       {/* Account Management Modal */}
-      <AccountManagementModal
-        role={userRole}
-        isOpen={isAccountModalOpen}
-        onOpen={setIsAccountModalOpen}
-      />
     </>
   );
 }

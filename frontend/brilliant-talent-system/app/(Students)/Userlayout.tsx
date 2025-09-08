@@ -13,7 +13,7 @@ export default function UserLayout({
     <div>
       <div className="bg-background  min-h-screen  flex flex-col">
         <SidebarProvider>
-          <UserNavbar userName={"آرسام"} userMajor={"کامپیوتر"} />
+          <UserNavbar />
           <div className="flex flex-col max-h-screen overflow-hidden md:flex-row w-full">
             
             <div className="md:block hidden top-0 right-4 me-4">

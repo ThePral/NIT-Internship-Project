@@ -25,17 +25,9 @@ import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
 import UserDropDown from "./UserDropDown";
 
-interface UserNavbarProps {
-  userName: string;
-  userMajor: string;
-  userRole?: "user" | "admin" | "superadmin";
-}
 
-export default function UserNavbar({
-  userName,
-  userMajor,
-  userRole = "user",
-}: UserNavbarProps) {
+
+export default function UserNavbar() {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   return (
