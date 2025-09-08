@@ -5,7 +5,7 @@ import { SuperAdminService } from './superAdmin.service';
 import { EditSuperAdminDto, SuperAdminDto, SuperAdminWithRoleDto } from './dto';
 import { SuperAdmin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { AdminDto, CreateAdminDto, EditAdminDto } from 'src/admin/dto';
+import { AdminDto, CreateAdminDto, EditAdminBySuperAdminDto } from 'src/admin/dto';
 
 @ApiBearerAuth('access_token')
 @UseGuards(SuperAdminJwtGuard)
@@ -60,11 +60,11 @@ export class SuperAdminController {
     }
 
     @ApiOperation({ summary: 'Edit admin by id' })
-    @ApiBody({ type: EditAdminDto })
+    @ApiBody({ type: EditAdminBySuperAdminDto })
     @ApiResponse({ type: AdminDto })
     @Patch('admins/:id')
     editAdminById(
-        @Body() dto: EditAdminDto,
+        @Body() dto: EditAdminBySuperAdminDto,
         @Param('id') adminId: number
     ): Promise<AdminDto>{
         return this.superAdminService.editAdminById(adminId, dto);

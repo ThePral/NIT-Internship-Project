@@ -26,14 +26,14 @@ export class UserJwtStrategy extends PassportStrategy(
         username: string,
         role: string
     }) {
-        if(payload.role !== 'user') throw new UnauthorizedException();
+        if(payload.role !== 'user') throw new UnauthorizedException('دسترسی غیر مجاز');
         
         const user = await this.prisma.user.findUnique({
             where: {
                 id: payload.sub,
             }
         })
-        if (!user) throw new UnauthorizedException();
+        if (!user) throw new UnauthorizedException('دسترسی غیر مجاز');
         
         return user;
     }
@@ -61,14 +61,14 @@ export class AdminJwtStrategy extends PassportStrategy(
         username: string,
         role: string
     }) {
-        if(payload.role !== 'admin') throw new UnauthorizedException();
+        if(payload.role !== 'admin') throw new UnauthorizedException('دسترسی غیر مجاز');
         
         const admin = await this.prisma.admin.findUnique({
             where: {
                 id: payload.sub,
             }
         })
-        if (!admin) throw new UnauthorizedException();
+        if (!admin) throw new UnauthorizedException('دسترسی غیر مجاز');
         
         return admin;
     }
@@ -96,14 +96,14 @@ export class SuperAdminJwtStrategy extends PassportStrategy(
         username: string,
         role: string
     }) {
-        if(payload.role !== 'superAdmin') throw new UnauthorizedException();
+        if(payload.role !== 'superAdmin') throw new UnauthorizedException('دسترسی غیر مجاز');
         
         const superAdmin = await this.prisma.superAdmin.findUnique({
             where: {
                 id: payload.sub,
             }
         })
-        if (!superAdmin) throw new UnauthorizedException();
+        if (!superAdmin) throw new UnauthorizedException('دسترسی غیر مجاز');
         
         return superAdmin;
     }

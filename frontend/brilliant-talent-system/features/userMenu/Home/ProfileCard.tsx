@@ -31,7 +31,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   ];
 
   return (
-    <Card className="bg-sidebar text-sidebar-foreground w-full max-w-md rounded-lg shadow">
+    <Card className="bg-sidebar shadow-primary text-sidebar-foreground w-full max-w-md rounded-lg shadow">
       <CardHeader>
         <CardTitle className="text-sidebar-primary text-lg font-bold text-right">
           ویرایش رمز عبور

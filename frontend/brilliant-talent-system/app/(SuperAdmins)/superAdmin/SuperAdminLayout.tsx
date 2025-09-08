@@ -17,7 +17,7 @@ export default function SuperAdminLayout({
     <div>
       <div className="bg-background  min-h-screen  flex flex-col">
         <SidebarProvider>
-          <SuperAdminNavbar userName={"آرسام"} userMajor={"کامپیوتر"} />
+          <SuperAdminNavbar />
           <div className="flex flex-col md:flex-row w-full">
             <div className="md:block hidden top-0 right-0">
               <SuperAdminSidebar />
