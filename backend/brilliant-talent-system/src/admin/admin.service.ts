@@ -163,6 +163,79 @@ export class AdminService {
         }
     }
 
+    private readonly patterns: Record<string, RegExp> = {
+        students1: /students[^a-z0-9]*1/i,       // matches Students_1, Students-1, students1, etc.
+        students2: /students[^a-z0-9]*2/i,       // matches Students_2, Students2, ...
+        minors: /\bminors?\b/i,                  // minor or minors
+        universities: /\buniversit/i,            // university or universities (partial match)
+    };
+
+    private getResourcesDir(): string {
+        return path.resolve(process.cwd(), 'resources');
+    }
+
+    private async readDirSafe(): Promise<string[]>  {
+        const dir = this.getResourcesDir();
+
+        try {
+            // if directory does not exist, return empty list
+            if (!fs.existsSync(dir)) return [];
+            const files = await fs.promises.readdir(dir);
+            return files;
+        } catch (err) {
+            console.error((err as Error).message);
+            throw new InternalServerErrorException('Failed to read resources directory');
+        }
+    }
+
+    async listExcelPresence(): Promise<PresenceResult> {
+        
+        const files = await this.readDirSafe();
+
+        const present: PresenceResult = {
+            students1: false,
+            students2: false,
+            minors: false,
+            universities: false,
+        };
+
+        for (const f of files) {
+            // only consider .xls/.xlsx files
+            if (!f.match(/\.(xlsx|xls)$/i)) continue;
+
+            for (const key of Object.keys(this.patterns)) {
+                if (this.patterns[key].test(f)) {
+                    // (present as any)[key] = true;
+                    present[key] = true
+                }
+            }
+        }
+
+        return present;
+    }
+
+    async deleteDocs() {
+        const files = await this.readDirSafe();
+        const dir = this.getResourcesDir();
+
+        for (const f of files) {
+            const abs = path.join(dir, f);
+
+            try {
+                // use unlinkSync or promises - use promises for non-blocking
+                await fs.promises.unlink(abs);
+                // deleted[key].push(f);
+            } catch (err) {
+                // Log and continue; don't throw so we try to delete other files.
+                console.warn(`Failed to delete ${abs}: ${(err as Error).message}`);
+            }
+        }
+            
+        await this.prisma.cleanExcelsData();
+
+        return { message: "all resources files deleted succesfuly" };
+    }
+
     async allocateUserAcceptances() {
         const result = await this.allocationService.runAllocation(1);
         return {

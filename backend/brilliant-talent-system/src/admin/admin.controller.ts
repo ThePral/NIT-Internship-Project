@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto, PresenceResult } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
@@ -84,6 +84,20 @@ export class AdminController {
             message: 'File uploaded — import queued',
             jobId: job.id,
         };
+    }
+
+    @ApiOperation({ summary: 'Get Excel Files Existance' })
+    @ApiResponse({ type: PresenceResult })
+    @Get("excels")
+    getExcelsExistance() {
+        return this.adminService.listExcelPresence();
+    }
+
+    @ApiOperation({ summary: 'Deletes Excel Files' })
+    @Delete("excels")
+    @HttpCode(HttpStatus.NO_CONTENT)
+    deleteExcels() {
+        return this.adminService.deleteDocs();
     }
 
     @ApiOperation({ summary: "Allocates Users Minor Acceptance" })
