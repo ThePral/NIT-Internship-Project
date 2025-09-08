@@ -1,21 +1,21 @@
 import { APIURL } from "@/data/consts";
-import { postFetch, updateFetch } from "@/lib/fetch";
+import { postFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
 export async function AddAdminService(formData: {
-    username: string,
-    password: string
-} ) {
+  username: string;
+  password: string;
+}) {
   const result = await postFetch(
-    APIURL +`superAdmins/admins`,
+    APIURL + `superAdmins/admins`,
     JSON.stringify(formData)
   );
 
   const jsonResult = await result.json();
 
   if (result.ok) {
-    toast.success("آدرس با موفقیت اضافه شد", {
-      description: "آدرس جدید شما با موفقیت ثبت گردید",
+    toast.success("ادمین با موفقیت اضافه شد", {
+      description: "ادمین جدید با موفقیت ثبت گردید.",
     });
     return jsonResult;
   } else {
@@ -23,32 +23,32 @@ export async function AddAdminService(formData: {
     switch (result.status) {
       case 400:
         toast.error("خطای درخواست", {
-          description: jsonResult.message || "درخواست نامعتبر است.",
+          description: jsonResult.message || "اطلاعات وارد شده نامعتبر است.",
         });
         break;
       case 401:
         toast.error("عدم دسترسی", {
-          description: "شما مجوز انجام این عمل را ندارید.",
+          description: "شما مجوز افزودن ادمین جدید را ندارید.",
         });
         break;
       case 403:
         toast.error("ممنوع", {
-          description: "دسترسی به این عملیات ممنوع است.",
+          description: "امکان انجام این عملیات وجود ندارد.",
         });
         break;
       case 404:
         toast.error("یافت نشد", {
-          description: "منبع درخواستی یافت نشد.",
+          description: "مسیر یا سرویس افزودن ادمین یافت نشد.",
         });
         break;
       case 409:
         toast.error("تضاد", {
-          description: "این آدرس قبلاً ثبت شده است.",
+          description: "این نام کاربری قبلاً برای یک ادمین ثبت شده است.",
         });
         break;
       case 500:
         toast.error("خطای سرور", {
-          description: "خطایی در سرور رخ داده است. لطفاً بعداً تلاش کنید.",
+          description: "مشکلی در سرور رخ داده است. لطفاً بعداً تلاش کنید.",
         });
         break;
       default:

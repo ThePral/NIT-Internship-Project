@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
+import AdminDropDown from "../Admin/AdminDropDown";
+import SuperAdminDropDown from "./SuperAdminDropDown";
 
 interface SuperAdminNavbarProps {
   userRole?: "user" | "admin" | "superadmin";
@@ -80,49 +82,12 @@ export default function SuperAdminNavbar({
           </div>
 
           {/* User Info */}
-          <div className="flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="hidden md:flex items-center gap-2">
-                <Avatar className="w-8 h-8 border border-dashed border-border">
-                  <AvatarImage src="" alt={""} />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-foreground">{}</p>
-                  <p className="text-xs text-muted-foreground">{}</p>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="rtl bg-popover text-popover-foreground"
-              >
-                <DropdownMenuItem
-                  className="flex items-center justify-end gap-2 text-sm text-primary hover:bg-primary/10 hover:text-primary px-4 py-2"
-                  onClick={() => setIsAccountModalOpen(true)}
-                >
-                  ویرایش رمز عبور
-                  <User className="w-4 h-4" />
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator className="bg-border" />
-
-                <DropdownMenuItem className="flex items-center justify-end gap-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive px-4 py-2">
-                  خروج از حساب کاربری
-                  <LogOut className="w-4 h-4" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <SidebarTrigger className="block md:hidden" />
+          <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
+            <SuperAdminDropDown />
           </div>
+          <SidebarTrigger className="block md:hidden" />
         </div>
       </header>
-
-      {/* Account Management Modal */}
-      <AccountManagementModal
-        role={userRole}
-        isOpen={isAccountModalOpen}
-        onOpen={setIsAccountModalOpen}
-      />
     </>
   );
 }

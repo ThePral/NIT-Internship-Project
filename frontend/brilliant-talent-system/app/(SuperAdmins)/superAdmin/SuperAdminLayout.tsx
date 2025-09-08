@@ -18,8 +18,8 @@ export default function SuperAdminLayout({
       <div className="bg-background  min-h-screen  flex flex-col">
         <SidebarProvider>
           <SuperAdminNavbar />
-          <div className="flex flex-col md:flex-row w-full">
-            <div className="md:block hidden top-0 right-0">
+          <div className="flex flex-col max-h-screen overflow-hidden md:flex-row w-full">
+            <div className="md:block hidden top-0 right-4 me-4">
               <SuperAdminSidebar />
             </div>
             <div className="md:hidden flex">
@@ -30,7 +30,9 @@ export default function SuperAdminLayout({
               </Sidebar>
             </div>
 
-            <div className="w-full px-5 pb-5 max-md:px-0 mt-20">{children}</div>
+            <div className="w-full max-h-screen overflow-auto px-5 pb-5 max-md:px-0 mt-20">
+              {children}
+            </div>
           </div>
         </SidebarProvider>
       </div>

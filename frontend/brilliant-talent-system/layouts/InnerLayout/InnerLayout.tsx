@@ -30,7 +30,7 @@ const InnerLayout = ({
     isLoading = userHookResult.isLoading;
   } else if (role === "admin") {
     const adminHookResult = useAdminCheckToken();
-    serverUser  = adminHookResult.data;
+    serverUser = adminHookResult.data;
     error = adminHookResult.error;
     isLoading = adminHookResult.isLoading;
   } else if (role === "superAdmin") {
@@ -49,7 +49,7 @@ const InnerLayout = ({
       } else if (role == "admin") {
         router.push("/admin/auth");
       } else if (role == "superAdmin") {
-        router.push("/superadmin/auth");
+        router.push("/superAdmin/auth");
       }
     }
     if (error) {
@@ -59,7 +59,7 @@ const InnerLayout = ({
       } else if (role == "admin") {
         router.push("/admin/auth");
       } else if (role == "superAdmin") {
-        router.push("/superadmin/auth");
+        router.push("/superAdmin/auth");
       }
     } else if (serverUser?.id && !_.isEqual(serverUser, user)) {
       if (serverUser.role != role) {
@@ -69,7 +69,7 @@ const InnerLayout = ({
         } else if (role == "admin") {
           router.push("/admin/auth");
         } else if (role == "superAdmin") {
-          router.push("/superadmin/auth");
+          router.push("/superAdmin/auth");
         }
       }
       setUser(serverUser);

@@ -18,23 +18,17 @@ export default function AdminManagement() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
-  const {data , isLoading , error: serverError} = useGetAdmins();
+  const { data, isLoading, error: serverError } = useGetAdmins();
   const queryClient = useQueryClient();
   const deleteAdminMutate = useMutation({
-    mutationFn: async ({
-     id
-    }: {
-      id: number
-    }) => DeleteAdminService(
-      id
-    ),
+    mutationFn: async ({ id }: { id: number }) => DeleteAdminService(id),
     onSuccess: (res) => {
       console.log("res", res);
       setLoading(false);
-      queryClient.invalidateQueries({queryKey:["admins"]});
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     },
     onError: (error) => {
-      console.log("error",error);
+      console.log("error", error);
       setLoading(false);
     },
   });
@@ -45,8 +39,8 @@ export default function AdminManagement() {
       setIsEditModalOpen(true);
     };
     const handleDeleteAdmin = (event: CustomEvent) => {
-      console.log("delete")
-      if(loading){
+      console.log("delete");
+      if (loading) {
         return;
       }
       setLoading(true);
@@ -69,7 +63,6 @@ export default function AdminManagement() {
       //   "open-delete-dialog",
       //   handleDeleteAdmin as EventListener
       // );
-
     };
   }, []);
 
@@ -80,17 +73,18 @@ export default function AdminManagement() {
     }: {
       username: string;
       password: string;
-    }) => AddAdminService({
-      username: username,
-      password: password
-    }),
+    }) =>
+      AddAdminService({
+        username: username,
+        password: password,
+      }),
     onSuccess: (res) => {
       console.log("res", res);
       setLoading(false);
-      queryClient.invalidateQueries({queryKey:["admins"]});
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     },
     onError: (error) => {
-      console.log("error",error);
+      console.log("error", error);
       setLoading(false);
     },
   });
@@ -98,60 +92,68 @@ export default function AdminManagement() {
     mutationFn: async ({
       id,
       password,
-      username
+      username,
     }: {
-      id : number,
+      id: number;
       password?: string;
       username: string;
-    }) => EditUserPasswordService(id,{
-      new_password: password,
-      username : username
-    },"admin"),
+    }) =>
+      EditUserPasswordService(
+        id,
+        {
+          new_password: password,
+          username: username,
+        },
+        "admin"
+      ),
     onSuccess: (res) => {
       console.log("res", res);
       setLoading(false);
-      queryClient.invalidateQueries({queryKey:["admins"]});
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
     },
     onError: (error) => {
-      console.log("error",error);
+      console.log("error", error);
       setLoading(false);
     },
   });
-  const handleAddAdmin = async ({username , password}: {
+  const handleAddAdmin = async ({
+    username,
+    password,
+  }: {
     username: string;
     password: string;
   }) => {
-    if(loading){
+    if (loading) {
       return;
     }
     setLoading(true);
     addAdminMutate.mutate({
       username,
-      password
-    })
-    // Simulate API call
-    
+      password,
+    });
   };
 
-  const handleEditAdmin = async ({id , password, username}: {
-    id: number
+  const handleEditAdmin = async ({
+    id,
+    password,
+    username,
+  }: {
+    id: number;
     password?: string;
     username: string;
   }) => {
-    if(loading){
+    if (loading) {
       return;
     }
-    if(password && password.trim()== ""){
+    if (password && password.trim() == "") {
       password = undefined;
     }
     setLoading(true);
     editAdminMutate.mutate({
       id,
       password,
-      username
-    })
-    // Simulate API call
-    
+      username,
+    });
   };
 
   const handleCloseEditModal = () => {

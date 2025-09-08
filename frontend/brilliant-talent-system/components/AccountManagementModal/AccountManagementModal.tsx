@@ -14,12 +14,12 @@ import {
 import { Button } from "../ui/button";
 import { Edit } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { EditMyPasswordService } from "@/services/EditMyPassword";
+import { EditMyPasswordService } from "@/services/EditMyPasswordService";
 
 interface AccountManagementModalProps {
-  role: "user" | "admin" | "superadmin";
+  role: "user" | "admin" | "superadmin" | "superAdmin";
   isOpen: boolean;
-  onOpen: (sth:boolean)=> void;
+  onOpen: (sth: boolean) => void;
   trigger?: React.ReactNode;
 }
 
@@ -44,10 +44,14 @@ const AccountManagementModal = ({
     }: {
       oldPassword: string;
       newPassword: string;
-    }) => EditMyPasswordService({
-      current_password: oldPassword,
-      new_password: newPassword
-    },role == "superadmin"? "superAdmin" : role),
+    }) =>
+      EditMyPasswordService(
+        {
+          current_password: oldPassword,
+          new_password: newPassword,
+        },
+        role == "superadmin" ? "superAdmin" : role
+      ),
     onSuccess: (res) => {
       console.log("res", res);
       setIsLoading(false);
@@ -59,7 +63,7 @@ const AccountManagementModal = ({
       });
     },
     onError: (error) => {
-      console.log("error",error);
+      console.log("error", error);
       setMessage({ text: "خطایی رخ داده است", type: "error" });
       setIsLoading(false);
     },
@@ -96,7 +100,10 @@ const AccountManagementModal = ({
       return;
     }
 
-    editPasswordMutate.mutate({oldPassword: formData.current_password,newPassword:formData.new_password});
+    editPasswordMutate.mutate({
+      oldPassword: formData.current_password,
+      newPassword: formData.new_password,
+    });
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -111,6 +118,8 @@ const AccountManagementModal = ({
         return "تغییر رمز ادمین";
       case "superadmin":
         return "تغییر رمز مدیر";
+      case "superAdmin":
+        return "تغییر رمز مدیر";
       default:
         return "تغییر رمز دانشجو";
     }
@@ -118,15 +127,14 @@ const AccountManagementModal = ({
 
   return (
     <ResponsiveModal open={isOpen} onOpenChange={onOpen}>
-  
-            <ResponsiveModalTrigger asChild>
+      <ResponsiveModalTrigger asChild>
         <div className="flex ">
-          <Button variant='ghost' className="p-1 has-[>svg]:px-1">
-            <Edit/>
+          <Button variant="ghost" className="p-1 has-[>svg]:px-1">
+            <Edit />
           </Button>
         </div>
       </ResponsiveModalTrigger>
- 
+
       <ResponsiveModalContent
         position="center"
         size="md"
@@ -228,9 +236,9 @@ const AccountManagementModal = ({
             <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 mr-2 sm:flex-initial bg-primary text-primary-foreground hover:bg-primary/90"
+              className="flex-1 md:mr-2 sm:flex-initial bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              {isLoading ? "در حال به روزرسانی..." : "به روزرسانی رمز عبور"}
+              {isLoading ? "در حال به‌روزرسانی..." : "به‌روزرسانی رمز عبور"}
             </Button>
           </ResponsiveModalFooter>
         </form>
