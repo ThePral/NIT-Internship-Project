@@ -23,6 +23,7 @@ import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
 import AdminDropDown from "../Admin/AdminDropDown";
 import SuperAdminDropDown from "./SuperAdminDropDown";
+import UserDropDown from "../User/UserDropDown";
 
 interface SuperAdminNavbarProps {
   userRole?: "user" | "admin" | "superadmin";
@@ -83,7 +84,7 @@ export default function SuperAdminNavbar({
 
           {/* User Info */}
           <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
-            <SuperAdminDropDown />
+            <UserDropDown />
           </div>
           <SidebarTrigger className="block md:hidden" />
         </div>

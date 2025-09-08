@@ -22,6 +22,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import _ from "lodash";
 import SuperAdminDropDown from "./SuperAdminDropDown";
+import UserDropDown from "../User/UserDropDown";
 
 export const SuperAdminSidebar = () => {
   const pathname = usePathname();
@@ -118,7 +119,7 @@ export const SuperAdminSidebar = () => {
         <Separator className="mb-5" />
 
         <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
-          <SuperAdminDropDown />
+          <UserDropDown />
         </div>
       </Card>
     </div>

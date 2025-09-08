@@ -1,6 +1,5 @@
 "use client";
-
-import NewOperation from "@/features/superAdminMenu/newOperation/NewOperation";
+import NewOperation from "@/features/adminMenu/newOperation/NewOperation";
 import React from "react";
 
 const NewOperationPage = () => {
