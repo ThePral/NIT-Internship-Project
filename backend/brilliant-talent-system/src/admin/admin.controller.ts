@@ -7,13 +7,13 @@ import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
-import fs from "fs";
+import { QueueService } from 'src/queue/queue.service';
 
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
 export class AdminController {
-    constructor(private adminService: AdminService) {}
+    constructor(private adminService: AdminService, private readonly queueService: QueueService) {}
     
     @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Get me' })
@@ -32,14 +32,6 @@ export class AdminController {
     editMe(@GetUser() admin: Admin, @Body() dto: EditAdminDto): Promise<AdminDto>{
         return this.adminService.editAdmin(admin, dto);
     }
-
-    // @ApiOperation({ summary: 'Add user' })
-    // @ApiBody({ type: CreateUserDto })
-    // @ApiResponse({ type: UserDto })
-    // @Post('users')
-    // addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
-    //     return this.adminService.addUser(dto);
-    // }
 
     @ApiOperation({ summary: 'Get users' })
     @ApiResponse({ type: UserDto, isArray: true })
@@ -73,16 +65,24 @@ export class AdminController {
         return this.adminService.deleteUserById(userId);
     }
 
+
+    @HttpCode(HttpStatus.ACCEPTED)
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
     @ApiOkResponse( { type: UploadResponseDto})
     @Post("upload/:type")
     async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
-        const result = await this.adminService.importDocs(file.path, type);
-        return {
-            result,
-            filename: file.filename,
+        
+        const job = await this.queueService.importQueue.add('import', {
             path: file.path,
+            filename: file.filename,
+            type,
+            uploadedBy: 'admin', 
+        });
+
+        return {
+            message: 'File uploaded — import queued',
+            jobId: job.id,
         };
     }
 

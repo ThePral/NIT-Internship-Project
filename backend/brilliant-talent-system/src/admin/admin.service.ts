@@ -1,13 +1,15 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
-import { EditAdminDto } from './dto';
+import { EditAdminDto, PresenceResult } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
 import { AllocationService } from 'src/admissions/allocation.service';
 import { SrPdfService } from 'src/admissions/srpdf.service';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AdminService {
@@ -146,7 +148,7 @@ export class AdminService {
         });
     }
 
-    async importDocs(filePath: string, type: string) {
+    async importDocs(filePath: string, type: string, progressCb?: (progress: number | object) => void) {
         switch (type) {
             case "universities":
                 return await this.importService.importUniversities(filePath);
