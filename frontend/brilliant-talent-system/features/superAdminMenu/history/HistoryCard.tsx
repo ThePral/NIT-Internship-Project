@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { ChevronLeft } from "lucide-react";
-// import { UploadTableModal } from "../newOperation/UploadTableModal";
 import { Button } from "@/components/ui/button";
 
 const historyItems = [
@@ -11,8 +16,18 @@ const historyItems = [
     fullTitle: "نتایج ۱۴۰۴/۰۶/۱۲",
     date: "۱۴۰۴/۰۶/۱۲",
   },
-  { id: 2, title: null, fullTitle: null, date: null },
-  { id: 3, title: null, fullTitle: null, date: null },
+  {
+    id: 2,
+    title: "گزارش عملیات",
+    fullTitle: "گزارش عملیات ۱۴۰۴/۰۶/۱۰",
+    date: "۱۴۰۴/۰۶/۱۰",
+  },
+  {
+    id: 3,
+    title: null,
+    fullTitle: null,
+    date: null,
+  },
 ];
 
 export const HistoryCard = () => {
@@ -22,38 +37,39 @@ export const HistoryCard = () => {
         <h2 className="text-xl font-bold text-primary">تاریخچه</h2>
       </header>
 
-      <main className="space-y-3">
-        {historyItems.map((item) => {
-          if (item.title && item.fullTitle) {
-            return (
-              // <UploadTableModal key={item.id} title={item.fullTitle}>
-              //   <Button
-              //     variant="ghost"
-              //     className="flex w-full items-center justify-between rounded-lg bg-muted p-6 text-sm font-semibold text-card-foreground hover:bg-accent"
-              //   >
-              //     <div dir="">
-              //       <span>{item.title}</span>
-              //       <span
-              //         dir=""
-              //         className="mr-2 font-mono text-muted-foreground"
-              //       >
-              //         {item.date}
-              //       </span>
-              //     </div>
-              //     <ChevronLeft className="h-5 w-5 text-muted-foreground" />
-              //   </Button>
-              // </UploadTableModal>
-              <div></div>
-            );
-          }
-
-          return (
-            <div
-              key={item.id}
-              className="h-[60px] w-full rounded-lg bg-muted opacity-50"
-            />
-          );
-        })}
+      <main>
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {historyItems.map((item) =>
+            item.title && item.fullTitle ? (
+              <AccordionItem
+                key={item.id}
+                value={`item-${item.id}`}
+                className="rounded-lg border bg-muted/20"
+              >
+                <AccordionTrigger className="flex justify-between px-4 py-3 text-right">
+                  <span className="font-semibold">{item.title}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {item.date}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4 text-sm text-muted-foreground">
+                  {item.fullTitle}
+                  <div className="mt-3">
+                    <Button size="sm" variant="secondary" className="gap-2">
+                      <ChevronLeft size={16} />
+                      مشاهده
+                    </Button>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ) : (
+              <div
+                key={item.id}
+                className="h-[60px] w-full rounded-lg bg-muted opacity-50"
+              />
+            )
+          )}
+        </Accordion>
       </main>
     </div>
   );

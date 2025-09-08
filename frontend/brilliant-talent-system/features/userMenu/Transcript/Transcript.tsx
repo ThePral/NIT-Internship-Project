@@ -21,9 +21,9 @@ const profileData: ProfileInfo[] = [
 
 export default function Transcript() {
   return (
-    <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6" dir="rtl">
+    <div className="w-full p-4 sm:p-4 space-y-6" dir="rtl">
       <Card className="bg-card border border-border rounded-lg shadow-md">
-        <CardContent className="p-4 sm:p-6 lg:p-8 space-y-4 md:space-y-6 text-right">
+        <CardContent className="p-4 sm:px-6 lg:px-8 space-y-4 md:space-y-6 text-right">
           {/* Header */}
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-primary">
             کارنامه
