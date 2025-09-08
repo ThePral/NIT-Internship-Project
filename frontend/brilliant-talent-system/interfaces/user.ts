@@ -12,7 +12,6 @@ export interface User {
 export interface Admin {
   id: number;
   username: string;
-  role: string;
   createdAt: Date;
   updatedAt: Date;
 }

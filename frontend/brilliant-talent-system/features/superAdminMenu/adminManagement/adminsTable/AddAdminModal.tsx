@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 interface AddAdminModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAdmin: (adminData: { first_name: string; last_name: string }) => void;
+  onAddAdmin: (adminData: { username: string;
+    password: string;}) => void;
 }
 
 export default function AddAdminModal({
@@ -17,22 +18,22 @@ export default function AddAdminModal({
   onClose,
   onAddAdmin,
 }: AddAdminModalProps) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName.trim() || !lastName.trim()) return;
+    if (!username.trim() || !password.trim()) return;
 
     setIsSubmitting(true);
     try {
       await onAddAdmin({
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
+        username: username.trim(),
+        password: password.trim(),
       });
-      setFirstName("");
-      setLastName("");
+      setUsername("");
+      setPassword("");
       onClose();
     } catch (error) {
       console.error("Error adding admin:", error);
@@ -71,13 +72,13 @@ export default function AddAdminModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="firstName" className="text-foreground">
+            <Label htmlFor="username" className="text-foreground">
               نام
             </Label>
             <Input
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="نام ادمین"
               className="w-full"
               required
@@ -86,14 +87,14 @@ export default function AddAdminModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lastName" className="text-foreground">
+            <Label htmlFor="password" className="text-foreground">
               نام خانوادگی
             </Label>
             <Input
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="نام خانوادگی ادمین"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="رمز ادمین"
               className="w-full"
               required
               disabled={isSubmitting}
@@ -113,7 +114,7 @@ export default function AddAdminModal({
             <Button
               type="submit"
               className="flex-1 bg-primary hover:bg-primary/90 text-card"
-              disabled={isSubmitting || !firstName.trim() || !lastName.trim()}
+              disabled={isSubmitting || !username.trim() || !password.trim()}
             >
               {isSubmitting ? "در حال افزودن..." : "افزودن ادمین"}
             </Button>

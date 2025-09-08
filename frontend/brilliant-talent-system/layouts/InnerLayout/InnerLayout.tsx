@@ -20,7 +20,7 @@ const InnerLayout = ({
 }) => {
   let [user, setUser] = useState<User>();
   let [loading, setLoading] = useState<any>(true);
-  let serverUser: User | undefined;
+  let serverUser: any | undefined;
   let error: any;
   let isLoading: boolean = false;
   if (role === "user") {
@@ -30,7 +30,7 @@ const InnerLayout = ({
     isLoading = userHookResult.isLoading;
   } else if (role === "admin") {
     const adminHookResult = useAdminCheckToken();
-    serverUser = adminHookResult.data;
+    serverUser  = adminHookResult.data;
     error = adminHookResult.error;
     isLoading = adminHookResult.isLoading;
   } else if (role === "superAdmin") {
@@ -49,7 +49,7 @@ const InnerLayout = ({
       } else if (role == "admin") {
         router.push("/admin/auth");
       } else if (role == "superAdmin") {
-        router.push("/superAdmin/auth");
+        router.push("/superadmin/auth");
       }
     }
     if (error) {
@@ -59,7 +59,7 @@ const InnerLayout = ({
       } else if (role == "admin") {
         router.push("/admin/auth");
       } else if (role == "superAdmin") {
-        router.push("/superAdmin/auth");
+        router.push("/superadmin/auth");
       }
     } else if (serverUser?.id && !_.isEqual(serverUser, user)) {
       if (serverUser.role != role) {
@@ -69,7 +69,7 @@ const InnerLayout = ({
         } else if (role == "admin") {
           router.push("/admin/auth");
         } else if (role == "superAdmin") {
-          router.push("/superAdmin/auth");
+          router.push("/superadmin/auth");
         }
       }
       setUser(serverUser);

@@ -1,11 +1,11 @@
 import { APIURL } from "@/data/consts";
-import { Admin } from "@/interfaces/user";
+import { User } from "@/interfaces/user";
 import { getFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
-export async function GetAdmins() : Promise<Admin[]> {
+export async function GetUsersService() : Promise<User[]> {
   try {
-    const result = await getFetch(APIURL + `superAdmins/admins`);
+    const result = await getFetch(APIURL + `admins/users`);
     const jsonResult = await result.json();
 
     if (result.ok) {

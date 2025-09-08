@@ -5,21 +5,24 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { usersColumns } from "./usersTable/columns";
 import { GenericDataTable } from "./usersTable/GenericDataTable";
 import EditUserModal from "./usersTable/EditUserModal";
+import useGetUsers from "@/hooks/useGetUsers";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { EditUserPasswordService } from "@/services/EditUserPasswordService";
 
 export default function UserManagement() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-
+  const {data , isLoading , error: serverError} = useGetUsers();
+  const queryClient = useQueryClient();
+  
   useEffect(() => {
-    // Add event listener for edit action
     const handleEditUser = (event: CustomEvent) => {
       setSelectedUser(event.detail);
       setIsEditModalOpen(true);
     };
-
+   
     window.addEventListener(
       "open-edit-dialog",
       handleEditUser as EventListener
@@ -30,65 +33,47 @@ export default function UserManagement() {
         "open-edit-dialog",
         handleEditUser as EventListener
       );
+
+
     };
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      try {
-        setData([
-          {
-            id: 1,
-            first_name: "علی",
-            last_name: "محمدی",
-            student_id: "98123456",
-          },
-          {
-            id: 2,
-            first_name: "سارا",
-            last_name: "رضایی",
-            student_id: "98123457",
-          },
-          {
-            id: 3,
-            first_name: "مهدی",
-            last_name: "کریمی",
-            student_id: "98123458",
-          },
-        ]);
-        setError(false);
-      } catch (e) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }, 800);
-  }, []);
 
-  const handleEditUser = async (userData: {
-    id: number;
-    first_name: string;
-    last_name: string;
-    student_id: string;
+  const editUserMutate = useMutation({
+    mutationFn: async ({
+      id,
+      password
+    }: {
+      id : number,
+      password: string;
+    }) => EditUserPasswordService(id,{
+      new_password: password
+    },"user"),
+    onSuccess: (res) => {
+      console.log("res", res);
+      setLoading(false);
+      queryClient.invalidateQueries({queryKey:["users"]});
+    },
+    onError: (error) => {
+      console.log("error",error);
+      setLoading(false);
+    },
+  });
+
+  const handleEditUser = async ({id , password}: {
+    id: number
+    password: string;
   }) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        setData((prev) =>
-          prev.map((user) =>
-            user.id === userData.id
-              ? {
-                  ...user,
-                  first_name: userData.first_name,
-                  last_name: userData.last_name,
-                  student_id: userData.student_id,
-                }
-              : user
-          )
-        );
-        resolve(true);
-      }, 500);
-    });
+    if(loading){
+      return;
+    }
+    setLoading(true);
+    editUserMutate.mutate({
+      id,
+      password
+    })
+    // Simulate API call
+    
   };
 
   const handleCloseEditModal = () => {
@@ -109,7 +94,7 @@ export default function UserManagement() {
             data={data}
             columns={usersColumns}
             title=""
-            isLoading={loading}
+            isLoading={isLoading}
             isError={error}
             searchPlaceholder="جستجوی دانشجو..."
           />

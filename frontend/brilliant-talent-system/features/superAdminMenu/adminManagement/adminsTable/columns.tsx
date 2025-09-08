@@ -39,12 +39,12 @@ export const adminsColumns: ColumnDef<any>[] = [
     cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
   },
   {
-    accessorKey: "first_name",
+    accessorKey: "username",
     header: ({ column }) => (
-      <SortableHeader column={column} sortKey="first_name" label="نام" />
+      <SortableHeader column={column} sortKey="username" label="نام" />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("first_name")}</div>
+      <div className="text-center">{row.getValue("username")}</div>
     ),
   },
   {
