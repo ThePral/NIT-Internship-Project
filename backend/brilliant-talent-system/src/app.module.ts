@@ -7,6 +7,7 @@ import { SuperAdminModule } from './superAdmin/superAdmin.mudule';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdmissionsModule } from './admissions/admissions.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { AdmissionsModule } from './admissions/admissions.module';
     UserModule, 
     SuperAdminModule, 
     AdminModule, 
-    AdmissionsModule
+    AdmissionsModule, QueueModule
   ]
 })
 export class AppModule implements NestModule {

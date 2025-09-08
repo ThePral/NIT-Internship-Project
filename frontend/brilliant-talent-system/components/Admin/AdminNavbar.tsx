@@ -22,13 +22,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "../ui/sidebar";
 import AccountManagementModal from "../AccountManagementModal/AccountManagementModal";
-import AdminDropDown from "./AdminDropDown";
+import UserDropDown from "../User/UserDropDown";
 
-interface AdminNavbarProps {
-  userRole?: "user" | "admin" | "superadmin";
-}
 
-export default function AdminNavbar({ userRole = "admin" }: AdminNavbarProps) {
+export default function AdminNavbar() {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   return (
@@ -37,7 +34,7 @@ export default function AdminNavbar({ userRole = "admin" }: AdminNavbarProps) {
         className=" fixed top-0 right-0 left-0 z-50 bg-card border-b"
         dir="rtl"
       >
-        <div className=" w-full px-2 text-xl h-20 flex items-center justify-between">
+        <div className=" w-full px-5 text-xl h-20 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <svg
@@ -80,7 +77,7 @@ export default function AdminNavbar({ userRole = "admin" }: AdminNavbarProps) {
           </div>
           {/* User Info */}
           <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
-            <AdminDropDown />
+            <UserDropDown/>
           </div>
           <SidebarTrigger className="block md:hidden" />
         </div>

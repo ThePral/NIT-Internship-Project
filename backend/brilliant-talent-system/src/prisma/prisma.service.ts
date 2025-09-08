@@ -26,6 +26,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit{
         }
     }
 
+    async cleanExcelsData() {
+        return await this.$transaction([
+            this.university.deleteMany(),
+            this.minor.deleteMany(),
+            this.user.deleteMany(),
+            this.studentPriority.deleteMany(),
+            this.acceptance.deleteMany(),
+        ]);
+    }
+
     cleanDB() {
         return this.$transaction([
             this.user.deleteMany(),

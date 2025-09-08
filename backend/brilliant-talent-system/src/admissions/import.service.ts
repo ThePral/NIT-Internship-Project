@@ -238,7 +238,6 @@ export class ImportService {
         const firstIdx = tryFind(options?.firstnameColumn, FIRST_HEADERS) as number | null;
         const lastIdx = tryFind(options?.lastnameColumn, LAST_HEADERS) as number | null;
         const gradeIdx = tryFind(options?.gradeColumn, GRADE_HEADERS) as number | null;
-        console.log("gggrade indx", gradeIdx);
         const uniIdx = tryFind(options?.universityColumn, UNIVERSITY_HEADERS) as number | null;
         const majorIdx = tryFind(options?.majorColumn, MAJOR_HEADERS) as number | null;
 
@@ -271,10 +270,7 @@ export class ImportService {
             const firstname = String(row.getCell(firstIdx || 0).value || '').trim() || undefined;
             const lastname = String(row.getCell(lastIdx || 0).value || '').trim() || undefined;
             const gradeRaw = String(row.getCell(gradeIdx || 0).value || '');
-            // console.log("gradeIdx", gradeIdx)
-            // console.log("gradeRaw", gradeRaw)
             const grade = gradeRaw !== null && gradeRaw !== undefined ? Number(gradeRaw) : undefined;
-            // console.log("grade", grade)
             const uniName = String(row.getCell(uniIdx || 0).value || '').trim() || undefined;
             const majorText = String(row.getCell(majorIdx).value || '').trim() || undefined;
 
@@ -322,7 +318,6 @@ export class ImportService {
 
             usersToCreate.push({
                 username: st.username,
-                // hash_password: hashPassword && st.nationalCode ? await bcrypt.hash(st.nationalCode, saltRounds) : (st.nationalCode ?? ''), // store hashed or raw (not recommended)
                 hash_password: hashPassword && st.nationalCode ? await argon.hash(st.nationalCode) : (st.nationalCode ?? ''), // store hashed or raw (not recommended)
                 firstname: st.firstname ?? undefined,
                 lastname: st.lastname ?? undefined,
@@ -332,13 +327,7 @@ export class ImportService {
                 cohort
             });
         }
-
-        const baduser = usersToCreate.find(u => !u.universityId);
-        setTimeout(() => {
-            console.log(baduser);
-        }, 3000);
         
-
         // bulk create users (skip duplicates)
         const userChunks = this.chunk(usersToCreate);
         let createdUsers = 0;

@@ -1,13 +1,16 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
-import { EditAdminDto } from './dto';
+import { EditAdminDto, ExcelPaths, PresenceResult } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
 import { AllocationService } from 'src/admissions/allocation.service';
 import { SrPdfService } from 'src/admissions/srpdf.service';
+import * as fs from 'fs';
+import * as path from 'path';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class AdminService {
@@ -15,7 +18,8 @@ export class AdminService {
         private prisma: PrismaService, 
         private importService: ImportService, 
         private allocationService: AllocationService,
-        private srv: SrPdfService
+        private srv: SrPdfService,
+        private queueService: QueueService,
     ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
@@ -146,19 +150,125 @@ export class AdminService {
         });
     }
 
-    async importDocs(filePath: string, type: string) {
-        switch (type) {
-            case "universities":
-                return await this.importService.importUniversities(filePath);
-            case "minors":
-                return await this.importService.importMinors(filePath);
-            case "students1":
-                return await this.importService.importStudents(filePath, 1, {hashPassword: true});
-            case "students2":
-                return await this.importService.importStudents(filePath, 2, {hashPassword: true});
-            default:
-                break;
+    private readonly patterns: Record<string, RegExp> = {
+        students1: /students[^a-z0-9]*1/i,       // matches Students_1, Students-1, students1, etc.
+        students2: /students[^a-z0-9]*2/i,       // matches Students_2, Students2, ...
+        minors: /\bminors?\b/i,                  // minor or minors
+        universities: /\buniversit/i,            // university or universities (partial match)
+    };
+
+    private getResourcesDir(): string {
+        return path.resolve(process.cwd(), 'resources');
+    }
+
+    private async readDirSafe(): Promise<string[]>  {
+        const dir = this.getResourcesDir();
+
+        try {
+            // if directory does not exist, return empty list
+            if (!fs.existsSync(dir)) return [];
+            const files = await fs.promises.readdir(dir);
+            return files;
+        } catch (err) {
+            console.error((err as Error).message);
+            throw new InternalServerErrorException('Failed to read resources directory');
         }
+    }
+
+    async listExcelPresence(): Promise<PresenceResult> {
+
+        const files = await this.readDirSafe();
+
+        const present: PresenceResult = {
+            students1: false,
+            students2: false,
+            minors: false,
+            universities: false,
+        };
+
+        for (const f of files) {
+            // only consider .xls/.xlsx files
+            if (!f.match(/\.(xlsx|xls)$/i)) continue;
+
+            for (const key of Object.keys(this.patterns)) {
+                if (this.patterns[key].test(f)) {
+                    // (present as any)[key] = true;
+                    present[key] = true
+                }
+            }
+        }
+
+        return present;
+    }
+
+    async deleteDocs() {
+        const files = await this.readDirSafe();
+        const dir = this.getResourcesDir();
+
+        for (const f of files) {
+            const abs = path.join(dir, f);
+
+            try {
+                // use unlinkSync or promises - use promises for non-blocking
+                await fs.promises.unlink(abs);
+                // deleted[key].push(f);
+            } catch (err) {
+                // Log and continue; don't throw so we try to delete other files.
+                console.warn(`Failed to delete ${abs}: ${(err as Error).message}`);
+            }
+        }
+            
+        await this.prisma.cleanExcelsData();
+
+        return { message: "all resources files deleted succesfuly" };
+    }
+
+    async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
+
+        const hashPassword = true;
+        
+        await this.importService.importUniversities(filePaths["universities"]!);
+        progressCb?.({message: "universities data imported"});
+        await this.importService.importMinors(filePaths["minors"]!);
+        progressCb?.({message: "minors data imported"});
+        await this.importService.importStudents(filePaths["students1"]!, 1, {hashPassword});
+        progressCb?.({message: "students1 data imported"});
+        await this.importService.importStudents(filePaths["students2"]!, 2, {hashPassword});
+        progressCb?.({message: "students2 data imported"});
+    }
+
+    async importDocs() {
+
+        const files = await this.readDirSafe();
+        const dir = this.getResourcesDir();
+
+        const filePaths: ExcelPaths = {
+            students1: null,
+            students2: null,
+            minors: null,
+            universities: null,
+        };
+
+        for (const f of files) {
+            if (!f.match(/\.(xlsx|xls)$/i)) continue;
+            for (const key of Object.keys(this.patterns)) {
+                if (this.patterns[key].test(f)) {
+                    filePaths[key] = path.join(dir, f);
+                }
+            }
+        }
+
+        
+        if (!filePaths.minors || !filePaths.universities || !filePaths.students1 || !filePaths.students2) {
+            throw new BadRequestException("همه اکسل ها باید آپلود شده باشند");
+        }
+
+        const job = await this.queueService.importQueue.add('import', {filePaths});
+
+        return {
+            message: 'File imports queued',
+            jobId: job.id,
+        };
     }
 
     async allocateUserAcceptances() {

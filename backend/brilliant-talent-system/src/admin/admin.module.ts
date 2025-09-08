@@ -6,6 +6,7 @@ import { AdmissionsModule } from 'src/admissions/admissions.module';
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
+  // exports: [AdminService],
   imports: [AdmissionsModule]
 })
 export class AdminModule {}

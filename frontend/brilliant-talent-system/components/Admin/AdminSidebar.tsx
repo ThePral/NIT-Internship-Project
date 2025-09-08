@@ -20,7 +20,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import _ from "lodash";
-import AdminDropDown from "./AdminDropDown";
+import UserDropDown from "../User/UserDropDown";
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
@@ -85,14 +85,11 @@ export const AdminSidebar = () => {
     <div className="h-screen flex items-start  w-full">
       <Card className="flex md:rounded-xl p-4 border-0 md:border rounded-none flex-col gap-2 md:mt-24 shadow-none md:w-80 w-full overflow-auto">
         {items.map((item, index) => (
-          <div
-            key={index}
-            className={`${index != items.length - 1 ? "border-b" : ""}`}
-          >
+          <div key={index} className={`${index != items.length -1? 'border-b' : 'md:border-0 border-b'}`}>
             <div className="flex gap-2 items-center">
               <div
                 className={`w-2 rounded-l-lg h-10 ${
-                  pathname != item.link ? "bg-content" : "bg-primary-color"
+                  pathname != item.link ? "bg-transparent" : "bg-sidebar-primary"
                 } `}
               ></div>
 
@@ -101,18 +98,21 @@ export const AdminSidebar = () => {
                 onClick={() => {
                   handleClick(item.link);
                 }}
-                className="flex gap-2 py-4 w-full hover:bg-gray-superlight transition-colors"
+                className="flex gap-2 py-4 w-full hover:bg-sidebar-accent transition-colors text-sidebar-foreground"
               >
                 <p className="text-primary">{item.icon}</p>
                 <p className="text-primary "> {item.title}</p>
               </Link>
             </div>
+            {/* <Separator className="bg-sidebar-border" /> */}
           </div>
         ))}
-        <Separator className="bg-sidebar-border" />
-        <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
-          <AdminDropDown />
+        
+        <div className="md:hidden mt-5 w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
+          <UserDropDown/>
         </div>
+      </Card>
+    </div>
       </Card>
     </div>
   );

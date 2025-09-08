@@ -39,18 +39,34 @@ export function postFetch(
   params?: { [key: string]: string }
 ) {
   const queryString = MakeQueryString(params ?? {});
-  const token = localStorage.getItem("authToken")
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-    "Authorization": token? ("Bearer " + token) : ""
+  const token = localStorage.getItem("authToken");
+  
+  // Determine content type and format body
+  let finalBody: BodyInit;
+  let contentType: string | null = null;
+
+  if (data instanceof FormData) {
+    finalBody = data;
+    // Don't set Content-Type for FormData - let browser handle it
+  } else {
+    finalBody = typeof data === 'string' ? data : JSON.stringify(data);
+    contentType = 'application/json';
+  }
+
+  // Build headers conditionally
+  const headers: HeadersInit = {
+    "Authorization": token ? ("Bearer " + token) : ""
   };
+
+  // Only add Content-Type header if it's not FormData
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
+
   return fetch(url + "?" + queryString, {
     method: "POST",
-    headers: {
-      ...defaultHeaders
-    },
-
-    body: data,
+    headers: headers,
+    body: finalBody,
   });
 }
 

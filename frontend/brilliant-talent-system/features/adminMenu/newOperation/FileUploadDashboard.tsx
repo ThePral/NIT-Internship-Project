@@ -1,3 +1,4 @@
+'use client'
 import type { LucideIcon } from "lucide-react";
 import { GraduationCap, School, Armchair } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UploadFileService } from "@/services/UploadFileService";
 
 interface UploadCardProps {
   Icon: LucideIcon;
   title: string;
   description: string;
   className?: string;
+  type:string
 }
 
 const UploadCard = ({
@@ -23,7 +28,16 @@ const UploadCard = ({
   title,
   description,
   className,
+  type
 }: UploadCardProps) => {
+
+  const uploadFile =  useMutation({
+    mutationFn: ({type , file}:{type:string , file:File})=> UploadFileService(type , file),
+    onSuccess: () => {
+      // queryClient.invalidateQueries({ queryKey: ["tickets", filter] });
+    },
+  });
+
   return (
     <label
       className={cn(
@@ -31,7 +45,7 @@ const UploadCard = ({
         className
       )}
     >
-      <input type="file" className="hidden" />
+      <input type="file" onChange={(e)=>e.target.files && uploadFile.mutate({type:type , file:e.target.files[0]})} className="hidden" />
       <Icon className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
       <div className="space-y-1">
         <p className="font-semibold text-card-foreground">{title}</p>
@@ -47,23 +61,30 @@ export const FileUploadDashboard = () => {
       Icon: GraduationCap,
       title: "جدول دانشجویان نوشیروانی",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
+      type:"students1"
     },
     {
       Icon: GraduationCap,
       title: "جدول دانشجویان دیگر دانشگاه ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
+      type:"students2"
     },
     {
       Icon: School,
       title: "جدول دانشگاه ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
+      type:"universities"
     },
     {
       Icon: Armchair,
       title: "جدول ظرفیت ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
+      type:"minors"
     },
   ];
+
+  const [state , setState] = useState(0)
+  // const queryClient = useQueryClient()
 
   return (
     <div className="flex w-full items-center justify-center bg-background font-primary text-foreground">
@@ -84,6 +105,7 @@ export const FileUploadDashboard = () => {
                 Icon={item.Icon}
                 title={item.title}
                 description={item.description}
+                type={item.type}
               />
             ))}
           </div>

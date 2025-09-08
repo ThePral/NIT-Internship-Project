@@ -27,9 +27,12 @@ export function ExcelUploadDecorator(fieldName = 'file') {
                     },
                 }),
                 fileFilter: (req, file, callback) => {
-                    if (!file.originalname.match(/\.(xlsx|xls)$/)) {
-                        return callback(new Error('Only Excel files are allowed!'), false);
-                    }
+                    const allowed = ['students1', 'students2', 'minors', 'universities'];
+                    const type = req.params?.type;
+
+                    if (!type || !allowed.includes(type)) return callback(new BadRequestException('تایپ نادرست برای فایل'), false);
+                    if (!file.originalname.match(/\.(xlsx|xls)$/)) return callback(new BadRequestException('تنها فایل های اکسل قابل قبول هستند'), false);
+                    
                     callback(null, true);
                 },
             }),
