@@ -17,6 +17,7 @@ import { UploadFileService } from "@/services/UploadFileService";
 import { toast } from "sonner";
 import useGetIsUploadeds from "@/hooks/useGetIsUploadeds";
 import { UploadState } from "@/interfaces/operation";
+import { AddToDB } from "@/services/AddToDB";
 
 interface UploadCardProps {
   Icon: LucideIcon;
@@ -92,7 +93,16 @@ export const FileUploadDashboard = () => {
 
   const [state , setState] = useState(0)
   const {data:isUploadeds} = useGetIsUploadeds()
+  const [jobId , setJobId] = useState<string>()
   
+  const addToDB = useMutation({
+    mutationFn: ()=> AddToDB(),
+    onSuccess: (data : {message: string, jobId: string}) => {
+      // queryClient.invalidateQueries({ queryKey: ["uploadeds"] });
+      console.log('successful add to db' , data)
+      setJobId(data.jobId)
+    },
+  });
 
   return (
     <div className="flex w-full items-center justify-center bg-background font-primary text-foreground">
@@ -123,6 +133,7 @@ export const FileUploadDashboard = () => {
           <Button
             size="lg"
             className="px-10 py-6 text-card bg-primary hover:bg-primary/90"
+            onClick={()=>addToDB.mutate()}
           >
             پردازش
           </Button>
