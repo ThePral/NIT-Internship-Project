@@ -23,11 +23,11 @@ export class ImportWorker implements OnModuleDestroy {
         this.worker = new Worker(
             'import-queue',
             async (job: Job) => {
-                this.logger.log(`Processing import job ${job.id} (file=${job.data.path})`);
+                this.logger.log(`Processing import job ${job.id}`);
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    const result = await this.adminService.importDocs(job.data.path, job.data.type, async (p) => {
+                    const result = await this.adminService.importDocsJob(job.data.filePaths, async (p) => {
                         await job.updateProgress(p);
                     });
 

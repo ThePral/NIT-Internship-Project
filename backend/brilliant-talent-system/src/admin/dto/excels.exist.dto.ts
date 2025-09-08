@@ -4,3 +4,10 @@ export class PresenceResult {
     minors: boolean;
     universities: boolean;
 };
+
+export class ExcelPaths {
+    students1: string | null;
+    students2: string | null;
+    minors: string | null;
+    universities: string | null;
+};

@@ -66,24 +66,24 @@ export class AdminController {
     }
 
 
-    @HttpCode(HttpStatus.ACCEPTED)
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
-    @ApiOkResponse( { type: UploadResponseDto})
+    // @ApiOkResponse( { type: UploadResponseDto})
     @Post("upload/:type")
-    async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
-        
-        const job = await this.queueService.importQueue.add('import', {
+    async uploadExcel(@UploadedFile() file: Express.Multer.File) {
+        return {
+            message: 'File uploaded succesfully',
             path: file.path,
             filename: file.filename,
-            type,
-            uploadedBy: 'admin', 
-        });
-
-        return {
-            message: 'File uploaded — import queued',
-            jobId: job.id,
         };
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @ApiOperation({ summary: "Import Excels Data to DB" })
+    @ApiOkResponse( { type: UploadResponseDto})
+    @Post("excels")
+    async submitExcelsData() {
+        return this.adminService.importDocs();
     }
 
     @ApiOperation({ summary: 'Get Excel Files Existance' })
@@ -93,9 +93,9 @@ export class AdminController {
         return this.adminService.listExcelPresence();
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Deletes Excel Files' })
     @Delete("excels")
-    @HttpCode(HttpStatus.NO_CONTENT)
     deleteExcels() {
         return this.adminService.deleteDocs();
     }

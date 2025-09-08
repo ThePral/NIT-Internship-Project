@@ -1,8 +1,8 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
-import { EditAdminDto, PresenceResult } from './dto';
+import { EditAdminDto, ExcelPaths, PresenceResult } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
@@ -10,6 +10,7 @@ import { AllocationService } from 'src/admissions/allocation.service';
 import { SrPdfService } from 'src/admissions/srpdf.service';
 import * as fs from 'fs';
 import * as path from 'path';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class AdminService {
@@ -17,7 +18,8 @@ export class AdminService {
         private prisma: PrismaService, 
         private importService: ImportService, 
         private allocationService: AllocationService,
-        private srv: SrPdfService
+        private srv: SrPdfService,
+        private queueService: QueueService,
     ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
@@ -148,21 +150,6 @@ export class AdminService {
         });
     }
 
-    async importDocs(filePath: string, type: string, progressCb?: (progress: number | object) => void) {
-        switch (type) {
-            case "universities":
-                return await this.importService.importUniversities(filePath);
-            case "minors":
-                return await this.importService.importMinors(filePath);
-            case "students1":
-                return await this.importService.importStudents(filePath, 1, {hashPassword: true});
-            case "students2":
-                return await this.importService.importStudents(filePath, 2, {hashPassword: true});
-            default:
-                break;
-        }
-    }
-
     private readonly patterns: Record<string, RegExp> = {
         students1: /students[^a-z0-9]*1/i,       // matches Students_1, Students-1, students1, etc.
         students2: /students[^a-z0-9]*2/i,       // matches Students_2, Students2, ...
@@ -189,7 +176,7 @@ export class AdminService {
     }
 
     async listExcelPresence(): Promise<PresenceResult> {
-        
+
         const files = await this.readDirSafe();
 
         const present: PresenceResult = {
@@ -234,6 +221,54 @@ export class AdminService {
         await this.prisma.cleanExcelsData();
 
         return { message: "all resources files deleted succesfuly" };
+    }
+
+    async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
+
+        const hashPassword = true;
+        
+        await this.importService.importUniversities(filePaths["universities"]!);
+        progressCb?.({message: "universities data imported"});
+        await this.importService.importMinors(filePaths["minors"]!);
+        progressCb?.({message: "minors data imported"});
+        await this.importService.importStudents(filePaths["students1"]!, 1, {hashPassword});
+        progressCb?.({message: "students1 data imported"});
+        await this.importService.importStudents(filePaths["students2"]!, 2, {hashPassword});
+        progressCb?.({message: "students2 data imported"});
+    }
+
+    async importDocs() {
+
+        const files = await this.readDirSafe();
+        const dir = this.getResourcesDir();
+
+        const filePaths: ExcelPaths = {
+            students1: null,
+            students2: null,
+            minors: null,
+            universities: null,
+        };
+
+        for (const f of files) {
+            if (!f.match(/\.(xlsx|xls)$/i)) continue;
+            for (const key of Object.keys(this.patterns)) {
+                if (this.patterns[key].test(f)) {
+                    filePaths[key] = path.join(dir, f);
+                }
+            }
+        }
+
+        
+        if (!filePaths.minors || !filePaths.universities || !filePaths.students1 || !filePaths.students2) {
+            throw new BadRequestException("همه اکسل ها باید آپلود شده باشند");
+        }
+
+        const job = await this.queueService.importQueue.add('import', {filePaths});
+
+        return {
+            message: 'File imports queued',
+            jobId: job.id,
+        };
     }
 
     async allocateUserAcceptances() {
