@@ -145,7 +145,7 @@ export function GenericDataTable<TData>({
                 <span className="hidden sm:inline text-foreground">
                   ستون‌ها
                 </span>
-                <ChevronDown className="mr-2 h-4 w-4" />
+                <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
