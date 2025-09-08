@@ -23,7 +23,7 @@ export const HistoryCard = () => {
       </header>
 
       <main className="space-y-3">
-        {historyItems.map((item) => {
+        {historyItems.map((item , index) => {
           if (item.title && item.fullTitle) {
             return (
               // <UploadTableModal key={item.id} title={item.fullTitle}>
@@ -43,7 +43,7 @@ export const HistoryCard = () => {
               //     <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               //   </Button>
               // </UploadTableModal>
-              <div></div>
+              <div key={index}></div>
             );
           }
 

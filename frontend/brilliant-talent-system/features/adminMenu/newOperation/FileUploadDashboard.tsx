@@ -14,6 +14,9 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UploadFileService } from "@/services/UploadFileService";
+import { toast } from "sonner";
+import useGetIsUploadeds from "@/hooks/useGetIsUploadeds";
+import { UploadState } from "@/interfaces/operation";
 
 interface UploadCardProps {
   Icon: LucideIcon;
@@ -21,6 +24,7 @@ interface UploadCardProps {
   description: string;
   className?: string;
   type:string
+  hasBeenUploaded?:boolean
 }
 
 const UploadCard = ({
@@ -28,13 +32,15 @@ const UploadCard = ({
   title,
   description,
   className,
-  type
+  type,
+  hasBeenUploaded
 }: UploadCardProps) => {
-
+  const queryClient = useQueryClient()
   const uploadFile =  useMutation({
     mutationFn: ({type , file}:{type:string , file:File})=> UploadFileService(type , file),
     onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ["tickets", filter] });
+      queryClient.invalidateQueries({ queryKey: ["uploadeds"] });
+      console.log('successful upload')
     },
   });
 
@@ -46,6 +52,7 @@ const UploadCard = ({
       )}
     >
       <input type="file" onChange={(e)=>e.target.files && uploadFile.mutate({type:type , file:e.target.files[0]})} className="hidden" />
+      {hasBeenUploaded && <p className="text-primary">آپلود شده</p>}
       <Icon className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
       <div className="space-y-1">
         <p className="font-semibold text-card-foreground">{title}</p>
@@ -84,7 +91,8 @@ export const FileUploadDashboard = () => {
   ];
 
   const [state , setState] = useState(0)
-  // const queryClient = useQueryClient()
+  const {data:isUploadeds} = useGetIsUploadeds()
+  
 
   return (
     <div className="flex w-full items-center justify-center bg-background font-primary text-foreground">
@@ -106,6 +114,7 @@ export const FileUploadDashboard = () => {
                 title={item.title}
                 description={item.description}
                 type={item.type}
+                hasBeenUploaded={isUploadeds ? isUploadeds[item.type as keyof UploadState] : false}
               />
             ))}
           </div>

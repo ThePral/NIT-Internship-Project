@@ -5,12 +5,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, MoreHorizontal, Trash2Icon } from "lucide-react";
+import { ArrowUpDown, Edit, MoreHorizontal } from "lucide-react";
 import { useQueryParams } from "@/hooks";
 
 const SortableHeader = ({
@@ -24,8 +23,16 @@ const SortableHeader = ({
 }) => {
   const { setQueryParam } = useQueryParams();
 
+  const handleSort = () => {
+    // First update the URL parameter
+    setQueryParam("sort", sortKey);
+    
+    // Then toggle the sorting in the table itself
+    column.toggleSorting(column.getIsSorted() === "asc");
+  };
+
   return (
-    <Button variant="ghost" onClick={() => setQueryParam("sort", sortKey)}>
+    <Button variant="ghost" onClick={handleSort}>
       {label}
       <ArrowUpDown className="mr-2 h-4 w-4" />
     </Button>
@@ -53,7 +60,7 @@ export const usersColumns: ColumnDef<any>[] = [
       <SortableHeader
         column={column}
         sortKey="firstname"
-        label="نام "
+        label="نام"
       />
     ),
     cell: ({ row }) => (
@@ -126,10 +133,9 @@ export const usersColumns: ColumnDef<any>[] = [
               }}
             >
               <Edit className="h-4 w-4 ml-2" />
-              <p className=" text-primary"> ویرایش</p>
+              <p className="text-primary">ویرایش</p>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            
           </DropdownMenuContent>
         </DropdownMenu>
       );
