@@ -1,6 +1,6 @@
 "use client";
 
-import { HistoryCard } from "@/features/superAdminMenu/history/HistoryCard";
+import { HistoryCard } from "@/features/adminMenu/history/HistoryCard";
 import React from "react";
 
 const History = () => {
