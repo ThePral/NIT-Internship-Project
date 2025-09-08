@@ -2,10 +2,11 @@ import { APIURL } from "@/data/consts";
 import { updateFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
-export async function AddTest(formData: any) {
+export async function EditMyPasswordService(formData: any , mode: "user" | "admin" | "superAdmin") {
   const result = await updateFetch(
-    APIURL + "users/address",
-    JSON.stringify(formData)
+    APIURL + `${mode}s/me`,
+    JSON.stringify(formData),
+    "PATCH"
   );
 
   const jsonResult = await result.json();

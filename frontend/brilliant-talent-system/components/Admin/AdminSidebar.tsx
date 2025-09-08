@@ -113,5 +113,7 @@ export const AdminSidebar = () => {
         </div>
       </Card>
     </div>
+      </Card>
+    </div>
   );
 };

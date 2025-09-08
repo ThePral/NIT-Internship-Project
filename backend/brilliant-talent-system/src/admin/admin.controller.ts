@@ -2,18 +2,18 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto, PresenceResult } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
-import { EditUserDto, UserDto } from 'src/user/dto/user.dto';
+import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
-import fs from "fs";
+import { QueueService } from 'src/queue/queue.service';
 
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
 export class AdminController {
-    constructor(private adminService: AdminService) {}
+    constructor(private adminService: AdminService, private readonly queueService: QueueService) {}
     
     @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Get me' })
@@ -33,14 +33,6 @@ export class AdminController {
         return this.adminService.editAdmin(admin, dto);
     }
 
-    // @ApiOperation({ summary: 'Add user' })
-    // @ApiBody({ type: CreateUserDto })
-    // @ApiResponse({ type: UserDto })
-    // @Post('users')
-    // addUser(@Body() dto: CreateUserDto): Promise<UserDto>{
-    //     return this.adminService.addUser(dto);
-    // }
-
     @ApiOperation({ summary: 'Get users' })
     @ApiResponse({ type: UserDto, isArray: true })
     @Get('users')
@@ -56,11 +48,11 @@ export class AdminController {
     }
 
     @ApiOperation({ summary: 'Edit user by id' })
-    @ApiBody({ type: EditUserDto })
+    @ApiBody({ type: EditUserByAdminDto })
     @ApiResponse({ type: UserDto })
     @Patch('users/:id')
     editUserById(
-        @Body() dto: EditUserDto,
+        @Body() dto: EditUserByAdminDto,
         @Param('id') userId: number
     ): Promise<UserDto>{
         return this.adminService.editUserById(userId, dto);
@@ -73,17 +65,39 @@ export class AdminController {
         return this.adminService.deleteUserById(userId);
     }
 
+
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
-    @ApiOkResponse( { type: UploadResponseDto})
+    // @ApiOkResponse( { type: UploadResponseDto})
     @Post("upload/:type")
-    async uploadExcel(@UploadedFile() file: Express.Multer.File, @Param('type') type: string) {
-        const result = await this.adminService.importDocs(file.path, type);
+    async uploadExcel(@UploadedFile() file: Express.Multer.File) {
         return {
-            result,
-            filename: file.filename,
+            message: 'File uploaded succesfully',
             path: file.path,
+            filename: file.filename,
         };
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @ApiOperation({ summary: "Import Excels Data to DB" })
+    @ApiOkResponse( { type: UploadResponseDto})
+    @Post("excels")
+    async submitExcelsData() {
+        return this.adminService.importDocs();
+    }
+
+    @ApiOperation({ summary: 'Get Excel Files Existance' })
+    @ApiResponse({ type: PresenceResult })
+    @Get("excels")
+    getExcelsExistance() {
+        return this.adminService.listExcelPresence();
+    }
+
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Deletes Excel Files' })
+    @Delete("excels")
+    deleteExcels() {
+        return this.adminService.deleteDocs();
     }
 
     @ApiOperation({ summary: "Allocates Users Minor Acceptance" })

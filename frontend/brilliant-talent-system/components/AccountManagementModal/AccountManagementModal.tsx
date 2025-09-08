@@ -13,11 +13,13 @@ import {
 } from "../ui/responsiveModal";
 import { Button } from "../ui/button";
 import { Edit } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { EditMyPasswordService } from "@/services/EditMyPasswordService";
 
 interface AccountManagementModalProps {
-  role: "user" | "admin" | "superadmin";
+  role: "user" | "admin" | "superadmin" | "superAdmin";
   isOpen: boolean;
-  onOpen: (sth:boolean)=> void;
+  onOpen: (sth: boolean) => void;
   trigger?: React.ReactNode;
 }
 
@@ -34,6 +36,38 @@ const AccountManagementModal = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+
+  const editPasswordMutate = useMutation({
+    mutationFn: async ({
+      oldPassword,
+      newPassword,
+    }: {
+      oldPassword: string;
+      newPassword: string;
+    }) =>
+      EditMyPasswordService(
+        {
+          current_password: oldPassword,
+          new_password: newPassword,
+        },
+        role == "superadmin" ? "superAdmin" : role
+      ),
+    onSuccess: (res) => {
+      console.log("res", res);
+      setIsLoading(false);
+      setMessage({ text: "رمز عبور با موفقیت به روز شد", type: "success" });
+      setFormData({
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+    },
+    onError: (error) => {
+      console.log("error", error);
+      setMessage({ text: "خطایی رخ داده است", type: "error" });
+      setIsLoading(false);
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,24 +100,10 @@ const AccountManagementModal = ({
       return;
     }
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setMessage({ text: "رمز عبور با موفقیت به روز شد", type: "success" });
-      setFormData({
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-
-      setTimeout(() => {
-        onOpen(false);
-      }, 2000);
-    } catch (error) {
-      setMessage({ text: "خطایی رخ داده است", type: "error" });
-    } finally {
-      setIsLoading(false);
-    }
+    editPasswordMutate.mutate({
+      oldPassword: formData.current_password,
+      newPassword: formData.new_password,
+    });
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -98,6 +118,8 @@ const AccountManagementModal = ({
         return "تغییر رمز ادمین";
       case "superadmin":
         return "تغییر رمز مدیر";
+      case "superAdmin":
+        return "تغییر رمز مدیر";
       default:
         return "تغییر رمز دانشجو";
     }
@@ -105,15 +127,14 @@ const AccountManagementModal = ({
 
   return (
     <ResponsiveModal open={isOpen} onOpenChange={onOpen}>
-  
-            <ResponsiveModalTrigger asChild>
+      <ResponsiveModalTrigger asChild>
         <div className="flex ">
-          <Button variant='ghost' className="p-1 has-[>svg]:px-1">
-            <Edit/>
+          <Button variant="ghost" className="p-1 has-[>svg]:px-1">
+            <Edit />
           </Button>
         </div>
       </ResponsiveModalTrigger>
- 
+
       <ResponsiveModalContent
         position="center"
         size="md"
@@ -215,9 +236,9 @@ const AccountManagementModal = ({
             <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 mr-2 sm:flex-initial bg-primary text-primary-foreground hover:bg-primary/90"
+              className="flex-1 md:mr-2 sm:flex-initial bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              {isLoading ? "در حال به روزرسانی..." : "به روزرسانی رمز عبور"}
+              {isLoading ? "در حال به‌روزرسانی..." : "به‌روزرسانی رمز عبور"}
             </Button>
           </ResponsiveModalFooter>
         </form>

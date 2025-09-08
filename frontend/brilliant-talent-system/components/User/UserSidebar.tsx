@@ -46,7 +46,10 @@ export const UserSidebar = () => {
     <div className="h-screen flex items-start  w-full">
       <Card className="flex md:rounded-xl p-4 border-0 md:border rounded-none flex-col gap-2 md:mt-24 shadow-none md:w-80 w-full overflow-auto">
         {items.map((item, index) => (
-          <div key={index} className={`${index != items.length -1? 'border-b' : ''}`}>
+          <div
+            key={index}
+            className={`${index != items.length - 1 ? "border-b" : ""}`}
+          >
             <div className="flex gap-2 items-center">
               <div
                 className={`w-2 rounded-l-lg h-10 ${
@@ -65,15 +68,12 @@ export const UserSidebar = () => {
                 <p className="text-primary "> {item.title}</p>
               </Link>
             </div>
-            {/* {index != items.length -1 &&
-              <Separator />
-            } */}
           </div>
         ))}
         <Separator className="mb-5" />
-        
+
         <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
-          <UserDropDown/>
+          <UserDropDown />
         </div>
       </Card>
     </div>

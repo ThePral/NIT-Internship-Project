@@ -75,7 +75,6 @@ export default function AdminNavbar() {
               سامانه استعداد درخشان
             </span>
           </div>
-
           {/* User Info */}
           <div className="md:flex hidden items-center gap-3 border rounded-full max-w-52 bg-accent ps-5 pe-1 py-2">
             <UserDropDown/>
@@ -83,7 +82,6 @@ export default function AdminNavbar() {
           <SidebarTrigger className="block md:hidden" />
         </div>
       </header>
-      {/* Account Management Modal */}
     </>
   );
 }

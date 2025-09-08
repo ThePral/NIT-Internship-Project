@@ -134,11 +134,11 @@ export function GenericDataTable<TData>({
             {onAdd && (
               <Button
                 onClick={onAdd}
-                className="btn btn-primary bg-primary hidden sm:flex"
+                className="btn btn-primary bg-primary sm:flex"
                 size="sm"
               >
-                <Plus className="h-4 w-4 ml-2 text-card" />
-                <p className=" text-card"> {addButtonLabel}</p>
+                <Plus className="h-4 w-4 text-card" />
+                <p className=" text-card hidden sm:flex"> {addButtonLabel}</p>
               </Button>
             )}
 
@@ -151,7 +151,7 @@ export function GenericDataTable<TData>({
                   <span className="hidden sm:inline text-foreground">
                     ستون‌ها
                   </span>
-                  <ChevronDown className="mr-2 h-4 w-4" />
+                  <ChevronDown className=" h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

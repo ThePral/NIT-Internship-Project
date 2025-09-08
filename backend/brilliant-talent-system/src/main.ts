@@ -10,7 +10,7 @@ async function bootstrap() {
     allowedHeaders: '*',
     origin: '*',
     credentials: true,
-    methods: ['GET', 'PUT', 'POST', 'PATCH', 'OPTIONS'],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'OPTIONS', 'DELETE'],
   });
 
   const config = new DocumentBuilder()

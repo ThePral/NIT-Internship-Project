@@ -4,48 +4,58 @@ import { toast } from "sonner";
 
 export async function GetHistories() {
   try {
-    const result = await getFetch(APIURL + `rules`);
+    const result = await getFetch(APIURL + `rules`); // بررسی کن که endpoint درست باشه
     const jsonResult = await result.json();
+
     if (result.ok) {
-      console.log(jsonResult, "success");
+      console.log(jsonResult, "لیست سوابق با موفقیت دریافت شد");
       return jsonResult;
     } else {
       switch (result.status) {
         case 400:
           toast.error("خطای درخواست", {
-            description: jsonResult.message || "درخواست نامعتبر است",
+            description:
+              jsonResult.message || "درخواست نامعتبر برای دریافت سوابق.",
           });
           break;
         case 401:
           toast.error("عدم دسترسی", {
-            description: "لطفاً ابتدا وارد حساب کاربری خود شوید",
+            description: "برای مشاهده سوابق باید وارد حساب کاربری شوید.",
           });
           break;
         case 403:
-          toast.error("ممنوع", { description: "دسترسی به قوانین ممنوع است" });
+          toast.error("ممنوع", {
+            description: "شما مجوز دسترسی به سوابق را ندارید.",
+          });
           break;
         case 404:
-          toast.error("یافت نشد", { description: "هیچ قانونی یافت نشد" });
+          toast.error("یافت نشد", {
+            description: "هیچ سابقه‌ای یافت نشد.",
+          });
           break;
         case 409:
-          toast.error("تضاد", { description: "تضاد در دریافت قوانین" });
+          toast.error("تضاد", {
+            description: "مشکلی در دریافت سوابق رخ داده است.",
+          });
           break;
         case 500:
           toast.error("خطای سرور", {
-            description: "خطایی در دریافت قوانین رخ داده است",
+            description: "خطایی در دریافت سوابق رخ داده است.",
           });
           break;
         default:
           toast.error("خطای ناشناخته", {
             description:
-              jsonResult.error || "خطایی در دریافت قوانین رخ داده است",
+              jsonResult.error || "خطایی در دریافت سوابق رخ داده است.",
           });
       }
       throw new Error(jsonResult.error);
     }
   } catch (error) {
-    console.error("Error getting rules:", error);
-    toast.error("خطا", { description: "خطایی در دریافت قوانین رخ داده است" });
+    console.error("خطا در دریافت سوابق:", error);
+    toast.error("خطا", {
+      description: "مشکلی در دریافت سوابق رخ داده است.",
+    });
     throw error;
   }
 }

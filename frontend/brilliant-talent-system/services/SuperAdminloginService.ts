@@ -47,7 +47,7 @@ export async function SuperAdminLoginService(
         break;
       case 409:
         toast.error("حساب قفل شده", {
-          description: "حساب شما به دلیل تلاشهای ناموفق متعدد قفل شده است.",
+          description: "حساب شما به دلیل تلاش‌های ناموفق متعدد قفل شده است.",
         });
         break;
       case 500:

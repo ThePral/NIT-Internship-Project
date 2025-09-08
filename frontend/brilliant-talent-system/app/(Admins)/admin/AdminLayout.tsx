@@ -2,7 +2,11 @@
 import AdminNavbar from "@/components/Admin/AdminNavbar";
 import { AdminSidebar } from "@/components/Admin/AdminSidebar";
 import "@/app/globals.css";
-import { SidebarContent, SidebarProvider , Sidebar } from "@/components/ui/sidebar";
+import {
+  SidebarContent,
+  SidebarProvider,
+  Sidebar,
+} from "@/components/ui/sidebar";
 
 export default function AdminLayout({
   children,
@@ -20,10 +24,10 @@ export default function AdminLayout({
               <AdminSidebar/>
             </div>
             <div className="md:hidden flex">
-                <Sidebar side='right'>
-                  <SidebarContent>
-                      <AdminSidebar/>
-                  </SidebarContent>
+              <Sidebar side="right">
+                <SidebarContent>
+                  <AdminSidebar />
+                </SidebarContent>
               </Sidebar>
             </div>
         

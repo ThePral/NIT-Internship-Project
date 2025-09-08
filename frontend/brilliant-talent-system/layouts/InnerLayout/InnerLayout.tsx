@@ -20,7 +20,7 @@ const InnerLayout = ({
 }) => {
   let [user, setUser] = useState<User>();
   let [loading, setLoading] = useState<any>(true);
-  let serverUser: User | undefined;
+  let serverUser: any | undefined;
   let error: any;
   let isLoading: boolean = false;
   if (role === "user") {

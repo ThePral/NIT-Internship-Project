@@ -8,9 +8,8 @@ import { Label } from "@/components/ui/label";
 
 interface User {
   id: number;
-  first_name: string;
-  last_name: string;
-  student_id: string;
+  password: string;
+
 }
 
 interface EditUserModalProps {
@@ -18,9 +17,7 @@ interface EditUserModalProps {
   onClose: () => void;
   onEditUser: (userData: {
     id: number;
-    first_name: string;
-    last_name: string;
-    student_id: string;
+    password: string;
   }) => void;
   user: User | null;
 }
@@ -31,32 +28,26 @@ export default function EditUserModal({
   onEditUser,
   user,
 }: EditUserModalProps) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [studentId, setStudentId] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update form fields when user data changes
   useEffect(() => {
-    if (user) {
-      setFirstName(user.first_name);
-      setLastName(user.last_name);
-      setStudentId(user.student_id);
-    }
+    // if (user) {
+    //   setPassword(user.password);
+    // }
   }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName.trim() || !lastName.trim() || !studentId.trim() || !user)
+    if (!password.trim()  || !user)
       return;
 
     setIsSubmitting(true);
     try {
       await onEditUser({
         id: user.id,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-        student_id: studentId.trim(),
+        password: password.trim()
       });
       onClose();
     } catch (error) {
@@ -73,11 +64,9 @@ export default function EditUserModal({
   };
 
   const handleClose = () => {
-    if (user) {
-      setFirstName(user.first_name);
-      setLastName(user.last_name);
-      setStudentId(user.student_id);
-    }
+    // if (user) {
+    //   setPassword(user.password);
+    // }
     onClose();
   };
 
@@ -103,13 +92,13 @@ export default function EditUserModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="editFirstName" className="text-foreground">
-              نام
+            <Label htmlFor="editPassword" className="text-foreground">
+              پسورد
             </Label>
             <Input
-              id="editFirstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              id="editPassword"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="نام دانشجو"
               className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
@@ -117,35 +106,7 @@ export default function EditUserModal({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="editLastName" className="text-foreground">
-              نام خانوادگی
-            </Label>
-            <Input
-              id="editLastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="نام خانوادگی دانشجو"
-              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
-              required
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="editStudentId" className="text-foreground">
-              شماره دانشجویی
-            </Label>
-            <Input
-              id="editStudentId"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              placeholder="شماره دانشجویی"
-              className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
-              required
-              disabled={isSubmitting}
-            />
-          </div>
+          
 
           <div className="flex gap-3 pt-4">
             <Button
@@ -162,9 +123,7 @@ export default function EditUserModal({
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={
                 isSubmitting ||
-                !firstName.trim() ||
-                !lastName.trim() ||
-                !studentId.trim()
+                !password.trim() 
               }
             >
               {isSubmitting ? "در حال ویرایش..." : "ذخیره تغییرات"}

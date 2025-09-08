@@ -9,13 +9,16 @@ export interface User {
   "cohort"?: number,
   "role": "user" | "admin" | "superadmin"
 }
-// export interface Admin {
-//   id: number;
-//   username: string;
-//   role: string;
-// }
-// export interface SuperAdmin {
-//   id: number;
-//   username: string;
-//   role: string;
-// }
+export interface Admin {
+  id: number;
+  username: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface SuperAdmin {
+  id: number;
+  username: string;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

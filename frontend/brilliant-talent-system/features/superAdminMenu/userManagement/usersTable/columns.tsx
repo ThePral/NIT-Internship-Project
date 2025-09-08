@@ -39,25 +39,64 @@ export const usersColumns: ColumnDef<any>[] = [
     cell: ({ row }) => <div className="text-center">{row.getValue("id")}</div>,
   },
   {
-    accessorKey: "first_name",
+    accessorKey: "username",
     header: ({ column }) => (
-      <SortableHeader column={column} sortKey="first_name" label="نام" />
+      <SortableHeader column={column} sortKey="username" label="نام کاربری" />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("first_name")}</div>
+      <div className="text-center">{row.getValue("username")}</div>
     ),
   },
   {
-    accessorKey: "last_name",
+    accessorKey: "firstname",
     header: ({ column }) => (
       <SortableHeader
         column={column}
-        sortKey="last_name"
+        sortKey="firstname"
+        label="نام "
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("firstname")}</div>
+    ),
+  },
+  {
+    accessorKey: "lastname",
+    header: ({ column }) => (
+      <SortableHeader
+        column={column}
+        sortKey="lastname"
         label="نام خانوادگی"
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("last_name")}</div>
+      <div className="text-center">{row.getValue("lastname")}</div>
+    ),
+  },
+  {
+    accessorKey: "grade",
+    header: ({ column }) => (
+      <SortableHeader
+        column={column}
+        sortKey="grade"
+        label="نمره معدل"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("grade")}</div>
+    ),
+  },
+  {
+    accessorKey: "points",
+    header: ({ column }) => (
+      <SortableHeader
+        column={column}
+        sortKey="points"
+        label="امتیاز"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("points")}</div>
     ),
   },
   {
@@ -90,18 +129,7 @@ export const usersColumns: ColumnDef<any>[] = [
               <p className=" text-primary"> ویرایش</p>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => {
-                const event = new CustomEvent("open-delete-dialog", {
-                  detail: user,
-                });
-                window.dispatchEvent(event);
-              }}
-            >
-              <Trash2Icon className="h-4 w-4 ml-2" />
-              <p className=" text-danger"> حذف</p>
-            </DropdownMenuItem>
+            
           </DropdownMenuContent>
         </DropdownMenu>
       );

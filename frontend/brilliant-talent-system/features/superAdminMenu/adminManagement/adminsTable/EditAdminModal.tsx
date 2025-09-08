@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 
 interface Admin {
   id: number;
-  first_name: string;
-  last_name: string;
+  username: string;
+  password?: string;
 }
 
 interface EditAdminModalProps {
@@ -17,8 +17,8 @@ interface EditAdminModalProps {
   onClose: () => void;
   onEditAdmin: (adminData: {
     id: number;
-    first_name: string;
-    last_name: string;
+    username: string;
+    password?: string;
   }) => void;
   admin: Admin | null;
 }
@@ -29,28 +29,28 @@ export default function EditAdminModal({
   onEditAdmin,
   admin,
 }: EditAdminModalProps) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update form fields when admin data changes
   useEffect(() => {
     if (admin) {
-      setFirstName(admin.first_name);
-      setLastName(admin.last_name);
+      setUsername(admin.username);
+      setPassword(admin.password || "");
     }
   }, [admin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firstName.trim() || !lastName.trim() || !admin) return;
+    if (!username.trim() || !admin) return;
 
     setIsSubmitting(true);
     try {
       await onEditAdmin({
         id: admin.id,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
+        username: username.trim(),
+        password: password.trim(),
       });
       onClose();
     } catch (error) {
@@ -67,8 +67,8 @@ export default function EditAdminModal({
   };
 
   const handleClose = () => {
-    setFirstName(admin?.first_name || "");
-    setLastName(admin?.last_name || "");
+    setUsername(admin?.username || "");
+    setPassword(admin?.password || "");
     onClose();
   };
 
@@ -94,13 +94,13 @@ export default function EditAdminModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="editFirstName" className="text-foreground">
+            <Label htmlFor="editUsername" className="text-foreground">
               نام
             </Label>
             <Input
-              id="editFirstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              id="editUsername"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="نام ادمین"
               className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
@@ -109,16 +109,15 @@ export default function EditAdminModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="editLastName" className="text-foreground">
-              نام خانوادگی
+            <Label htmlFor="editPassword" className="text-foreground">
+            رمز ادمین
             </Label>
             <Input
-              id="editLastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="نام خانوادگی ادمین"
+              id="editPassword"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="رمز ادمین"
               className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
-              required
               disabled={isSubmitting}
             />
           </div>
@@ -136,7 +135,7 @@ export default function EditAdminModal({
             <Button
               type="submit"
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={isSubmitting || !firstName.trim() || !lastName.trim()}
+              disabled={isSubmitting || !username.trim() }
             >
               {isSubmitting ? "در حال ویرایش..." : "ذخیره تغییرات"}
             </Button>
