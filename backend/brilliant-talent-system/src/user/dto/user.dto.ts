@@ -46,6 +46,16 @@ export class UserDto {
     @IsString({ message: "نام خانوادگی باید رشته باشد" })
     lastname: string | null;
 
+    @ApiProperty()
+    @IsDate()
+    @IsNotEmpty()
+    birthDate: Date
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    nationalCode: string
+
     @ApiProperty({
         description: "User's grade"
     })

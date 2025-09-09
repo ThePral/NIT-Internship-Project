@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
-import { EditAdminDto, ExcelPaths, PresenceResult } from './dto';
+import { EditAdminDto, ExcelPaths, PresenceResult, userResults } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
@@ -49,47 +49,48 @@ export class AdminService {
         return safeAdmin;
     }
 
-    async addUser(dto: CreateUserDto) {
+    // async addUser(dto: CreateUserDto) {
 
-        const hash = await argon.hash(dto.password);
+    //     const hash = await argon.hash(dto.password);
 
-        const {password, ...userdto} = dto;
+    //     const {password, ...userdto} = dto;
 
-        try {
-            const user = await this.prisma.user.create({
-                data: {
-                    hash_password: hash,
-                    ...userdto
-                }
-            });    
+    //     try {
+    //         const user = await this.prisma.user.create({
+    //             data: {
+    //                 hash_password: hash,
+    //                 ...userdto
+    //             }
+    //         });    
 
-            const { hash_password, ...safeUser} = user;
-            return safeUser;
+    //         const { hash_password, ...safeUser} = user;
+    //         return safeUser;
 
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new ForbiddenException('اطلاعات وارد شده مورد استفاده قرار گرفته اند');
-                }
-            }
-            throw error;
-        }
-    }
+    //     } catch (error) {
+    //         if (error instanceof PrismaClientKnownRequestError) {
+    //             if (error.code === "P2002") {
+    //                 throw new ForbiddenException('اطلاعات وارد شده مورد استفاده قرار گرفته اند');
+    //             }
+    //         }
+    //         throw error;
+    //     }
+    // }
 
     async getUsers() {
-        return await this.prisma.user.findMany({
-            select: {
-                id: true,
-                createdAt: true,
-                updatedAt: true,
-                username: true,
-                firstname: true,
-                lastname: true,
-                points: true,
-                grade: true,
-                universityId: true
-            }
-        });
+        // return await this.prisma.user.findMany({
+        //     select: {
+        //         id: true,
+        //         createdAt: true,
+        //         updatedAt: true,
+        //         username: true,
+        //         firstname: true,
+        //         lastname: true,
+        //         points: true,
+        //         grade: true,
+        //         universityId: true
+        //     }
+        // });
+        return await this.prisma.user.findMany();
     }
 
     async getUserById(userId: number) {
@@ -180,10 +181,22 @@ export class AdminService {
         const files = await this.readDirSafe();
 
         const present: PresenceResult = {
-            students1: false,
-            students2: false,
-            minors: false,
-            universities: false,
+            students1: {
+                exists: false,
+                date_created: null
+            },
+            students2: {
+                exists: false,
+                date_created: null
+            },
+            minors: {
+                exists: false,
+                date_created: null
+            },
+            universities: {
+                exists: false,
+                date_created: null
+            },
         };
 
         for (const f of files) {
@@ -193,7 +206,14 @@ export class AdminService {
             for (const key of Object.keys(this.patterns)) {
                 if (this.patterns[key].test(f)) {
                     // (present as any)[key] = true;
-                    present[key] = true
+                    present[key].exists = true;
+                    const filePath = path.join(this.getResourcesDir(), f);
+                    try {
+                        const stats = fs.statSync(filePath)
+                        present[key].date_created = stats.birthtime;
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
         }
@@ -277,6 +297,40 @@ export class AdminService {
             message: "User Acceptance Calculated",
             data: result
         };
+    }
+
+    async userAcceptanceData() {
+
+        const data: userResults[] = await this.prisma.user.findMany({
+            select: {
+                firstname: true,
+                lastname: true,
+                points: true,
+                university: {
+                    select: {
+                        name: true
+                    }
+                },
+                priorities: {
+                    orderBy: {
+                        priority: 'asc'
+                    },
+                    select: {
+                        isAccepted: true,
+                        priority: true,
+                        minor: {
+                            select: {
+                                name: true,
+                                req:true,
+                                capacity: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return data;
     }
 
     async buildSr0() {
