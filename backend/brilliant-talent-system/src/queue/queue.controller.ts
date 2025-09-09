@@ -25,4 +25,25 @@ export class QueueController {
             failedReason,
         };
     }
+
+    @Get('history/:id')
+    async getHistoryStatus(@Param('id') id: string) {
+        const job = await this.queueService.historyQueue.getJob(id);
+        if (!job) {
+            throw new NotFoundException();
+        }
+
+        const state = await job.getState();
+        const progress = job.progress;
+        const result = state === 'completed' ? job.returnvalue : null;
+        const failedReason = job.failedReason ?? null;
+
+        return {
+            jobId: job.id,
+            state,
+            progress,
+            result,
+            failedReason,
+        };
+    }
 }

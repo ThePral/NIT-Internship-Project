@@ -6,6 +6,7 @@ import IORedis, { RedisOptions, Redis } from 'ioredis';
 export class QueueService implements OnModuleDestroy {
     private connection: Redis;
     public importQueue: Queue;
+    public historyQueue: Queue;
 
     constructor() {
         const redisOpts: RedisOptions = {
@@ -28,11 +29,25 @@ export class QueueService implements OnModuleDestroy {
                 removeOnFail: { age: 60 * 60 * 24 }, // keep failures 24h
             },
         });
+
+        this.historyQueue = new Queue('history-queue', {
+            connection: this.connection,
+            defaultJobOptions: {
+                attempts: 3,
+                backoff: {
+                    type: 'fixed',
+                    delay: 4000,
+                },
+                removeOnComplete: { age: 60 * 60 },
+                removeOnFail: { age: 60 * 60 * 24 },
+            },
+        })
     }
 
     async onModuleDestroy() {
         try {
             await this.importQueue.close();
+            await this.historyQueue.close();
             await this.connection.quit();
         } catch (err) {
             // ignore
