@@ -82,8 +82,9 @@ model AllocationRun {
   createdAt       DateTime  @default(now())
   privilegedUniId Int       
   cohortPolicy    String   
-  acceptances     Acceptance[]
 
+  acceptances     Acceptance[]
+  AllocationHistory AllocationHistory[]
   @@map("allocation_runs")
 }
 
@@ -104,6 +105,21 @@ model Acceptance {
   @@unique([runId, studentId])
   @@index([minorId])
   @@map("acceptances")
+}
+
+model AllocationHistory {
+  id          Int      @id @default(autoincrement())
+  runId       Int
+  studentName String
+  minorName   String
+  minorReq    String
+  priority    Int
+  points      Float
+
+  createdAt   DateTime @default(now())
+
+  run        AllocationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  @@map("allocation_history")
 }
 
 
