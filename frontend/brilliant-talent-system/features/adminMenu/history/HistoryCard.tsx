@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/accordion";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AcceptedModal from "@/components/Result/AcceptedModal";
+import { useState } from "react";
 
 const historyItems = [
   {
@@ -31,6 +33,7 @@ const historyItems = [
 ];
 
 export const HistoryCard = () => {
+  const [open , setOpen] = useState(false)
   return (
     <div className="w-full rounded-xl shadow-primary bg-card p-6 font-primary shadow-sm mt-4">
       <header className="mb-4 flex justify-start">
@@ -38,6 +41,7 @@ export const HistoryCard = () => {
       </header>
 
       <main>
+        <AcceptedModal isOpen={open} onOpen={setOpen} />
         <Accordion type="single" collapsible className="w-full space-y-2">
           {historyItems.map((item) =>
             item.title && item.fullTitle ? (

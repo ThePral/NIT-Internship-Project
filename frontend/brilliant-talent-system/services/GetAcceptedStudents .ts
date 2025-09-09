@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export async function GetAcceptedStudents() {
   try {
-    const result = await getFetch(APIURL + `admissions/accepted`);
+    const result = await getFetch(APIURL + `admins/results/table`);
     const jsonResult = await result.json();
 
     if (result.ok) {
