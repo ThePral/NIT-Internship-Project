@@ -23,6 +23,8 @@ model User {
   hash_password String                
   firstname     String?
   lastname      String?
+  birthDate     DateTime
+  nationalCode  String
 
   grade         Float                 
   universityId  Int                   

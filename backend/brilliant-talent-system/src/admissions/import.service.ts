@@ -195,6 +195,7 @@ export class ImportService {
             gradeColumn?: number | string;
             universityColumn?: number | string;
             majorColumn?: number | string; // the column containing the chosen major (priority row)
+            birthdateColumn?: number | string
         },
     ) {
         const hashPassword = options?.hashPassword ?? true;
@@ -232,6 +233,7 @@ export class ImportService {
         const GRADE_HEADERS = ['معدل تا پايان نيمسال ششم', 'نمره', 'grade', 'معدل', 'نمره کل'];
         const UNIVERSITY_HEADERS = ['دانشگاه محل اخذ مدرك كارشناسي', 'نام دانشگاه', 'university', 'سازمان آموزشي', 'محل تحصيل'];
         const MAJOR_HEADERS = ['گرايش', 'گرایش', 'گرايش (هاي) انتخابي', 'گرايش (های) انتخابي', 'major', 'choices'];
+        const BIRTHDATE_HEADERS = ['تاريخ تولد', 'birth_date', 'birthdate', 'تاریخ متولد شدن'];
 
         const usernameIdx = tryFind(options?.usernameColumn, USER_HEADERS) as number | null;
         const nationalIdx = tryFind(options?.nationalCodeColumn, NATIONAL_HEADERS) as number | null;
@@ -240,6 +242,7 @@ export class ImportService {
         const gradeIdx = tryFind(options?.gradeColumn, GRADE_HEADERS) as number | null;
         const uniIdx = tryFind(options?.universityColumn, UNIVERSITY_HEADERS) as number | null;
         const majorIdx = tryFind(options?.majorColumn, MAJOR_HEADERS) as number | null;
+        const birthdateIdx = tryFind(options?.birthdateColumn, BIRTHDATE_HEADERS) as number | null;
 
         if (!usernameIdx || !majorIdx) {
             throw new Error('Failed to detect required columns (username or major). Provide explicit mapping in options if header names differ.');
@@ -257,6 +260,7 @@ export class ImportService {
             lastname?: string;
             grade?: number;
             universityName?: string;
+            birthDate: Date;
             priorities: string[]; // priority texts in encountered order
         };
         const studentsMap = new Map<string, StagingStudent>();
@@ -273,6 +277,29 @@ export class ImportService {
             const grade = gradeRaw !== null && gradeRaw !== undefined ? Number(gradeRaw) : undefined;
             const uniName = String(row.getCell(uniIdx || 0).value || '').trim() || undefined;
             const majorText = String(row.getCell(majorIdx).value || '').trim() || undefined;
+            const birthDateText = String(row.getCell(birthdateIdx || 0).value || '').trim() || undefined;
+            const convertPersianDateToEnglish = (input: string) => {
+                const mapper = {
+                    "۰": '0',
+                    "۱": '1',
+                    "۲": '2',
+                    "۳": '3',
+                    "۴": '4',
+                    "۵": '5',
+                    "۶": '6',
+                    "۷": '7',
+                    "۸": '8',
+                    "۹": '9',
+                    "/": '-',
+                };
+
+                let ouput = "";
+                for (const l of input) ouput += mapper[l];
+                
+                return ouput;
+            }
+
+            const birthDate = new Date(convertPersianDateToEnglish(birthDateText!));
 
             const key = username;
             if (!studentsMap.has(key)) {
@@ -283,6 +310,7 @@ export class ImportService {
                     lastname,
                     grade,
                     universityName: uniName,
+                    birthDate,
                     priorities: [],
                 });
             }
@@ -318,13 +346,15 @@ export class ImportService {
 
             usersToCreate.push({
                 username: st.username,
-                hash_password: hashPassword && st.nationalCode ? await argon.hash(st.nationalCode) : (st.nationalCode ?? ''), // store hashed or raw (not recommended)
+                hash_password: hashPassword && st.nationalCode ? await argon.hash(st.nationalCode) : (st.nationalCode ?? ''),
                 firstname: st.firstname ?? undefined,
                 lastname: st.lastname ?? undefined,
                 grade: st.grade ?? null,
                 universityId: uniId,
                 points,
-                cohort
+                cohort,
+                birthDate: st.birthDate,
+                nationalCode: st.nationalCode,
             });
         }
         
