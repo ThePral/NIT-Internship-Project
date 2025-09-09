@@ -180,10 +180,22 @@ export class AdminService {
         const files = await this.readDirSafe();
 
         const present: PresenceResult = {
-            students1: false,
-            students2: false,
-            minors: false,
-            universities: false,
+            students1: {
+                exists: false,
+                date_created: null
+            },
+            students2: {
+                exists: false,
+                date_created: null
+            },
+            minors: {
+                exists: false,
+                date_created: null
+            },
+            universities: {
+                exists: false,
+                date_created: null
+            },
         };
 
         for (const f of files) {
@@ -193,7 +205,14 @@ export class AdminService {
             for (const key of Object.keys(this.patterns)) {
                 if (this.patterns[key].test(f)) {
                     // (present as any)[key] = true;
-                    present[key] = true
+                    present[key].exists = true;
+                    const filePath = path.join(this.getResourcesDir(), f);
+                    try {
+                        const stats = fs.statSync(filePath)
+                        present[key].date_created = stats.birthtime;
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
         }
