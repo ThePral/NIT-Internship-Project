@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
-import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto, PresenceResult } from './dto';
+import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto, PresenceResult, userResults } from './dto';
 import { Admin } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
@@ -106,6 +106,8 @@ export class AdminController {
         return await this.adminService.allocateUserAcceptances();
     }
 
+    @ApiOperation({ summary: "Last allocations results"})
+    @ApiResponse({ type: [userResults]})
     @Get("results/table")
     getResultsTable() {
         return this.adminService.userAcceptanceData();

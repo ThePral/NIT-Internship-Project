@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
-import { EditAdminDto, ExcelPaths, PresenceResult } from './dto';
+import { EditAdminDto, ExcelPaths, PresenceResult, userResults } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateUserDto, EditUserByAdminDto } from 'src/user/dto/user.dto';
 import { ImportService } from 'src/admissions/import.service';
@@ -300,7 +300,7 @@ export class AdminService {
 
     async userAcceptanceData() {
 
-        const data = await this.prisma.user.findMany({
+        const data: userResults[] = await this.prisma.user.findMany({
             select: {
                 firstname: true,
                 lastname: true,
