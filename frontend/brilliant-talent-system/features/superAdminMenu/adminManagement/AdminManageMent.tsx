@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { GenericDataTable } from "./adminsTable/GenericDataTable";
 import { adminsColumns } from "./adminsTable/columns";
 import AddAdminModal from "./adminsTable/AddAdminModal";
 import EditAdminModal from "./adminsTable/EditAdminModal";
@@ -11,6 +10,7 @@ import { AddAdminService } from "@/services/AddAdminService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditUserPasswordService } from "@/services/EditUserPasswordService";
 import { DeleteAdminService } from "@/services/DeleteAdminService";
+import { GenericDataTable } from "@/features/adminMenu/newOperation/dataTable/GenericDataTable";
 
 export default function AdminManagement() {
   const [loading, setLoading] = useState(false);

@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { usersColumns } from "./usersTable/columns";
-import { GenericDataTable } from "./usersTable/GenericDataTable";
 import EditUserModal from "./usersTable/EditUserModal";
 import useGetUsers from "@/hooks/useGetUsers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditUserPasswordService } from "@/services/EditUserPasswordService";
+import { GenericDataTable } from "@/features/adminMenu/newOperation/dataTable/GenericDataTable";
 
 export default function UserManagement() {
   const [loading, setLoading] = useState(false);
