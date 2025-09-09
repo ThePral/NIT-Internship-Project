@@ -1,37 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-type Cohort = 1 | 2;
-
-interface MinorCap {
-    total: number;
-    local: number;    // reserved for privileged-university students
-    other: number;    // for non-privileged students
-}
-
-interface StudentStaging {
-    id: number;
-    points: number;
-    universityId: number | null;
-    cohort: number;
-    priorities: { id: number; minorId: number; priority: number }[]; // studentPriority rows
-}
-
-interface Assignment {
-    studentId: number;
-    minorId: number;
-    priority: number;
-    points: number;
-    cohort: number;
-    studentPriorityId: number;
-}
+import { MinorCap, Cohort, StudentStaging, Assignment } from './dto/allocation-service';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class AllocationService {
     private readonly logger = new Logger(AllocationService.name);
     private readonly CHUNK_SIZE = 500;
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService, private queueService: QueueService) {}
 
     private roundHalfUp(x: number): number {
         return Math.floor(x + 0.5);
@@ -334,6 +311,8 @@ export class AllocationService {
             throw err;
         }
 
+        const job = await this.queueService.historyQueue.add('history', { runId: run.id});
+
         const acceptedCount = assignments.length;
         const totalStudents = await this.prisma.user.count({ where: { priorities: { some: {} } } });
         const unmatchedCount = totalStudents - acceptedCount;
@@ -342,8 +321,67 @@ export class AllocationService {
 
         return {
             runId: run.id,
+            historyJobId: job.id,
             acceptedCount,
             unmatchedCount,
         };
+    }
+
+    async allocationHistoryJob(runId: number, progressCb?: (progress: number | object) => void) {
+
+        const acceptances = await this.prisma.acceptance.findMany({
+            where: { runId },
+            select: {
+                student: {
+                    select: {
+                        firstname: true,
+                        lastname: true,
+                        university: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
+                minor: {
+                    select: {
+                        name: true,
+                        req: true,
+                        capacity: true,
+                    }
+                },
+                priority: true,
+                points: true
+            }
+        });
+
+        progressCb?.({message: "fetched allocation data"});
+
+        const allocationHistoryInsert = acceptances.map(a => ({
+            runId,
+            studentName: a.student.firstname + " " + a.student.lastname,
+            universityName: a.student.university.name,
+            minorName: a.minor.name,
+            minorReq: a.minor.req,
+            minorCap: a.minor.capacity,
+            priority: a.priority,
+            points: a.points,
+        }));
+
+        const chunks = this.chunk(allocationHistoryInsert);
+        try {
+            await this.prisma.$transaction(async (tx) => {
+                for (let i = 0; i < chunks.length; i++) {
+                    await tx.allocationHistory.createMany({ data: chunks[i] });
+                    progressCb?.({message: `data chunk ${i+1} imported.`});
+                }
+                // for (const c of chunks) await tx.allocationHistory.createMany({ data: c });
+            });
+        } catch (err) {
+            this.logger.error('Error allocation history insert transaction failed:', err as any);
+            throw err;
+        }
+
+        return {success: true, message: "allocation history created succesfully"};
     }
 }

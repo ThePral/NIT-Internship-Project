@@ -1,13 +1,14 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import IORedis, { RedisOptions } from 'ioredis';
+import { AllocationService } from 'src/admissions/allocation.service';
 
 @Injectable()
 export class HistoryWorker implements OnModuleDestroy {
     private worker: Worker | null = null;
     private readonly logger = new Logger(HistoryWorker.name);
 
-    constructor() {
+    constructor(private allocationService: AllocationService) {
         const redisOpts: RedisOptions = {
             host: process.env.REDIS_HOST || '127.0.0.1',
             port: Number(process.env.REDIS_PORT || 6379),
@@ -15,7 +16,7 @@ export class HistoryWorker implements OnModuleDestroy {
             maxRetriesPerRequest: null
         };
 
-        const concurrency = Number(process.env.IMPORT_WORKER_CONCURRENCY || 3);
+        const concurrency = Number(process.env.HISTORY_WORKER_CONCURRENCY || 3);
 
         this.worker = new Worker(
             'history-queue',
@@ -24,13 +25,13 @@ export class HistoryWorker implements OnModuleDestroy {
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    // const result = await this.adminService.importDocsJob(job.data.filePaths, async (p) => {
-                    //     await job.updateProgress(p);
-                    // });
+                    const result = await this.allocationService.allocationHistoryJob(job.data.runId, async (p) => {
+                        await job.updateProgress(p);
+                    });
 
                     await job.updateProgress({ step: 'finalizing' });
 
-                    // return result;
+                    return result;
                 } catch (err) {
                     this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`, (err as any).stack);
                     throw err;
