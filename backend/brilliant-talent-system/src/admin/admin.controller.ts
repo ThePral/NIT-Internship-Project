@@ -106,6 +106,11 @@ export class AdminController {
         return await this.adminService.allocateUserAcceptances();
     }
 
+    @Get("results/table")
+    getResultsTable() {
+        return this.adminService.userAcceptanceData();
+    }
+
     @Get("results/pdf/sr0")
     async generateSr0PDF() {
         return this.adminService.buildSr0();

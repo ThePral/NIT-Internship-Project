@@ -298,6 +298,40 @@ export class AdminService {
         };
     }
 
+    async userAcceptanceData() {
+
+        const data = await this.prisma.user.findMany({
+            select: {
+                firstname: true,
+                lastname: true,
+                points: true,
+                university: {
+                    select: {
+                        name: true
+                    }
+                },
+                priorities: {
+                    orderBy: {
+                        priority: 'asc'
+                    },
+                    select: {
+                        isAccepted: true,
+                        priority: true,
+                        minor: {
+                            select: {
+                                name: true,
+                                req:true,
+                                capacity: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return data;
+    }
+
     async buildSr0() {
         return this.srv.generateSr0(
             './output/sr0.pdf',
