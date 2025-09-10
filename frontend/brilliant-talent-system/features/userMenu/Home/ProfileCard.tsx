@@ -1,11 +1,11 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/hooks";
-import { StudentReport } from "@/interfaces/operation";
+import { StudentResult } from "@/interfaces/operation";
 import React from "react";
 
 interface ProfileCardProps {
-  result: StudentReport;
+  result: StudentResult;
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({ result }) => {
