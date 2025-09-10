@@ -64,13 +64,20 @@ export const acceptedHistoryColumns: ColumnDef<HistoryResult>[] = [
       <div className="text-center">{row.getValue("universityName")}</div>
     ),
   },
+    {
+    accessorKey: "majorName",
+    header: "رشته فارغ التحصیلی",
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("majorName")}</div>
+    ),
+  },
   {
     accessorKey: "minorName",
     header: ({ column }) => (
       <SortableHeader
         column={column}
         sortKey="minorName"
-        label="نام رشته"
+        label="نام رشته قبولی"
       />
     ),
     cell: ({ row }) => (

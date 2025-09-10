@@ -12,7 +12,7 @@ import {
   ResponsiveModalTrigger,
 } from "../ui/responsiveModal";
 import { Button } from "../ui/button";
-import { Edit, GraduationCap } from "lucide-react";
+import { ChevronLeft, Edit, GraduationCap } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { EditMyPasswordService } from "@/services/EditMyPasswordService";
 import AcceptedTable from "./AcceptedTable";
@@ -31,9 +31,10 @@ const AcceptedModal = ({
   return (
     <ResponsiveModal open={isOpen} onOpenChange={onOpen}>
       <ResponsiveModalTrigger asChild>
-          <Button variant="ghost" className="p-1 has-[>svg]:px-1">
-            <GraduationCap/>
-          </Button>
+        <Button size="sm" variant="secondary" className="gap-2">
+          <ChevronLeft size={16} />
+            مشاهده نتایج دانشجویان
+        </Button>
       </ResponsiveModalTrigger>
 
       <ResponsiveModalContent

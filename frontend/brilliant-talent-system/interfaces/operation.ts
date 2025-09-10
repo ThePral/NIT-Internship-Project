@@ -1,9 +1,9 @@
 
 export interface UploadState {
-    "students1": boolean,
-    "students2": boolean,
-    "minors": boolean,
-    "universities": boolean
+    "students1": { exists: boolean, date_created?: Date }
+    "students2": { exists: boolean, date_created?: Date },
+    "minors": { exists: boolean, date_created?: Date },
+    "universities": { exists: boolean, date_created?: Date }
 }
 
 export interface StudentReport {
@@ -32,6 +32,7 @@ export interface HistoryResult {
     "universityName": string,
     "minorName": string,
     "minorReq": string,
+    majorName: string
     "minorCap": number,
     "acceptedPriority": number,
     "points": number,
