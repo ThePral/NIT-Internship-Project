@@ -274,7 +274,6 @@ export class AllocationService {
     // 5) Persist results in DB as an AllocationRun + Acceptances + mark StudentPriority.isAccepted
     const run = await this.prisma.allocationRun.create({
       data: {
-        privilegedUniId,
         cohortPolicy: 'students1-first',
       },
     });

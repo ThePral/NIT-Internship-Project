@@ -10,6 +10,7 @@ export class ImportService {
     private readonly logger = new Logger(ImportService.name);
     private readonly CHUNK_SIZE = 500;
     // private readonly DEFAULT_SALT_ROUNDS = 10;
+    private readonly privilegedUniName = "دانشگاه صنعتي نوشيرواني بابل";
 
     constructor(private readonly prisma: PrismaService) {}
 
@@ -195,7 +196,8 @@ export class ImportService {
             gradeColumn?: number | string;
             universityColumn?: number | string;
             majorColumn?: number | string; // the column containing the chosen major (priority row)
-            birthdateColumn?: number | string
+            birthdateColumn?: number | string;
+            majornameColumn?: number | string;
         },
     ) {
         const hashPassword = options?.hashPassword ?? true;
@@ -234,6 +236,7 @@ export class ImportService {
         const UNIVERSITY_HEADERS = ['دانشگاه محل اخذ مدرك كارشناسي', 'نام دانشگاه', 'university', 'سازمان آموزشي', 'محل تحصيل'];
         const MAJOR_HEADERS = ['گرايش', 'گرایش', 'گرايش (هاي) انتخابي', 'گرايش (های) انتخابي', 'major', 'choices'];
         const BIRTHDATE_HEADERS = ['تاريخ تولد', 'birth_date', 'birthdate', 'تاریخ متولد شدن'];
+        const MAJORNAME_HEADERS = ['رشته تحصيلي كارشناسي', 'رشته تحصيلي ', 'رشته تحصيلی كارشناسی', 'رشته تحصيلی', 'major_name', 'majorname', 'major name', 'major'];
 
         const usernameIdx = tryFind(options?.usernameColumn, USER_HEADERS) as number | null;
         const nationalIdx = tryFind(options?.nationalCodeColumn, NATIONAL_HEADERS) as number | null;
@@ -243,6 +246,7 @@ export class ImportService {
         const uniIdx = tryFind(options?.universityColumn, UNIVERSITY_HEADERS) as number | null;
         const majorIdx = tryFind(options?.majorColumn, MAJOR_HEADERS) as number | null;
         const birthdateIdx = tryFind(options?.birthdateColumn, BIRTHDATE_HEADERS) as number | null;
+        const majornameIdx = tryFind(options?.majornameColumn, MAJORNAME_HEADERS) as number | null;
 
         if (!usernameIdx || !majorIdx) {
             throw new Error('Failed to detect required columns (username or major). Provide explicit mapping in options if header names differ.');
@@ -260,6 +264,7 @@ export class ImportService {
             lastname?: string;
             grade?: number;
             universityName?: string;
+            majorName: string;
             birthDate: Date;
             priorities: string[]; // priority texts in encountered order
         };
@@ -277,6 +282,7 @@ export class ImportService {
             const grade = gradeRaw !== null && gradeRaw !== undefined ? Number(gradeRaw) : undefined;
             const uniName = String(row.getCell(uniIdx || 0).value || '').trim() || undefined;
             const majorText = String(row.getCell(majorIdx).value || '').trim() || undefined;
+            const majorName = String(row.getCell(majornameIdx || 0).value || '').trim() || 'نامشخص';
             const birthDateText = String(row.getCell(birthdateIdx || 0).value || '').trim() || undefined;
             const convertPersianDateToEnglish = (input: string) => {
                 const mapper = {
@@ -310,6 +316,7 @@ export class ImportService {
                     lastname,
                     grade,
                     universityName: uniName,
+                    majorName,
                     birthDate,
                     priorities: [],
                 });
@@ -340,6 +347,7 @@ export class ImportService {
         for (const [username, st] of studentsMap.entries()) {
             usernameList.push(username);
             const uniId = st.universityName ? uniNameToId.get(this.normalizeUniversityName(st.universityName)) ?? null : null;
+            const isLocal = this.normalizeUniversityName(st.universityName!) === this.normalizeUniversityName(this.privilegedUniName)
             // compute points if uni grade exists and student grade known
             const uniGrade = uniId ? (uniIdToGrade.get(uniId) ?? 0) : 0;
             const points = (st.grade ?? 0) + uniGrade;
@@ -353,6 +361,8 @@ export class ImportService {
                 universityId: uniId,
                 points,
                 cohort,
+                isLocal,
+                majorName: st.majorName,
                 birthDate: st.birthDate,
                 nationalCode: st.nationalCode,
             });
