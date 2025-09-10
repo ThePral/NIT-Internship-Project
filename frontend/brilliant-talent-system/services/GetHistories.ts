@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export async function GetHistories() {
   try {
-    const result = await getFetch(APIURL + `rules`); // بررسی کن که endpoint درست باشه
+    const result = await getFetch(APIURL + `admins/allocation/all`); // بررسی کن که endpoint درست باشه
     const jsonResult = await result.json();
 
     if (result.ok) {
