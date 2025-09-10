@@ -327,6 +327,7 @@ export class AdminService {
                 firstname: true,
                 lastname: true,
                 points: true,
+                majorName: true,
                 university: {
                     select: {
                         name: true

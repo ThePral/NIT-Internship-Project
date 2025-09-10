@@ -382,6 +382,7 @@ export class AllocationService {
           },
         },
         points: true,
+        majorName: true,
         acceptances: {
           where: { runId },
           select: {
@@ -414,6 +415,7 @@ export class AllocationService {
       runId,
       studentName: user.firstname + ' ' + user.lastname,
       universityName: user.university.name,
+      majorName: user.majorName,
       minorName: user.acceptances[0]?.minor.name || null,
       minorReq: user.acceptances[0]?.minor.req || null,
       minorCap: user.acceptances[0]?.minor.capacity || null,
