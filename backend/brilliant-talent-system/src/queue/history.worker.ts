@@ -1,14 +1,14 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import IORedis, { RedisOptions } from 'ioredis';
-import { AdminService } from '../admin/admin.service';
+import { AllocationService } from 'src/admissions/allocation.service';
 
 @Injectable()
-export class ImportWorker implements OnModuleDestroy {
+export class HistoryWorker implements OnModuleDestroy {
     private worker: Worker | null = null;
-    private readonly logger = new Logger(ImportWorker.name);
+    private readonly logger = new Logger(HistoryWorker.name);
 
-    constructor(private readonly adminService: AdminService) {
+    constructor(private allocationService: AllocationService) {
         const redisOpts: RedisOptions = {
             host: process.env.REDIS_HOST || '127.0.0.1',
             port: Number(process.env.REDIS_PORT || 6379),
@@ -16,17 +16,16 @@ export class ImportWorker implements OnModuleDestroy {
             maxRetriesPerRequest: null
         };
 
-        // concurrency: how many imports this worker can run in parallel
-        const concurrency = Number(process.env.IMPORT_WORKER_CONCURRENCY || 2);
+        const concurrency = Number(process.env.HISTORY_WORKER_CONCURRENCY || 3);
 
         this.worker = new Worker(
-            'import-queue',
+            'history-queue',
             async (job: Job) => {
                 this.logger.log(`Processing import job ${job.id}`);
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    const result = await this.adminService.importDocsJob(job.data.filePaths, async (p) => {
+                    const result = await this.allocationService.allocationHistoryJob(job.data.runId, async (p) => {
                         await job.updateProgress(p);
                     });
 
@@ -35,7 +34,7 @@ export class ImportWorker implements OnModuleDestroy {
                     return result;
                 } catch (err) {
                     this.logger.error(`Job ${job.id} failed: ${(err as Error).message}`, (err as any).stack);
-                    throw err; // worker will handle retry/backoff per Queue defaultJobOptions
+                    throw err;
                 }
             },
             {
