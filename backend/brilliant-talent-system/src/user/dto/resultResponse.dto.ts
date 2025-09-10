@@ -18,6 +18,11 @@ export class StudentResultDto {
   points: number;
 
   @ApiProperty({
+    example: 16.25,
+  })
+  grade: number;
+
+  @ApiProperty({
     example: 'مهندسی کامپیوتر',
   })
   majorName: string;

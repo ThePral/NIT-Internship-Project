@@ -449,6 +449,7 @@ export class AllocationService {
         firstname: true,
         lastname: true,
         points: true,
+        grade: true,
         majorName: true,
         university: { select: { name: true } },
         priorities: {
@@ -515,6 +516,7 @@ export class AllocationService {
       firstname: student.firstname,
       lastname: student.lastname,
       points: student.points,
+      grade: student.grade,
       majorName: student.majorName,
       university: student.university,
       priorities: results,
