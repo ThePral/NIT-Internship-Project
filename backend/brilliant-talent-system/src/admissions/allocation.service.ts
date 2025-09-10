@@ -34,10 +34,7 @@ export class AllocationService {
    * Run allocation with given privileged university id (your university).
    * Returns a summary including runId and counts.
    */
-  async runAllocation(privilegedUniId: number) {
-    this.logger.log(
-      `Starting allocation for privilegedUniId=${privilegedUniId}`,
-    );
+  async runAllocation() {
 
     // 1) Load minors and build capacity map
     const minors = await this.prisma.minor.findMany({
@@ -66,7 +63,7 @@ export class AllocationService {
       const users = await this.prisma.user.findMany({
         where: {
           cohort: cohort,
-          universityId: isLocal ? privilegedUniId : { not: privilegedUniId },
+          isLocal,
           priorities: { some: {} },
         },
         select: {

@@ -292,7 +292,7 @@ export class AdminService {
     }
 
     async allocateUserAcceptances() {
-        const result = await this.allocationService.runAllocation(1);
+        const result = await this.allocationService.runAllocation();
         return {
             message: "User Acceptance Calculated",
             data: result
