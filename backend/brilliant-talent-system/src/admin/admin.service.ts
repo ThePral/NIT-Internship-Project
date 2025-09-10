@@ -299,6 +299,27 @@ export class AdminService {
         };
     }
 
+    async allocationRunsData() {
+        return await this.prisma.allocationRun.findMany();
+    }
+
+    async removeAllocationRunById(runId: number) {
+        const run = await this.prisma.allocationRun.findUnique({
+            where: { id: runId }
+        });
+        if (!run) throw new NotFoundException('یافت نشد');
+
+        return await this.prisma.allocationRun.delete({
+            where: { id: runId }
+        });
+    }
+
+    async allocationHistoryData(runId: number) {
+        return await this.prisma.allocationHistory.findMany({
+            where: { runId }
+        });
+    }
+
     async userAcceptanceData() {
 
         const data: userResults[] = await this.prisma.user.findMany({

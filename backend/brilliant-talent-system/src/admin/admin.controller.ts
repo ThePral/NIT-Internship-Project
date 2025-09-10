@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
@@ -104,6 +104,25 @@ export class AdminController {
     @Post("allocation/run")
     async caclulateUserAcceptance() {
         return await this.adminService.allocateUserAcceptances();
+    }
+
+    @ApiOperation({ summary: "Get All Allocation Runs" })
+    @Get("allocation/all")
+    getAllocationRuns() {
+        return this.adminService.allocationRunsData();
+    }
+
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: "Delete Allocation Run By ID" })
+    @Delete("allocation/:id")
+    DeleteAllocationRunById(@Param('id', ParseIntPipe) runId: number) {
+        return this.adminService.removeAllocationRunById(runId);
+    }
+
+    @ApiOperation({ summary: "Get Allocation Run Result By ID" })
+    @Get("history/allocation/:id")
+    getAllocationRunsHistory(@Param('id', ParseIntPipe) runId: number) {
+        return this.adminService.allocationHistoryData(runId);
     }
 
     @ApiOperation({ summary: "Last allocations results"})
