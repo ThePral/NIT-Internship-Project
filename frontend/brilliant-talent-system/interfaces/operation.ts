@@ -24,3 +24,18 @@ export interface Priority {
   lastAcceptedRank: number;
   isAccepted: boolean;
 }
+
+export interface HistoryResult {
+  studentName: string;
+  universityName: string;
+  minorName: string;
+  minorReq: string;
+  minorCap: number;
+  acceptedPriority: number;
+  points: number;
+}
+
+export interface HistoryRow {
+  id: number;
+  createdAt: Date;
+}
