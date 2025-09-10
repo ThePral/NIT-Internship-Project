@@ -8,6 +8,8 @@ export interface User {
   "points"?: number,
   "cohort"?: number,
   "role": "user" | "admin" | "superadmin"
+  "birthDate": string,
+  "nationalCode": string,
 }
 export interface Admin {
   id: number;
