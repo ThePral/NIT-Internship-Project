@@ -329,43 +329,78 @@ export class AllocationService {
 
     async allocationHistoryJob(runId: number, progressCb?: (progress: number | object) => void) {
 
-        const acceptances = await this.prisma.acceptance.findMany({
-            where: { runId },
+        // const acceptances = await this.prisma.acceptance.findMany({
+        //     where: { runId },
+        //     select: {
+        //         student: {
+        //             select: {
+        //                 firstname: true,
+        //                 lastname: true,
+        //                 university: {
+        //                     select: {
+        //                         name: true
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         minor: {
+        //             select: {
+        //                 name: true,
+        //                 req: true,
+        //                 capacity: true,
+        //             }
+        //         },
+        //         priority: true,
+        //         points: true
+        //     }
+        // });
+        const users = await this.prisma.user.findMany({
             select: {
-                student: {
+                firstname: true,
+                lastname: true,
+                university: {
                     select: {
-                        firstname: true,
-                        lastname: true,
-                        university: {
+                        name: true
+                    }
+                },
+                points: true,
+                acceptances: {
+                    where: { runId },
+                    select: {
+                        minor: {
                             select: {
-                                name: true
+                                name: true,
+                                req: true,
+                                capacity: true,
                             }
-                        }
+                        },
+                        priority: true,
                     }
-                },
-                minor: {
-                    select: {
-                        name: true,
-                        req: true,
-                        capacity: true,
-                    }
-                },
-                priority: true,
-                points: true
+                }
             }
         });
 
         progressCb?.({message: "fetched allocation data"});
 
-        const allocationHistoryInsert = acceptances.map(a => ({
+        // const allocationHistoryInsert = acceptances.map(a => ({
+        //     runId,
+        //     studentName: a.student.firstname + " " + a.student.lastname,
+        //     universityName: a.student.university.name,
+        //     minorName: a.minor.name,
+        //     minorReq: a.minor.req,
+        //     minorCap: a.minor.capacity,
+        //     priority: a.priority,
+        //     points: a.points,
+        // }));
+        const allocationHistoryInsert = users.map(user => ({
             runId,
-            studentName: a.student.firstname + " " + a.student.lastname,
-            universityName: a.student.university.name,
-            minorName: a.minor.name,
-            minorReq: a.minor.req,
-            minorCap: a.minor.capacity,
-            priority: a.priority,
-            points: a.points,
+            studentName: user.firstname + " " + user.lastname,
+            universityName: user.university.name,
+            minorName: user.acceptances[0]?.minor.name || null,
+            minorReq: user.acceptances[0]?.minor.req || null,
+            minorCap: user.acceptances[0]?.minor.capacity || null,
+            acceptedPriority: user.acceptances[0]?.priority || null,
+            points: user.points || 0,
         }));
 
         const chunks = this.chunk(allocationHistoryInsert);
