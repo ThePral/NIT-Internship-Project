@@ -5,17 +5,24 @@ import { StudentReport } from "@/interfaces/operation";
 import React from "react";
 
 interface ProfileCardProps {
-  result:StudentReport
+  result: StudentReport;
 }
 
-export const ProfileCard: React.FC<ProfileCardProps> = ({
-result
-}) => {
-  const {user} = useUser()
+export const ProfileCard: React.FC<ProfileCardProps> = ({ result }) => {
+  const { user } = useUser();
   const info = [
     { label: "نام", value: result.firstname },
     { label: "نام خانوادگی", value: result.lastname },
-    { label: "تاریخ تولد", value: new Date(user?.birthDate ?? '').toLocaleDateString('en-US') },
+    {
+      label: "تاریخ تولد",
+      value: (() => {
+        const date = new Date(user?.birthDate ?? "");
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}/${month}/${day}`;
+      })(),
+    },
     { label: "کد ملی", value: user?.nationalCode },
     // { label: "رشته تحصیلی", value: user. },
     { label: "دانشگاه محل اخذ مدرک", value: result.university.name },
@@ -41,7 +48,7 @@ result
                 {item.label}
               </span>
               <span className="text-foreground truncate">{item?.value}</span>
-              <Separator className="col-span-2 opacity-50"/>
+              <Separator className="col-span-2 opacity-50" />
             </React.Fragment>
           ))}
         </div>

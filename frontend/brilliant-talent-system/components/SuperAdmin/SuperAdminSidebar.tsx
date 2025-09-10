@@ -98,7 +98,7 @@ export const SuperAdminSidebar = () => {
               index != items.length - 1 ? "border-b" : "md:border-0 border-b"
             }`}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center hover:bg-sidebar-accent">
               <div
                 className={`w-2 rounded-l-lg h-10 ${
                   pathname != item.link
@@ -120,7 +120,7 @@ export const SuperAdminSidebar = () => {
             </div>
           </div>
         ))}
-        <Separator className="mb-5" />
+        {/* <Separator className="mb-5" /> */}
 
         <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
           <UserDropDown />
