@@ -19,7 +19,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ result }) => {
       value: toLocalDateTime({date:user?.birthDate , type:"justNumbersToFarsi"}),
     },
     { label: "کد ملی", value: user?.nationalCode },
-    // { label: "رشته تحصیلی", value: user. },
+    { label: "رشته تحصیلی", value: user?.majorName },
     { label: "دانشگاه محل اخذ مدرک", value: result.university.name },
     // { label: "دیپلم", value: degree },
   ];

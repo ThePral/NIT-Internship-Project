@@ -10,6 +10,7 @@ export interface User {
   "role": "user" | "admin" | "superadmin"
   "birthDate": Date,
   "nationalCode": string,
+  majorName: string
 }
 export interface Admin {
   id: number;
