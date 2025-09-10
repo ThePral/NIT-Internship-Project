@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 // import * as bcrypt from 'bcryptjs';
 import * as argon from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'; // adjust path to your PrismaService
+import { QueueService } from 'src/queue/queue.service';
 type Cohort = 1 | 2;
 
 @Injectable()
@@ -12,7 +13,7 @@ export class ImportService {
     // private readonly DEFAULT_SALT_ROUNDS = 10;
     private readonly privilegedUniName = "دانشگاه صنعتي نوشيرواني بابل";
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService, private queueService: QueueService) {}
 
     /* ----------------- Helpers ----------------- */
 
@@ -435,6 +436,8 @@ export class ImportService {
             createdPriorities += (res.count ?? 0);
         }
 
+        if (!hashPassword) this.queueService.hashPasswordQueue.add('hash', {});
+
         return {
             message: 'Students import finished',
             summary: {
@@ -445,5 +448,20 @@ export class ImportService {
             },
             unmatchedPriorities: unmatchedPriorities.slice(0, 50), // show first 50 for debugging
         };
+    }
+
+    async hashPasswordsJob(progressCb?: (progress: number | object) => void,) {
+
+        const users = await this.prisma.user.findMany();
+    
+        for (const user of users) {
+            const hashedPassword = await argon.hash(user.hash_password);
+            await this.prisma.user.update({
+                where : { id: user.id},
+                data: {hash_password: hashedPassword}
+            });
+        }
+
+        return { success: true, message: "users passwords hashed succesfully"};
     }
 }

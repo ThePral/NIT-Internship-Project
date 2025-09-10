@@ -7,6 +7,7 @@ export class QueueService implements OnModuleDestroy {
     private connection: Redis;
     public importQueue: Queue;
     public historyQueue: Queue;
+    public hashPasswordQueue: Queue;
 
     constructor() {
         const redisOpts: RedisOptions = {
@@ -41,13 +42,27 @@ export class QueueService implements OnModuleDestroy {
                 removeOnComplete: { age: 60 * 60 },
                 removeOnFail: { age: 60 * 60 * 24 },
             },
-        })
+        });
+
+        this.hashPasswordQueue = new Queue('hash-password-queue', {
+            connection: this.connection,
+            defaultJobOptions: {
+                attempts: 5,
+                backoff: {
+                    type: 'fixed',
+                    delay: 2000,
+                },
+                removeOnComplete: { age: 60 * 60 },
+                removeOnFail: { age: 60 * 60 * 24 },
+            },
+        });
     }
 
     async onModuleDestroy() {
         try {
             await this.importQueue.close();
             await this.historyQueue.close();
+            await this.hashPasswordQueue.close();
             await this.connection.quit();
         } catch (err) {
             // ignore
