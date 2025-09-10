@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Edit, MoreHorizontal, Trash2Icon } from "lucide-react";
 import { useQueryParams } from "@/hooks";
 
 const SortableHeader = ({
@@ -26,7 +26,7 @@ const SortableHeader = ({
   const handleSort = () => {
     // First update the URL parameter
     setQueryParam("sort", sortKey);
-    
+
     // Then toggle the sorting in the table itself
     column.toggleSorting(column.getIsSorted() === "asc");
   };
@@ -57,11 +57,7 @@ export const usersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "firstname",
     header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="firstname"
-        label="نام"
-      />
+      <SortableHeader column={column} sortKey="firstname" label="نام" />
     ),
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("firstname")}</div>
@@ -70,11 +66,7 @@ export const usersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "lastname",
     header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="lastname"
-        label="نام خانوادگی"
-      />
+      <SortableHeader column={column} sortKey="lastname" label="نام خانوادگی" />
     ),
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("lastname")}</div>
@@ -83,11 +75,7 @@ export const usersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "grade",
     header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="grade"
-        label="نمره معدل"
-      />
+      <SortableHeader column={column} sortKey="grade" label="نمره معدل" />
     ),
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("grade")}</div>
@@ -96,11 +84,7 @@ export const usersColumns: ColumnDef<any>[] = [
   {
     accessorKey: "points",
     header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="points"
-        label="امتیاز"
-      />
+      <SortableHeader column={column} sortKey="points" label="امتیاز" />
     ),
     cell: ({ row }) => (
       <div className="text-center">{row.getValue("points")}</div>
@@ -136,6 +120,18 @@ export const usersColumns: ColumnDef<any>[] = [
               <p className="text-primary">ویرایش</p>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => {
+                const event = new CustomEvent("open-delete-dialog", {
+                  detail: user,
+                });
+                window.dispatchEvent(event);
+              }}
+            >
+              <Trash2Icon className="h-4 w-4 ml-2" />
+              <p className=" text-danger"> حذف</p>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
