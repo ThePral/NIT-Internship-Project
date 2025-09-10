@@ -6,6 +6,6 @@ import { PuppeteerService } from './puppeteer.service';
 
 @Module({
   providers: [ImportService, AllocationService, SrPdfService, PuppeteerService],
-  exports: [ImportService, AllocationService, SrPdfService]
+  exports: [ImportService, AllocationService, SrPdfService],
 })
 export class AdmissionsModule {}
