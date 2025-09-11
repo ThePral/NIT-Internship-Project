@@ -162,7 +162,7 @@ export default function AdminManagement() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground py-4">
+    <div className="flex flex-col min-h-screen mx-auto bg-background text-foreground py-4">
       <Card className="w-full shadow-primary border border-border">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-primary">
