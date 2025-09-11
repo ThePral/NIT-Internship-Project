@@ -21,7 +21,7 @@ export const AdminHome = () => {
             <p className="break-words">{user?.username || "-"}</p>
           </div>
 
-          <Separator className="my-2 sm:my-4 " />
+          <Separator className="my-2 sm:my-4 border opacity-40 " />
 
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <p className="text-primary font-semibold opacity-80 mb-1 sm:mb-0">
@@ -30,7 +30,7 @@ export const AdminHome = () => {
             <p>{user?.role === "admin" ? "ادمین" : "مدیر کل"}</p>
           </div>
 
-          <Separator className="my-2 sm:my-4 opacity-40" />
+          <Separator className="my-2 sm:my-4 border opacity-40" />
         </CardContent>
       </Card>
     </div>

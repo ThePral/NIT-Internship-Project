@@ -1,6 +1,6 @@
 "use client";
 import type { LucideIcon } from "lucide-react";
-import { GraduationCap, School, Armchair } from "lucide-react";
+import { GraduationCap, School, Armchair, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,8 +82,8 @@ const UploadCard = ({
         className="hidden"
       />
       {hasBeenUploaded?.exists && (
-        <div className="flex justify-center items-center gap-3">
-          <p className="text-primary ">آپلود شده</p>
+        <div className="flex flex-col md:flex-col sm:flex-row xl:flex-row justify-center items-center gap-3">
+          <p className="text-primary ">{!uploadFile.isPending ? "آپلود شده" : <span className="flex gap-2">در حال بارگزاری <Loader2 className="animate-spin"/></span> }</p>
           {/* <p className="text-xs">تاریخ آخرین آپلود</p> */}
           <p className="text-xs">
             {toLocalDateTime({
@@ -231,11 +231,6 @@ export const FileUploadDashboard = () => {
                 title={item.title}
                 description={item.description}
                 type={item.type}
-                hasBeenUploaded={
-                  isUploadeds
-                    ? isUploadeds[item.type as keyof UploadState]
-                    : false
-                }
                 hasBeenUploaded={
                   isUploadeds
                     ? isUploadeds[item.type as keyof UploadState]
