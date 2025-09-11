@@ -58,7 +58,7 @@ export const AdminSidebar = () => {
       link: "/admin/history",
       icon: <Clock className="h-5 w-5" />,
     },
-    { title: "خروج", link: "/user/auth", icon: <LogOut /> },
+    { title: "خروج", link: "/admin/auth", icon: <LogOut /> },
   ];
   const router = useRouter();
 
@@ -66,7 +66,9 @@ export const AdminSidebar = () => {
     mutationFn: async () => {},
     onSuccess: () => {
       setUser(undefined);
-      router.push("/user/auth");
+      localStorage.removeItem("authToken")
+      localStorage.removeItem("refreshToken")
+      router.push("/admin/auth");
     },
     onError: (error) => {
       console.log(error);

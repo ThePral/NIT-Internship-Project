@@ -32,7 +32,10 @@ export const UserSidebar = () => {
     mutationFn: async () => {},
     onSuccess: () => {
       setUser(undefined);
+      localStorage.removeItem("authToken")
+      localStorage.removeItem("refreshToken")
       router.push("/user/auth");
+
     },
   });
 

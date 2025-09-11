@@ -73,7 +73,9 @@ export const SuperAdminSidebar = () => {
     mutationFn: async () => {},
     onSuccess: () => {
       setUser(undefined);
-      router.push("/user/auth");
+      localStorage.removeItem("authToken")
+      localStorage.removeItem("refreshToken")
+      router.push("/superAdmin/auth");
     },
     onError: (error) => {
       console.log(error);
@@ -83,7 +85,7 @@ export const SuperAdminSidebar = () => {
 
   function handleClick(link: string) {
     console.log(user);
-    if (link == "/user/auth") {
+    if (link == "/superAdmin/auth") {
       logOut.mutate();
     }
   }
