@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PuppeteerService } from './puppeteer.service';
 import { AcceptedUser, MinorAcceptance } from './dto/srpdf-service';
 import { Sr4AcceptedUser, Sr4MinorAcceptance } from './dto/srpdf-service/sr4.dto';
+import { UserResult } from './dto/srpdf-service/sr1.dto';
 
 @Injectable()
 export class SrPdfService {
@@ -71,6 +72,7 @@ export class SrPdfService {
      * Build the HTML string for sr0 using the provided minors array.
      * Embeds fonts (base64) in a style block so puppeteer/Chromium uses them.
      */
+    
     private buildSr0Html(minors: MinorAcceptance[], fontFamily: string, fontFiles: { regular: string; bold?: string }) {
         // Embed fonts as base64 @font-face
         const regularAbs = this.toAbsolute(fontFiles.regular);
@@ -225,7 +227,213 @@ export class SrPdfService {
         `;
         return html;
     }
+    private buildSr1Html(userResults: UserResult[], fontFamily: string, fontFiles: { regular: string; bold?: string }) {
+        // Embed fonts as base64 @font-face
+        const regularAbs = this.toAbsolute(fontFiles.regular);
+        const regularB64 = this.loadFontAsBase64(regularAbs);
+        const regularExt = path.extname(regularAbs).replace('.', '') || 'ttf';
+        const boldB64 = fontFiles.bold ? this.loadFontAsBase64(this.toAbsolute(fontFiles.bold)) : regularB64;
+        const boldExt = fontFiles.bold ? path.extname(this.toAbsolute(fontFiles.bold)).replace('.', '') : regularExt;
 
+        const fontCss = `
+            @font-face {
+                font-family: '${fontFamily}';
+                src: url('data:font/${regularExt};base64,${regularB64}') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: '${fontFamily}';
+                src: url('data:font/${boldExt};base64,${boldB64}') format('truetype');
+                font-weight: bold;
+                font-style: normal;
+            }
+        `;
+
+        
+
+        // Build table rows - only show minor name for first student in each minor
+        let rowsHtml = '';
+        let index = 1;
+        for (const m of userResults) {
+            rowsHtml += '<tr>';
+            rowsHtml += `<td style="text-align:center; vertical-align:middle;">${index}</td>`;
+            rowsHtml += `<td style="text-align:right; vertical-align:middle; ${ m.isAcceptedAtAll?"color: rgb(0, 0, 255);" : ""}">${this.escapeHtml(m.fullName)}</td>`;
+            for (let i = 0; i < 3; i++) {
+                if(i == 0){
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml(m.bachelorsDegree)}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml(m.grade+ "")}</td>`
+                }
+                if(i == 1){
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+
+
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml(m.university)}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml(m.universityPoints+ "")}</td>`
+                }
+                if(i == 2){
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+
+
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("")}</td>`
+                }
+                if(m.chosenMinors[i]){
+                    const minor = m.chosenMinors[i];
+                    rowsHtml += `<td style="text-align:right; vertical-align:middle; ${minor.accepted?"color: rgb(0, 0, 255);" : ""}">${this.escapeHtml(minor.name)}</td>`;
+                    rowsHtml += `<td style="text-align:right; vertical-align:middle; ${minor.accepted?"color: rgb(0, 0, 255);" : ""}">${this.escapeHtml(minor.capacity + "")}</td>`;
+                    rowsHtml += `<td style="text-align:right; vertical-align:middle; ${minor.accepted?"color: rgb(0, 0, 255);" : ""}">${this.escapeHtml(minor.rank + "")}</td>`;
+                    rowsHtml += `<td style="text-align:right; vertical-align:middle; ${minor.accepted?"color: rgb(0, 0, 255);" : ""}">${this.escapeHtml(minor.lastAccepted + "")}</td>`;
+
+
+
+                }else{
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("-")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("-")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("-")}</td>`
+                    rowsHtml +=`<td style="text-align:right; vertical-align:middle; }">${this.escapeHtml("-")}</td>`
+                    
+                }
+                rowsHtml += '</tr>';
+                
+            }
+
+            index++;
+            
+        //     // for (let i = 0; i < m.accepted.length; i++) {
+        //     //     const a = m.accepted[i];
+        //     //     r
+                
+        //     //     // First column (ردیف) - only show for first student in each minor
+        //     //     if (i === 0) {
+            
+        //     //     } else {
+        //     //         rowsHtml += '<td></td>';
+        //     //     }
+                
+        //     //     // Second column (رشته قبولی) - only show for first student in each minor
+        //     //     if (i === 0) {
+        //     //         
+        //     //     } else {
+        //     //         rowsHtml += '<td></td>';
+        //     //     }
+                
+        //     //     // Third column (افراد قبول شده)
+        //     //     rowsHtml += `<td style="text-align:right; vertical-align:middle;">${this.escapeHtml(a.fullName)}</td>`;
+                
+        //     //     // Fourth column (دانشگاه) - include university grade if available
+        //     //     let universityDisplay = a.university;
+        //     //     if (a.uniGrade) {
+        //     //         universityDisplay += ` (${a.uniGrade})`;
+        //     //     }
+        //     //     rowsHtml += `<td style="text-align:right; vertical-align:middle;">${this.escapeHtml(universityDisplay)}</td>`;
+                
+        //     //     // Fifth column (امتیاز)
+        //     //     rowsHtml += `<td style="text-align:center; vertical-align:middle;">${this.escapeHtml(String(a.points))}</td>`;
+                
+        //     //     rowsHtml += '</tr>';
+        //     // }
+        //     
+        }
+
+        if (userResults.length === 0) {
+            rowsHtml = `<tr><td colspan="5" style="text-align:center">-</td></tr>`;
+        }
+
+        // Full HTML with improved styling
+        const html = `
+            <!doctype html>
+            <html lang="fa">
+                <head>
+                    <meta charset="utf-8"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                    <style>
+                        ${fontCss}
+                        body {
+                            font-family: '${fontFamily}', sans-serif;
+                            direction: rtl;
+                            text-align: right;
+                            margin: 0;
+                            padding: 15mm 10mm;
+                            color: #000;
+                            line-height: 1.5;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 10px;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 22px;
+                            font-weight: bold;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            border: 2px solid #333;
+                            font-size: 12px;
+                        }
+                        th, td {
+                            border: 1px solid #333;
+                            padding: 8px 5px;
+                            word-break: break-word;
+                        }
+                        th {
+                            background-color: #e0e0e0;
+                            font-weight: bold;
+                            text-align: center;
+                            padding: 10px 5px;
+                        }
+                        /* Column widths */
+                        th:nth-child(1), td:nth-child(1) { width: 8%; }  /* ردیف */
+                        th:nth-child(2), td:nth-child(2) { width: 22%; } /* نام*/
+                        th:nth-child(3), td:nth-child(3) { width: 22%; } /* کارشناسی */
+                        th:nth-child(4), td:nth-child(4) { width: 7%; } /*  */
+                        th:nth-child(5), td:nth-child(5) { width: 25%; } /* اولویت */
+                        th:nth-child(6), td:nth-child(6) { width: 6%; } /* ظرفیت */
+                        th:nth-child(7), td:nth-child(7) { width: 5%; } /* رتبه */
+                        th:nth-child(8), td:nth-child(8) { width: 5%; } /* آخرین */
+
+                        
+                        /* Ensure proper RTL alignment */
+                        td:empty {
+                            border-left: 1px solid #333;
+                            border-right: 1px solid #333;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>بسمه تعالی</h1>
+                        <h1>نتایج قبولی رشته‌ها</h1>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>نام</th>
+                                <th>کارشناسی</th>
+                                <th></th>
+                                <th>اولویت</th>
+                                <th style= "font-size: 8px;" >ظرفیت</th>
+                                <th style= "font-size: 8px;">رتبه</th>
+                                <th style= "font-size: 8px;" >آخرین</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </body>
+            </html>
+        `;
+        return html;
+    }
     private buildSr4Html(minors: Sr4MinorAcceptance[], fontFamily: string, fontFiles: { regular: string; bold?: string }) {
         // Embed fonts as base64 @font-face
         const regularAbs = this.toAbsolute(fontFiles.regular);
@@ -457,7 +665,207 @@ export class SrPdfService {
 
         return { runId: run.id, outPath };
     }
+    async generateSr1(
+        outPath: string,
+        fontFamily: string,
+        fontFiles: { regular: string; bold?: string },
+        runId?: number,
+    ): Promise<{ runId: number; outPath: string }> {
+        // find run
+        let run;
+        if (runId) {
+            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
+            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        } else {
+            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!run) throw new Error('No AllocationRun found in DB');
+        }
+        const acceptances = await this.prisma.acceptance.findMany({
+            where: { runId: run.id },
+            orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
+            select: {
+                id: true,
+                points: true,
+                student: {
+                    select: {
+                        id: true,
+                        firstname: true,
+                        lastname: true,
+                        university: { 
+                            select: { 
+                                name: true, 
+                                grade: true 
+                            } 
+                        },
+                    },
+                },
+                minor: { select: { name: true , id: true } },
+            },
+        });
+    
+        // Get all students with their priorities
+        const allStudents = await this.prisma.user.findMany({
+            include: {
+                university: true,
+                acceptances: true,
+                priorities: {
+                    include: {
+                        minor: true
+                    }
+                }
+            }
+        });
+        const allMinors = await this.prisma.minor.findMany({
+            include:{
+                priorities:{
+                    include:{
+                        student: {
+                            include: {
+                                acceptances: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        type MinorWithExtras = typeof allMinors[0] & {
+            lastAccepted: number;
+          };
+          
+        const finalMinors = allMinors as MinorWithExtras[];
+          
+        for(const minor of finalMinors){
+            minor.lastAccepted = 0
+            minor.priorities.sort((a , b) => {
+                return (b.student.points || 0) - (a.student.points  || 0)
+            });
 
+        }
+        // console.log(finalMinors[2].priorities)
+        // for (const accepted of acceptances){
+        //     for (const minor of finalMinors){
+        //         if(minor.id == accepted.minor.id){
+        //             for (let index = 0; index < minor.priorities.length; index++) {
+        //                 const element = minor.priorities[index];
+                        
+        //                 if(element.student.id == accepted.student.id){
+        //                     if((index + 1) >minor.lastAccepted){
+        //                         minor.lastAccepted == index + 1 ;
+        //                     }
+        //                     break;
+        //                 }
+        //             }
+        //             break;
+        //         }
+        //     }
+        // }
+        for (const minor of finalMinors){
+                        for (let index = 0; index < minor.priorities.length; index++) {
+                            const element = minor.priorities[index];
+                            console.log(element)
+                            if(element.isAccepted){
+                                if((index + 1) > minor.lastAccepted){
+                                    minor.lastAccepted = index + 1 ;
+                                }
+                            }
+                        }
+                }
+        console.log(finalMinors[2].lastAccepted)
+
+        // Pre-calculate rankings for each minor
+        
+        
+    
+        // Build user results
+        const userResults: UserResult[] = [];
+    
+        for (const student of allStudents) {
+            const userResult: UserResult = {
+                fullName: [student.firstname, student.lastname].filter(Boolean).join(' ').trim() || 'نامشخص',
+                university: student.university.name,
+                isAcceptedAtAll: false,
+                bachelorsDegree: student.university.name,
+                grade: student.grade,
+                universityPoints: student.university.grade,
+                chosenMinors: []
+            };
+            let counter = 0;
+            for( const priority of student.priorities){
+                counter++;
+                let accepted = false;
+                // for (const acceptance of acceptances){
+                //     if(acceptance.student.id == student.id && acceptance.minor.id == priority.minor.id){
+                //         accepted =  true;
+                //         break;
+                //     }
+                // }
+                for( const minor of finalMinors){
+                    if(minor.id == priority.minor.id){
+                    // if( counter == 1){
+                    //     console.log(minor)
+                    // }
+
+                        let rankInMinor = 0; 
+                        for (let index = 0; index < minor.priorities.length; index++) {
+                            const element = minor.priorities[index];
+                            if(element.student.id == student.id){
+                                rankInMinor = index + 1 ;
+                                if(element.isAccepted){
+                                    accepted = true;
+                                    userResult.isAcceptedAtAll = true;
+                                }
+                                break;
+                            }
+                        }
+                        userResult.chosenMinors.push({
+                            accepted: accepted,
+                            capacity: minor.capacity,
+                            lastAccepted: minor.lastAccepted,
+                            name: minor.name,
+                            rank: rankInMinor
+                        })
+                        break;
+                    }
+                }
+                
+            }
+            // Process each minor the student chose
+            // for (const priority of student.priorities.sort((a, b) => a.priority - b.priority)) {
+            //     const minor = priority.minor;
+            //     const minorId = minor.id;
+                
+            //     // Get the ranking for this minor
+            //     const ranking = minorRankings.get(minorId) || [];
+                
+            //     // Find this student's rank in the minor
+            //     const studentRank = ranking.findIndex(item => item.studentId === student.id) + 1;
+                
+            //     // Check if student is accepted in this minor (based on capacity)
+            //     const isAccepted = studentRank > 0 && studentRank <= minor.capacity;
+                
+            //     // Get the last accepted rank (capacity or number of students if less than capacity)
+            //     const lastAccepted = Math.min(minor.capacity, ranking.length);
+                
+            //     userResult.chosenMinors.push({
+            //         name: minor.name,
+            //         accepted: isAccepted,
+            //         capacity: minor.capacity,
+            //         rank: studentRank > 0 ? studentRank : ranking.length + 1, // If not in ranking, show as beyond last
+            //         lastAccepted: lastAccepted
+            //     });
+            // }
+    
+            userResults.push(userResult);
+        }
+        // console.log(userResults[1])
+        const html = this.buildSr1Html(userResults, fontFamily, fontFiles);
+    
+        await this.convertHtmlToPdfPuppeteer(html, outPath);
+    
+        return { runId: run.id, outPath };
+    }
+    
+    
     async generateSr4(
         outPath: string,
         fontFamily: string,
