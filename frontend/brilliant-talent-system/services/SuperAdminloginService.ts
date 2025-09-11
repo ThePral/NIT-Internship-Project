@@ -36,9 +36,10 @@ export async function SuperAdminLoginService(
         });
         break;
       case 403:
-        toast.error("حساب غیرفعال", {
-          description: "حساب کاربری شما غیرفعال شده است.",
+        toast.error("کاربر یافت نشد", {
+          description: "کاربری با اطلاعات وارد شده یافت نشد",
         });
+        break;
         break;
       case 404:
         toast.error("کاربر یافت نشد", {

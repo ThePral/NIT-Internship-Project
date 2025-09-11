@@ -1,27 +1,42 @@
-
 export interface UploadState {
-    "students1": boolean,
-    "students2": boolean,
-    "minors": boolean,
-    "universities": boolean
+    "students1": { exists: boolean, date_created?: Date }
+    "students2": { exists: boolean, date_created?: Date },
+    "minors": { exists: boolean, date_created?: Date },
+    "universities": { exists: boolean, date_created?: Date }
 }
 
-export interface StudentReport {
-    "firstname": string,
-    "lastname": string,
-    "points": number,
-    "university": {
-        "name": string
-    },
+export interface StudentResult {
+    firstname: string;
+    lastname: string;
+    points: number;
+    university: {
+        name: string;
+    };
 
-    "priorities": Priority[]
+    priorities: Priority[];
 }
 
 export interface Priority {
-    "priority": number,
+    priority: number;
+    minorName: string;
+    capacity: number;
+    studentRank: number;
+    lastAcceptedRank: number;
+    isAccepted: boolean;
+}
+
+export interface HistoryResult {
+    "studentName": string,
+    "universityName": string,
     "minorName": string,
-    "capacity": number,
-    "studentRank": number,
-    "lastAcceptedRank": number,
-    "isAccepted": boolean
+    "minorReq": string,
+    majorName: string
+    "minorCap": number,
+    "acceptedPriority": number,
+    "points": number,
+}
+
+export interface HistoryRow {
+    id: number;
+    createdAt: Date;
 }

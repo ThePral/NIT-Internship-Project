@@ -210,7 +210,8 @@ export class AdminService {
                     const filePath = path.join(this.getResourcesDir(), f);
                     try {
                         const stats = fs.statSync(filePath)
-                        present[key].date_created = stats.birthtime;
+                        // present[key].date_created = stats.birthtime;
+                        present[key].date_created = stats.mtime;
                     } catch (error) {
                         console.error(error);
                     }
@@ -245,7 +246,7 @@ export class AdminService {
 
     async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
 
-        const hashPassword = true;
+        const hashPassword = false;
         
         await this.importService.importUniversities(filePaths["universities"]!);
         progressCb?.({message: "universities data imported"});
@@ -292,7 +293,7 @@ export class AdminService {
     }
 
     async allocateUserAcceptances() {
-        const result = await this.allocationService.runAllocation(1);
+        const result = await this.allocationService.runAllocation();
         return {
             message: "User Acceptance Calculated",
             data: result
@@ -327,6 +328,7 @@ export class AdminService {
                 firstname: true,
                 lastname: true,
                 points: true,
+                majorName: true,
                 university: {
                     select: {
                         name: true

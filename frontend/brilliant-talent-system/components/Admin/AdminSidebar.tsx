@@ -91,7 +91,7 @@ export const AdminSidebar = () => {
               index != items.length - 1 ? "border-b" : "md:border-0 border-b"
             }`}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center hover:bg-sidebar-accent">
               <div
                 className={`w-2 rounded-l-lg h-10 ${
                   pathname != item.link

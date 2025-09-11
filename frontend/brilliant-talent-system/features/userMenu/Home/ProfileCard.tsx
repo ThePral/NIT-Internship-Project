@@ -1,23 +1,25 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { toLocalDateTime } from "@/functions/toLocalDateTime";
 import { useUser } from "@/hooks";
-import { StudentReport } from "@/interfaces/operation";
+import { StudentResult } from "@/interfaces/operation";
 import React from "react";
 
 interface ProfileCardProps {
-  result:StudentReport
+  result: StudentResult;
 }
 
-export const ProfileCard: React.FC<ProfileCardProps> = ({
-result
-}) => {
-  const {user} = useUser()
+export const ProfileCard: React.FC<ProfileCardProps> = ({ result }) => {
+  const { user } = useUser();
   const info = [
     { label: "نام", value: result.firstname },
     { label: "نام خانوادگی", value: result.lastname },
-    { label: "تاریخ تولد", value: new Date(user?.birthDate ?? '').toLocaleDateString('en-US') },
+    {
+      label: "تاریخ تولد",
+      value: toLocalDateTime({date:user?.birthDate , type:"justNumbersToFarsi"}),
+    },
     { label: "کد ملی", value: user?.nationalCode },
-    // { label: "رشته تحصیلی", value: user. },
+    { label: "رشته تحصیلی", value: user?.majorName },
     { label: "دانشگاه محل اخذ مدرک", value: result.university.name },
     // { label: "دیپلم", value: degree },
   ];
@@ -41,7 +43,7 @@ result
                 {item.label}
               </span>
               <span className="text-foreground truncate">{item?.value}</span>
-              <Separator className="col-span-2 opacity-50"/>
+              <Separator className="col-span-2 opacity-50" />
             </React.Fragment>
           ))}
         </div>

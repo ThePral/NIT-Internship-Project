@@ -10,6 +10,9 @@ export class userResults {
     @ApiProperty({example: 20.00})
     points: number | null;
 
+    @ApiProperty({example: "مهندسي مكانيك"})
+    majorName: string;
+
     @ApiProperty({example: {
         name: "دانشگاه صنعتي نوشيرواني بابل"
     }})

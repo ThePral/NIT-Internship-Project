@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@/hooks";
 import { useMutation } from "@tanstack/react-query";
-import { LogOut, ScrollText, User, Menu } from "lucide-react";
+import { LogOut, ScrollText, User, Menu, Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -23,7 +23,7 @@ export const UserSidebar = () => {
   }
 
   const items: SidebarItem[] = [
-    { title: "خانه", link: "/home", icon: <User size={18} /> },
+    { title: "خانه", link: "/home", icon: <Home className="h-5 w-5" /> },
     { title: "کارنامه", link: "/transcript", icon: <ScrollText size={18} /> },
     { title: "خروج", link: "/user/auth", icon: <LogOut size={18} /> },
   ];
@@ -48,12 +48,16 @@ export const UserSidebar = () => {
         {items.map((item, index) => (
           <div
             key={index}
-            className={`${index != items.length - 1 ? "border-b" : ""}`}
+            className={`${
+              index != items.length - 1 ? "border-b" : "md:border-0 border-b"
+            }`}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center hover:bg-sidebar-accent">
               <div
                 className={`w-2 rounded-l-lg h-10 ${
-                  pathname != item.link ? "bg-content" : "bg-primary-color"
+                  pathname != item.link
+                    ? "bg-transparent"
+                    : "bg-sidebar-primary"
                 } `}
               ></div>
 
@@ -62,7 +66,7 @@ export const UserSidebar = () => {
                 onClick={() => {
                   handleClick(item.link);
                 }}
-                className="flex gap-2 py-4 w-full hover:bg-gray-superlight transition-colors"
+                className="flex gap-2 py-4 w-full hover:bg-sidebar-accent transition-colors text-sidebar-foreground"
               >
                 <p className="text-primary">{item.icon}</p>
                 <p className="text-primary "> {item.title}</p>
@@ -70,7 +74,7 @@ export const UserSidebar = () => {
             </div>
           </div>
         ))}
-        <Separator className="mb-5" />
+        {/* <Separator className="mb-5" /> */}
 
         <div className="md:hidden w-full flex items-center gap-3 border rounded-full bg-accent ps-5 pe-1 py-2">
           <UserDropDown />

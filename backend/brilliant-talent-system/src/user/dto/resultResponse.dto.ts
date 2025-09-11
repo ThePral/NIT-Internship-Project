@@ -18,6 +18,16 @@ export class StudentResultDto {
   points: number;
 
   @ApiProperty({
+    example: 16.25,
+  })
+  grade: number;
+
+  @ApiProperty({
+    example: 'مهندسی کامپیوتر',
+  })
+  majorName: string;
+
+  @ApiProperty({
     example: { name: 'دانشگاه صنعتی نوشیروانی بابل' },
   })
   university: {
@@ -30,7 +40,8 @@ export class StudentResultDto {
     example: [
       {
         priority: 1,
-        minorName: 'مهندسی نرم افزار',
+        minorName: 'هوش مصنوعی',
+        minorReq: 'مهندسی کامپیوتر',
         capacity: 5,
         studentRank: 2,
         lastAcceptedRank: 7,
@@ -38,7 +49,8 @@ export class StudentResultDto {
       },
       {
         priority: 2,
-        minorName: 'هوش مصنوعی',
+        minorName: 'مهندسی نرم افزار',
+        minorReq: 'مهندسی کامپیوتر',
         capacity: 3,
         studentRank: 4,
         lastAcceptedRank: 3,
@@ -47,6 +59,7 @@ export class StudentResultDto {
       {
         priority: 3,
         minorName: 'امنیت',
+        minorReq: 'مهندسی کامپیوتر',
         capacity: 6,
         studentRank: 10,
         lastAcceptedRank: 7,

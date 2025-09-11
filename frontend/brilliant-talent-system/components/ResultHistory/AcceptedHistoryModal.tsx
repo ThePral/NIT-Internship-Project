@@ -15,17 +15,20 @@ import { Button } from "../ui/button";
 import { ChevronLeft, Edit, GraduationCap } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { EditMyPasswordService } from "@/services/EditMyPasswordService";
-import AcceptedTable from "./AcceptedTable";
+import AcceptedHistoryTable from "./AcceptedHistoryTable";
 
-interface AcceptedModalProps {
+
+interface AcceptedHistoryModalProps {
   isOpen: boolean;
   onOpen: (sth: boolean) => void;
+  id:number
 }
 
-const AcceptedModal = ({
+const AcceptedHistoryModal = ({
   isOpen,
   onOpen,
-}: AcceptedModalProps) => {
+  id
+}: AcceptedHistoryModalProps) => {
 
 
   return (
@@ -47,11 +50,11 @@ const AcceptedModal = ({
           </ResponsiveModalTitle>
         </ResponsiveModalHeader>
         
-        <AcceptedTable/>
+        <AcceptedHistoryTable id={id}/>
        
       </ResponsiveModalContent>
     </ResponsiveModal>
   );
 };
 
-export default AcceptedModal;
+export default AcceptedHistoryModal;

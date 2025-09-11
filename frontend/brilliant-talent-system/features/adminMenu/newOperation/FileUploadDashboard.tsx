@@ -19,6 +19,7 @@ import useGetIsUploadeds from "@/hooks/useGetIsUploadeds";
 import { UploadState } from "@/interfaces/operation";
 import { AddToDB } from "@/services/AddToDB";
 import { CheckAddToDB } from "@/services/CheckAddToDB";
+import { toLocalDateTime } from "@/functions/toLocalDateTime";
 
 interface UploadCardProps {
   Icon: LucideIcon;
@@ -26,7 +27,7 @@ interface UploadCardProps {
   description: string;
   className?: string;
   type: string;
-  hasBeenUploaded?: boolean;
+  hasBeenUploaded?: {exists:boolean,date_created?:Date};
 }
 
 interface JobInterface {
@@ -64,7 +65,11 @@ const UploadCard = ({
       )}
     >
       <input type="file" onChange={(e) => e.target.files && uploadFile.mutate({ type: type, file: e.target.files[0] })} className="hidden" />
-      {hasBeenUploaded && <p className="text-primary">آپلود شده</p>}
+      {hasBeenUploaded?.exists && <div className="flex justify-center items-center gap-3">
+         <p className="text-primary ">آپلود شده</p>
+          {/* <p className="text-xs">تاریخ آخرین آپلود</p> */}
+          <p className="text-xs">{toLocalDateTime({date:hasBeenUploaded.date_created , type:'DateTimeToFarsi'})}</p>
+      </div>}
       <Icon className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
       <div className="space-y-1">
         <p className="font-semibold text-card-foreground">{title}</p>
@@ -199,7 +204,7 @@ export const FileUploadDashboard = () => {
                 title={item.title}
                 description={item.description}
                 type={item.type}
-                hasBeenUploaded={isUploadeds ? isUploadeds[item.type as keyof UploadState] : false}
+                hasBeenUploaded={isUploadeds ? isUploadeds[item.type as keyof UploadState] : {exists:false,date_created:new Date()}}
               />
             ))}
           </div>
@@ -212,7 +217,7 @@ export const FileUploadDashboard = () => {
             disabled={!allFilesUploaded || isPolling || addToDB.isPending}
           >
             {addToDB.isPending ? "در حال شروع..." : 
-             isPolling ? "در حال پردازش..." : "پردازش"}
+             isPolling ? "در حال پردازش..." : "پردازش و انتشار"}
           </Button>
         </CardFooter>
       </Card>
