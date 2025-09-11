@@ -246,7 +246,7 @@ export class AdminService {
 
     async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
 
-        const hashPassword = false;
+        const hashPassword = true;
         
         await this.importService.importUniversities(filePaths["universities"]!);
         progressCb?.({message: "universities data imported"});

@@ -25,7 +25,7 @@ export class HashPasswordsWorker implements OnModuleDestroy {
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    const result = await this.importService.hashPasswordsJob(async (p) => {
+                    const result = await this.importService.hashPasswordsJob(job.data.created, async (p) => {
                         await job.updateProgress(p);
                     });
 
