@@ -10,54 +10,45 @@ export async function GetAcceptedStudents() {
     if (result.ok) {
       console.log("لیست پذیرفته‌شدگان با موفقیت دریافت شد", jsonResult);
       return jsonResult;
-    } else {
-      switch (result.status) {
-        case 400:
-          toast.error("خطای درخواست", {
-            description:
-              jsonResult.message ||
-              "درخواست نامعتبر برای دریافت لیست پذیرفته‌شدگان",
-          });
-          break;
-        case 401:
-          toast.error("عدم دسترسی", {
-            description:
-              "برای مشاهده لیست پذیرفته‌شدگان باید وارد حساب کاربری خود شوید",
-          });
-          break;
-        case 403:
-          toast.error("ممنوع", {
-            description: "شما مجوز دسترسی به لیست پذیرفته‌شدگان را ندارید",
-          });
-          break;
-        case 404:
-          toast.error("یافت نشد", {
-            description: "لیست پذیرفته‌شدگان هنوز منتشر نشده است",
-          });
-          break;
-        case 409:
-          toast.error("تضاد داده", {
-            description: "مشکل در پردازش لیست پذیرفته‌شدگان",
-          });
-          break;
-        case 500:
-          toast.error("خطای سرور", {
-            description: "خطایی در دریافت لیست نهایی پذیرفته‌شدگان رخ داده است",
-          });
-          break;
-        default:
-          toast.error("خطای ناشناخته", {
-            description:
-              jsonResult.error || "خطایی در دریافت نتایج پذیرش رخ داده است",
-          });
-      }
-      throw new Error(jsonResult.error || "خطا در دریافت لیست پذیرفته‌شدگان");
     }
+
+    let message = "مشکلی در دریافت نتایج پذیرش رخ داده است.";
+
+    switch (result.status) {
+      case 400:
+        message =
+          jsonResult.message ||
+          "درخواست نامعتبر برای دریافت لیست پذیرفته‌شدگان.";
+        toast.error("خطای درخواست", { description: message });
+        break;
+      case 401:
+        message = "برای مشاهده لیست پذیرفته‌شدگان باید وارد حساب کاربری شوید.";
+        toast.error("عدم دسترسی", { description: message });
+        break;
+      case 403:
+        message = "شما مجوز دسترسی به لیست پذیرفته‌شدگان را ندارید.";
+        toast.error("ممنوع", { description: message });
+        break;
+      case 404:
+        message = "لیست پذیرفته‌شدگان هنوز منتشر نشده است.";
+        toast.error("یافت نشد", { description: message });
+        break;
+      case 409:
+        message = "مشکل در پردازش لیست پذیرفته‌شدگان.";
+        toast.error("تضاد داده", { description: message });
+        break;
+      case 500:
+        message = "خطایی در دریافت لیست نهایی پذیرفته‌شدگان رخ داده است.";
+        toast.error("خطای سرور", { description: message });
+        break;
+      default:
+        message = jsonResult.error || message;
+        toast.error("خطای ناشناخته", { description: message });
+    }
+
+    throw new Error(message);
   } catch (error) {
     console.error("خطا در دریافت لیست پذیرفته‌شدگان:", error);
-    toast.error("خطا", {
-      description: "خطایی در دریافت نتایج نهایی پذیرش رخ داده است",
-    });
     throw error;
   }
 }

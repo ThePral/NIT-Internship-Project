@@ -9,54 +9,46 @@ export async function GetStudentResult(): Promise<StudentResult> {
     const jsonResult = await result.json();
 
     if (result.ok) {
-      console.log(jsonResult, "نتایج با موفقیت دریافت شد");
+      console.log("نتایج با موفقیت دریافت شد", jsonResult);
       return jsonResult;
-    } else {
-      switch (result.status) {
-        case 400:
-          toast.error("خطای درخواست", {
-            description:
-              jsonResult.message || "درخواست نامعتبر برای دریافت نتایج.",
-          });
-          break;
-        case 401:
-          toast.error("عدم دسترسی", {
-            description: "برای مشاهده نتایج باید وارد حساب کاربری شوید.",
-          });
-          break;
-        case 403:
-          toast.error("ممنوع", {
-            description: "شما مجوز دسترسی به نتایج را ندارید.",
-          });
-          break;
-        case 404:
-          toast.error("یافت نشد", {
-            description: "هیچ ادمینی در سیستم یافت نشد.",
-          });
-          break;
-        case 409:
-          toast.error("تضاد", {
-            description: "مشکل در دریافت نتایج رخ داده است.",
-          });
-          break;
-        case 500:
-          toast.error("خطای سرور", {
-            description: "خطایی در دریافت نتایج رخ داده است.",
-          });
-          break;
-        default:
-          toast.error("خطای ناشناخته", {
-            description:
-              jsonResult.error || "خطایی در دریافت نتایج رخ داده است.",
-          });
-      }
-      throw new Error(jsonResult.error);
     }
+
+    // Default error message
+    let message = "مشکلی در دریافت نتایج رخ داده است.";
+
+    switch (result.status) {
+      case 400:
+        message = jsonResult.message || "درخواست نامعتبر برای دریافت نتایج.";
+        toast.error("خطای درخواست", { description: message });
+        break;
+      case 401:
+        message = "برای مشاهده نتایج باید وارد حساب کاربری شوید.";
+        toast.error("عدم دسترسی", { description: message });
+        break;
+      case 403:
+        message = "شما مجوز دسترسی به نتایج را ندارید.";
+        toast.error("ممنوع", { description: message });
+        break;
+      case 404:
+        message = "هیچ نتیجه‌ای در سیستم یافت نشد.";
+        toast.error("یافت نشد", { description: message });
+        break;
+      case 409:
+        message = "مشکلی در دریافت نتایج رخ داده است.";
+        toast.error("تضاد", { description: message });
+        break;
+      case 500:
+        message = "خطایی در دریافت نتایج رخ داده است.";
+        toast.error("خطای سرور", { description: message });
+        break;
+      default:
+        message = jsonResult.error || message;
+        toast.error("خطای ناشناخته", { description: message });
+    }
+
+    throw new Error(message);
   } catch (error) {
     console.error("خطا در دریافت نتایج:", error);
-    toast.error("خطا", {
-      description: "مشکلی در دریافت نتایج رخ داده است.",
-    });
     throw error;
   }
 }
