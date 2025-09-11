@@ -35,7 +35,6 @@ export class AllocationService {
    * Returns a summary including runId and counts.
    */
   async runAllocation() {
-
     // 1) Load minors and build capacity map
     const minors = await this.prisma.minor.findMany({
       select: { id: true, capacity: true },
@@ -447,63 +446,78 @@ export class AllocationService {
     const student = await this.prisma.user.findUnique({
       where: { id: studentId },
       select: {
-        id: true,
         firstname: true,
         lastname: true,
         points: true,
+        grade: true,
+        majorName: true,
         university: { select: { name: true } },
         priorities: {
-          select: { id: true, minorId: true, priority: true, isAccepted: true },
           orderBy: { priority: 'asc' },
+          // take: 3,
+          select: {
+            priority: true,
+            isAccepted: true,
+            minor: {
+              select: {
+                id: true,
+                name: true,
+                capacity: true,
+                req: true,
+                acceptances: {
+                  select: { studentId: true },
+                  orderBy: { points: 'desc' },
+                },
+              },
+            },
+          },
         },
       },
     });
 
-    if (!student) return null;
-
-    const results: PriorityResultDto[] = [];
-
-    for (const p of student.priorities) {
-      const applicants = await this.prisma.user.findMany({
-        where: { priorities: { some: { minorId: p.minorId } } },
-        select: { id: true, points: true },
-        orderBy: [{ points: 'desc' }, { id: 'asc' }],
-      });
-
-      const studentRank = applicants.findIndex((a) => a.id === student.id) + 1;
-
-      const acceptedPriorities = await this.prisma.studentPriority.findMany({
-        where: { minorId: p.minorId, isAccepted: true },
-        select: { studentId: true },
-      });
-
-      let lastAcceptedRank: number | null = null;
-      if (acceptedPriorities.length > 0) {
-        const lastAccepted = applicants.findIndex((a) =>
-          acceptedPriorities.some((ap) => ap.studentId === a.id),
-        );
-        lastAcceptedRank = lastAccepted + 1;
-      }
-
-      const minor = await this.prisma.minor.findUnique({
-        where: { id: p.minorId },
-        select: { name: true, capacity: true },
-      });
-
-      results.push({
-        priority: p.priority,
-        minorName: minor?.name ?? '',
-        capacity: Number(minor?.capacity ?? 0),
-        studentRank,
-        lastAcceptedRank,
-        isAccepted: p.isAccepted,
-      });
+    if (!student) {
+      throw new Error('Student not found');
     }
+
+    const results = await Promise.all(
+      student.priorities.map(async (p) => {
+        const minor = p.minor;
+
+        const applicants = await this.prisma.studentPriority.findMany({
+          where: { minorId: minor.id },
+          select: {
+            studentId: true,
+            student: { select: { points: true } },
+          },
+          orderBy: { student: { points: 'desc' } },
+        });
+
+        const studentRank =
+          applicants.findIndex((a) => a.studentId === studentId) + 1 || null;
+
+        const lastAcceptedRank =
+          applicants.length >= minor.capacity
+            ? minor.capacity
+            : applicants.length;
+
+        return {
+          priority: p.priority,
+          minorName: minor.name,
+          minorReq: minor.req,
+          capacity: minor.capacity,
+          studentRank,
+          lastAcceptedRank,
+          isAccepted: p.isAccepted,
+        };
+      }),
+    );
 
     return {
       firstname: student.firstname,
       lastname: student.lastname,
       points: student.points,
+      grade: student.grade,
+      majorName: student.majorName,
       university: student.university,
       priorities: results,
     };
