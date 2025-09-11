@@ -73,7 +73,6 @@ const UploadCard = ({
         }
         className="hidden"
       />
-      {hasBeenUploaded && <p className="text-primary">آپلود شده</p>}
       <input
         type="file"
         onChange={(e) =>
@@ -253,11 +252,6 @@ export const FileUploadDashboard = () => {
             onClick={() => addToDB.mutate()}
             disabled={!allFilesUploaded || isPolling || addToDB.isPending}
           >
-            {addToDB.isPending
-              ? "در حال شروع..."
-              : isPolling
-              ? "در حال پردازش..."
-              : "پردازش"}
             {addToDB.isPending
               ? "در حال شروع..."
               : isPolling
