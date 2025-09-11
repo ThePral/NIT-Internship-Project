@@ -10,15 +10,14 @@ export function useSuperAdminCheckToken() {
     queryFn: async () => {
       const result = await getFetch(APIURL + `superAdmins/me`);
       const jsonResult = await result.json();
-      if (result.ok) {
-        console.log(jsonResult, "success");
 
+      if (result.ok) {
         return jsonResult;
       } else {
-        if (result.status == 401) {
-          return RefreshToken("superAdmins")
+        if (result.status === 401) {
+          return RefreshToken("superAdmins"); // تلاش برای تازه‌سازی توکن
         }
-        throw new Error(jsonResult.error);
+        throw new Error("خطایی رخ داده است. لطفاً دوباره تلاش کنید.");
       }
     },
     staleTime: 6 * 60 * 60 * 1000,

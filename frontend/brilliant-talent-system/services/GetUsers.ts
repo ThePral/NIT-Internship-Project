@@ -11,53 +11,44 @@ export async function GetUsersService(): Promise<User[]> {
     if (result.ok) {
       console.log(jsonResult, "لیست کاربران با موفقیت دریافت شد");
       return jsonResult;
-    } else {
-      switch (result.status) {
-        case 400:
-          toast.error("خطای درخواست", {
-            description:
-              jsonResult.message || "درخواست نامعتبر برای دریافت لیست کاربران.",
-          });
-          break;
-        case 401:
-          toast.error("عدم دسترسی", {
-            description:
-              "برای مشاهده لیست کاربران باید وارد حساب کاربری خود شوید.",
-          });
-          break;
-        case 403:
-          toast.error("ممنوع", {
-            description: "شما مجوز دسترسی به لیست کاربران را ندارید.",
-          });
-          break;
-        case 404:
-          toast.error("یافت نشد", {
-            description: "هیچ کاربری در سیستم یافت نشد.",
-          });
-          break;
-        case 409:
-          toast.error("تضاد", {
-            description: "مشکلی در دریافت لیست کاربران رخ داده است.",
-          });
-          break;
-        case 500:
-          toast.error("خطای سرور", {
-            description: "خطایی در دریافت لیست کاربران رخ داده است.",
-          });
-          break;
-        default:
-          toast.error("خطای ناشناخته", {
-            description:
-              jsonResult.error || "خطایی در دریافت لیست کاربران رخ داده است.",
-          });
-      }
-      throw new Error(jsonResult.error);
     }
+
+    // Only show one toast based on status
+    let message = "مشکلی در دریافت لیست کاربران رخ داده است.";
+    switch (result.status) {
+      case 400:
+        message =
+          jsonResult.message || "درخواست نامعتبر برای دریافت لیست کاربران.";
+        toast.error("خطای درخواست", { description: message });
+        break;
+      case 401:
+        message = "برای مشاهده لیست کاربران باید وارد حساب کاربری خود شوید.";
+        toast.error("عدم دسترسی", { description: message });
+        break;
+      case 403:
+        message = "شما مجوز دسترسی به لیست کاربران را ندارید.";
+        toast.error("ممنوع", { description: message });
+        break;
+      case 404:
+        message = "هیچ کاربری در سیستم یافت نشد.";
+        toast.error("یافت نشد", { description: message });
+        break;
+      case 409:
+        message = "مشکلی در دریافت لیست کاربران رخ داده است.";
+        toast.error("تضاد", { description: message });
+        break;
+      case 500:
+        message = "خطایی در دریافت لیست کاربران رخ داده است.";
+        toast.error("خطای سرور", { description: message });
+        break;
+      default:
+        message = jsonResult.error || message;
+        toast.error("خطای ناشناخته", { description: message });
+    }
+
+    throw new Error(message);
   } catch (error) {
     console.error("خطا در دریافت لیست کاربران:", error);
-    toast.error("خطا", {
-      description: "مشکلی در دریافت لیست کاربران رخ داده است.",
-    });
     throw error;
   }
 }

@@ -36,11 +36,11 @@ export async function SuperAdminLoginService(
         });
         break;
       case 403:
-        toast.error("کاربر یافت نشد", {
-          description: "کاربری با اطلاعات وارد شده یافت نشد",
+        toast.error("نام کاربری یا رمز عبور اشتباه است", {
+          description: "لطفاً اطلاعات ورود خود را بررسی کنید",
         });
         break;
-        break;
+
       case 404:
         toast.error("کاربر یافت نشد", {
           description: "کاربری با این مشخصات وجود ندارد.",

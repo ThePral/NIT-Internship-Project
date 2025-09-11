@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,17 +8,12 @@ import { Label } from "@/components/ui/label";
 
 interface User {
   id: number;
-  password: string;
-
 }
 
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onEditUser: (userData: {
-    id: number;
-    password: string;
-  }) => void;
+  onEditUser: (userData: { id: number; password: string }) => void;
   user: User | null;
 }
 
@@ -31,24 +26,24 @@ export default function EditUserModal({
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Update form fields when user data changes
-  useEffect(() => {
-    // if (user) {
-    //   setPassword(user.password);
-    // }
-  }, [user]);
+  const resetFields = () => {
+    setPassword(""); // همیشه خالی می‌مونه
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()  || !user)
-      return;
+    if (!user) return;
+
+    const trimmedPassword = (password ?? "").trim();
+    if (!trimmedPassword) return;
 
     setIsSubmitting(true);
     try {
       await onEditUser({
         id: user.id,
-        password: password.trim()
+        password: trimmedPassword,
       });
+      resetFields();
       onClose();
     } catch (error) {
       console.error("Error editing user:", error);
@@ -59,14 +54,13 @@ export default function EditUserModal({
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
+      resetFields();
       onClose();
     }
   };
 
   const handleClose = () => {
-    // if (user) {
-    //   setPassword(user.password);
-    // }
+    resetFields();
     onClose();
   };
 
@@ -79,7 +73,9 @@ export default function EditUserModal({
     >
       <div className="bg-card rounded-lg shadow-lg w-full max-w-md border border-border">
         <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-bold text-foreground">ویرایش دانشجو</h2>
+          <h2 className="text-xl font-bold text-foreground">
+            ویرایش رمز دانشجو
+          </h2>
           <Button
             variant="ghost"
             size="icon"
@@ -93,20 +89,19 @@ export default function EditUserModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="editPassword" className="text-foreground">
-              پسورد
+              رمز دانشجو
             </Label>
             <Input
               id="editPassword"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="نام دانشجو"
+              placeholder="رمز عبور جدید"
               className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               required
               disabled={isSubmitting}
+              autoComplete="new-password"
             />
           </div>
-
-          
 
           <div className="flex gap-3 pt-4">
             <Button
@@ -121,10 +116,7 @@ export default function EditUserModal({
             <Button
               type="submit"
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={
-                isSubmitting ||
-                !password.trim() 
-              }
+              disabled={isSubmitting || !password.trim()}
             >
               {isSubmitting ? "در حال ویرایش..." : "ذخیره تغییرات"}
             </Button>

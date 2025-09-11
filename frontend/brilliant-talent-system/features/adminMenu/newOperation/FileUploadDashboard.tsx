@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import type { LucideIcon } from "lucide-react";
 import { GraduationCap, School, Armchair } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ interface UploadCardProps {
   description: string;
   className?: string;
   type: string;
-  hasBeenUploaded?: {exists:boolean,date_created?:Date};
+  hasBeenUploaded?: { exists: boolean; date_created?: Date };
 }
 
 interface JobInterface {
@@ -46,14 +46,15 @@ const UploadCard = ({
   description,
   className,
   type,
-  hasBeenUploaded
+  hasBeenUploaded,
 }: UploadCardProps) => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const uploadFile = useMutation({
-    mutationFn: ({ type, file }: { type: string; file: File }) => UploadFileService(type, file),
+    mutationFn: ({ type, file }: { type: string; file: File }) =>
+      UploadFileService(type, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["uploadeds"] });
-      console.log('successful upload')
+      console.log("successful upload");
     },
   });
 
@@ -64,12 +65,34 @@ const UploadCard = ({
         className
       )}
     >
-      <input type="file" onChange={(e) => e.target.files && uploadFile.mutate({ type: type, file: e.target.files[0] })} className="hidden" />
-      {hasBeenUploaded?.exists && <div className="flex justify-center items-center gap-3">
-         <p className="text-primary ">آپلود شده</p>
+      <input
+        type="file"
+        onChange={(e) =>
+          e.target.files &&
+          uploadFile.mutate({ type: type, file: e.target.files[0] })
+        }
+        className="hidden"
+      />
+      <input
+        type="file"
+        onChange={(e) =>
+          e.target.files &&
+          uploadFile.mutate({ type: type, file: e.target.files[0] })
+        }
+        className="hidden"
+      />
+      {hasBeenUploaded?.exists && (
+        <div className="flex justify-center items-center gap-3">
+          <p className="text-primary ">آپلود شده</p>
           {/* <p className="text-xs">تاریخ آخرین آپلود</p> */}
-          <p className="text-xs">{toLocalDateTime({date:hasBeenUploaded.date_created , type:'DateTimeToFarsi'})}</p>
-      </div>}
+          <p className="text-xs">
+            {toLocalDateTime({
+              date: hasBeenUploaded.date_created,
+              type: "DateTimeToFarsi",
+            })}
+          </p>
+        </div>
+      )}
       <Icon className="h-12 w-12 text-muted-foreground" strokeWidth={1.5} />
       <div className="space-y-1">
         <p className="font-semibold text-card-foreground">{title}</p>
@@ -85,25 +108,25 @@ export const FileUploadDashboard = () => {
       Icon: GraduationCap,
       title: "جدول دانشجویان نوشیروانی",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
-      type: "students1"
+      type: "students1",
     },
     {
       Icon: GraduationCap,
       title: "جدول دانشجویان دیگر دانشگاه ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
-      type: "students2"
+      type: "students2",
     },
     {
       Icon: School,
       title: "جدول دانشگاه ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
-      type: "universities"
+      type: "universities",
     },
     {
       Icon: Armchair,
       title: "جدول ظرفیت ها",
       description: "برای آپلود فایل مورد نظر را روی اینجا بکشید و رها کنید",
-      type: "minors"
+      type: "minors",
     },
   ];
 
@@ -114,7 +137,7 @@ export const FileUploadDashboard = () => {
 
   // Check for existing job on component mount
   useEffect(() => {
-    const storedJobId = localStorage.getItem('currentJob');
+    const storedJobId = localStorage.getItem("currentJob");
     if (storedJobId) {
       setJobId(storedJobId);
       startPolling(storedJobId);
@@ -128,17 +151,19 @@ export const FileUploadDashboard = () => {
       try {
         const jobData = await CheckAddToDB(jobIdToPoll);
         setJobStatus(jobData);
-        
+
         if (jobData.state === "completed" || jobData.state === "failed") {
           clearInterval(pollInterval);
           setIsPolling(false);
-          localStorage.removeItem('currentJob');
+          localStorage.removeItem("currentJob");
           setJobId(null);
-          
+
           if (jobData.state === "completed") {
             toast.success("پردازش با موفقیت انجام شد");
           } else {
-            toast.error(`پردازش ناموفق: ${jobData.failedReason || "دلیل نامشخص"}`);
+            toast.error(
+              `پردازش ناموفق: ${jobData.failedReason || "دلیل نامشخص"}`
+            );
           }
         }
       } catch (error) {
@@ -154,21 +179,23 @@ export const FileUploadDashboard = () => {
 
   const addToDB = useMutation({
     mutationFn: () => AddToDB(),
-    onSuccess: (data: { message: string, jobId: string }) => {
-      console.log('successful add to db', data);
+    onSuccess: (data: { message: string; jobId: string }) => {
+      toast.success("افزودن با موفقیت انجام شد");
       setJobId(data.jobId);
-      localStorage.setItem('currentJob', data.jobId);
+      localStorage.setItem("currentJob", data.jobId);
       startPolling(data.jobId);
     },
-    onError: (error) => {
-      toast.error("خطا در شروع پردازش");
+    onError: (error: any) => {
+      toast.error("خطا در شروع پردازش", {
+        description: error.message,
+      });
       console.error("Add to DB error:", error);
     },
   });
 
-  // Check if all required files are uploaded
-  const allFilesUploaded = isUploadeds && 
-    uploadItems.every(item => isUploadeds[item.type as keyof UploadState]);
+  const allFilesUploaded =
+    isUploadeds &&
+    uploadItems.every((item) => isUploadeds[item.type as keyof UploadState]);
 
   return (
     <div className="flex w-full items-center justify-center bg-background font-primary text-foreground">
@@ -204,7 +231,16 @@ export const FileUploadDashboard = () => {
                 title={item.title}
                 description={item.description}
                 type={item.type}
-                hasBeenUploaded={isUploadeds ? isUploadeds[item.type as keyof UploadState] : {exists:false,date_created:new Date()}}
+                hasBeenUploaded={
+                  isUploadeds
+                    ? isUploadeds[item.type as keyof UploadState]
+                    : false
+                }
+                hasBeenUploaded={
+                  isUploadeds
+                    ? isUploadeds[item.type as keyof UploadState]
+                    : { exists: false, date_created: new Date() }
+                }
               />
             ))}
           </div>
@@ -216,8 +252,11 @@ export const FileUploadDashboard = () => {
             onClick={() => addToDB.mutate()}
             disabled={!allFilesUploaded || isPolling || addToDB.isPending}
           >
-            {addToDB.isPending ? "در حال شروع..." : 
-             isPolling ? "در حال پردازش..." : "پردازش و انتشار"}
+            {addToDB.isPending
+              ? "در حال شروع..."
+              : isPolling
+              ? "در حال پردازش..."
+              : "پردازش و انتشار"}
           </Button>
         </CardFooter>
       </Card>

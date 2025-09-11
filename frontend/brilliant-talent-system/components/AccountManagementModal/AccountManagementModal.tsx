@@ -117,9 +117,9 @@ const AccountManagementModal = ({
       case "admin":
         return "تغییر رمز ادمین";
       case "superadmin":
-        return "تغییر رمز مدیر";
+        return "تغییر رمز مدیر کل";
       case "superAdmin":
-        return "تغییر رمز مدیر";
+        return "تغییر رمز مدیر کل";
       default:
         return "تغییر رمز دانشجو";
     }

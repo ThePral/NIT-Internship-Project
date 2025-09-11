@@ -246,7 +246,7 @@ export class AdminService {
 
     async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
 
-        const hashPassword = false;
+        const hashPassword = true;
         
         await this.importService.importUniversities(filePaths["universities"]!);
         progressCb?.({message: "universities data imported"});
@@ -363,7 +363,27 @@ export class AdminService {
             { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
         );
     }
-
+    async buildSr1() {
+        return this.srv.generateSr1(
+            './output/sr1.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
+    async buildSr2() {
+        return this.srv.generateSr2(
+            './output/sr2.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
+    async buildSr3() {
+        return this.srv.generateSr3(
+            './output/sr3.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
     async buildSr4() {
         return this.srv.generateSr4(
             './output/sr4.pdf',

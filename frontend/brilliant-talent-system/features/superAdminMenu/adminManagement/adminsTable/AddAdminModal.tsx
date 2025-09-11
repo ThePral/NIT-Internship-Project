@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label";
 interface AddAdminModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddAdmin: (adminData: { username: string;
-    password: string;}) => void;
+  onAddAdmin: (adminData: { username: string; password: string }) => void;
 }
 
 export default function AddAdminModal({
@@ -32,8 +31,7 @@ export default function AddAdminModal({
         username: username.trim(),
         password: password.trim(),
       });
-      setUsername("");
-      setPassword("");
+      resetFields();
       onClose();
     } catch (error) {
       console.error("Error adding admin:", error);
@@ -42,17 +40,28 @@ export default function AddAdminModal({
     }
   };
 
+  const resetFields = () => {
+    setUsername("");
+    setPassword("");
+  };
+
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
+      resetFields();
       onClose();
     }
+  };
+
+  const handleClose = () => {
+    resetFields();
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0  backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={handleOverlayClick}
     >
       <div className="bg-card rounded-lg shadow-lg w-full max-w-md border border-border">
@@ -63,8 +72,8 @@ export default function AddAdminModal({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
-            className="h-8 w-8 p-0 "
+            onClick={handleClose}
+            className="h-8 w-8 p-0"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -79,7 +88,7 @@ export default function AddAdminModal({
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="نام ادمین"
+              placeholder="نام‌کاربری ادمین"
               className="w-full"
               required
               disabled={isSubmitting}
@@ -88,13 +97,13 @@ export default function AddAdminModal({
 
           <div className="space-y-2">
             <Label htmlFor="password" className="text-foreground">
-              نام خانوادگی
+              رمز عبور
             </Label>
             <Input
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="رمز ادمین"
+              placeholder="رمز عبور ادمین"
               className="w-full"
               required
               disabled={isSubmitting}
@@ -105,7 +114,7 @@ export default function AddAdminModal({
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1"
               disabled={isSubmitting}
             >

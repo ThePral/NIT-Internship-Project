@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 interface Admin {
   id: number;
   username: string;
-  password?: string;
 }
 
 interface EditAdminModalProps {
@@ -33,25 +32,31 @@ export default function EditAdminModal({
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Update form fields when admin data changes
   useEffect(() => {
     if (admin) {
       setUsername(admin.username);
-      setPassword(admin.password || "");
+      setPassword(""); // رمز هیچ وقت پیش‌پر نمی‌شود
     }
   }, [admin]);
+
+  const resetFields = () => {
+    setUsername(admin?.username || "");
+    setPassword(""); // همیشه خالی می‌ماند
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !admin) return;
 
+    const trimmedPassword = (password ?? "").trim();
     setIsSubmitting(true);
     try {
       await onEditAdmin({
         id: admin.id,
         username: username.trim(),
-        password: password.trim(),
+        password: trimmedPassword || undefined, // فقط اگر چیزی تایپ شد ارسال می‌شود
       });
+      resetFields();
       onClose();
     } catch (error) {
       console.error("Error editing admin:", error);
@@ -62,13 +67,13 @@ export default function EditAdminModal({
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
+      resetFields();
       onClose();
     }
   };
 
   const handleClose = () => {
-    setUsername(admin?.username || "");
-    setPassword(admin?.password || "");
+    resetFields();
     onClose();
   };
 
@@ -110,15 +115,16 @@ export default function EditAdminModal({
 
           <div className="space-y-2">
             <Label htmlFor="editPassword" className="text-foreground">
-            رمز ادمین
+              رمز ادمین
             </Label>
             <Input
               id="editPassword"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="رمز ادمین"
+              placeholder="رمز جدید"
               className="w-full bg-background border-border focus:ring-2 focus:ring-primary/20"
               disabled={isSubmitting}
+              autoComplete="new-password"
             />
           </div>
 
@@ -135,7 +141,7 @@ export default function EditAdminModal({
             <Button
               type="submit"
               className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={isSubmitting || !username.trim() }
+              disabled={isSubmitting || !username.trim()}
             >
               {isSubmitting ? "در حال ویرایش..." : "ذخیره تغییرات"}
             </Button>
