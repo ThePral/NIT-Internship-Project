@@ -5,11 +5,12 @@ import { AdminService } from 'src/admin/admin.service';
 import { ImportWorker } from './import.worker';
 import { AdmissionsModule } from 'src/admissions/admissions.module';
 import { HistoryWorker } from './history.worker';
+import { HashPasswordsWorker } from './hashpasswords.worker';
 
 @Global()
 @Module({
   controllers: [QueueController],
-  providers: [QueueService, AdminService, ImportWorker, HistoryWorker],
+  providers: [QueueService, AdminService, ImportWorker, HistoryWorker, HashPasswordsWorker],
   exports: [QueueService],
   imports: [AdmissionsModule]
 })

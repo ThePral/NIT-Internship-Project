@@ -55,21 +55,11 @@ export default function Home() {
     );
   }
 
-  const accepted = result.priorities.find((p: any) => p.isAccepted);
-
   return (
     <main className="h-fit bg-background flex w-full justify-center items-start p-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ProfileCard result={result} />
-        {accepted ? (
-          <ResultCard
-            isAccepted={true}
-            priority={toPersianOrdinal(accepted.priority)}
-            acceptedMajor={accepted.minorName}
-          />
-        ) : (
-          <ResultCard isAccepted={false} />
-        )}
+        <ResultCard result={result} />
       </div>
     </main>
   );

@@ -210,7 +210,8 @@ export class AdminService {
                     const filePath = path.join(this.getResourcesDir(), f);
                     try {
                         const stats = fs.statSync(filePath)
-                        present[key].date_created = stats.birthtime;
+                        // present[key].date_created = stats.birthtime;
+                        present[key].date_created = stats.mtime;
                     } catch (error) {
                         console.error(error);
                     }
@@ -327,6 +328,7 @@ export class AdminService {
                 firstname: true,
                 lastname: true,
                 points: true,
+                majorName: true,
                 university: {
                     select: {
                         name: true
@@ -361,7 +363,20 @@ export class AdminService {
             { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
         );
     }
-
+    async buildSr1() {
+        return this.srv.generateSr1(
+            './output/sr1.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
+    async buildSr2() {
+        return this.srv.generateSr2(
+            './output/sr2.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
     async buildSr4() {
         return this.srv.generateSr4(
             './output/sr4.pdf',

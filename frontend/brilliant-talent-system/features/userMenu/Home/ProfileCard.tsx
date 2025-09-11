@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { toLocalDateTime } from "@/functions/toLocalDateTime";
 import { useUser } from "@/hooks";
 import { StudentResult } from "@/interfaces/operation";
 import React from "react";
@@ -15,16 +16,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ result }) => {
     { label: "نام خانوادگی", value: result.lastname },
     {
       label: "تاریخ تولد",
-      value: (() => {
-        const date = new Date(user?.birthDate ?? "");
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}/${month}/${day}`;
-      })(),
+      value: toLocalDateTime({date:user?.birthDate , type:"justNumbersToFarsi"}),
     },
     { label: "کد ملی", value: user?.nationalCode },
-    // { label: "رشته تحصیلی", value: user. },
+    { label: "رشته تحصیلی", value: user?.majorName },
     { label: "دانشگاه محل اخذ مدرک", value: result.university.name },
     // { label: "دیپلم", value: degree },
   ];

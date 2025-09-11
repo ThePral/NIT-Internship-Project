@@ -5,7 +5,7 @@ export const NewOperation = () => {
   return (
     <div className="bg-background font-primary w-full mt-4">
       <FileUploadDashboard />
-      <OperationResultPage />
+      {/* <OperationResultPage /> */}
     </div>
   );
 };

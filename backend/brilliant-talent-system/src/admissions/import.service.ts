@@ -3,6 +3,8 @@ import ExcelJS from 'exceljs';
 // import * as bcrypt from 'bcryptjs';
 import * as argon from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'; // adjust path to your PrismaService
+import { QueueService } from 'src/queue/queue.service';
+import { User } from '@prisma/client';
 type Cohort = 1 | 2;
 
 @Injectable()
@@ -12,7 +14,7 @@ export class ImportService {
     // private readonly DEFAULT_SALT_ROUNDS = 10;
     private readonly privilegedUniName = "دانشگاه صنعتي نوشيرواني بابل";
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService, private queueService: QueueService) {}
 
     /* ----------------- Helpers ----------------- */
 
@@ -368,13 +370,32 @@ export class ImportService {
             });
         }
         
-        // bulk create users (skip duplicates)
-        const userChunks = this.chunk(usersToCreate);
         let createdUsers = 0;
-        for (const chunk of userChunks) {
-            const res = await this.prisma.user.createMany({ data: chunk, skipDuplicates: true });
-            createdUsers += (res.count ?? 0);
+
+        if (hashPassword) {
+            // bulk create users (skip duplicates)
+            const userChunks = this.chunk(usersToCreate);
+            for (const chunk of userChunks) {
+                const res = await this.prisma.user.createMany({ data: chunk, skipDuplicates: true });
+                createdUsers += (res.count ?? 0);
+            }
+        } else {
+            const inserted = await Promise.all(
+                usersToCreate.map(utc => 
+                    this.prisma.user.create({ data: utc }).catch(err => {
+                        if (err.code === 'P2002') return null;
+                        throw err;
+                    })
+                )
+            );
+    
+            const created = inserted.filter(u => u !== null);
+            createdUsers += created.length;
+    
+            this.queueService.hashPasswordQueue.add('hash', {created});
+
         }
+
 
         // fetch user ids for usernames (both existing and newly created)
         const users = await this.prisma.user.findMany({
@@ -432,6 +453,7 @@ export class ImportService {
                 data: chunk,
                 skipDuplicates: true,
             });
+            
             createdPriorities += (res.count ?? 0);
         }
 
@@ -445,5 +467,20 @@ export class ImportService {
             },
             unmatchedPriorities: unmatchedPriorities.slice(0, 50), // show first 50 for debugging
         };
+    }
+
+    async hashPasswordsJob(users: User[], progressCb?: (progress: number | object) => void,) {
+
+        // const users = await this.prisma.user.findMany();
+    
+        for (const user of users) {
+            const hashedPassword = await argon.hash(user.hash_password);
+            await this.prisma.user.update({
+                where : { id: user.id},
+                data: {hash_password: hashedPassword}
+            });
+        }
+
+        return { success: true, message: "users passwords hashed succesfully"};
     }
 }
