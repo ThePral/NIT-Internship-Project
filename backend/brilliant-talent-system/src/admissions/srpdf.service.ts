@@ -7,6 +7,8 @@ import { AcceptedUser, MinorAcceptance } from './dto/srpdf-service';
 import { Sr4AcceptedUser, Sr4MinorAcceptance } from './dto/srpdf-service/sr4.dto';
 import { UserResult } from './dto/srpdf-service/sr1.dto';
 import { UserResult2 } from './dto/srpdf-service/sr2.dto';
+import { MinorResult } from './dto/srpdf-service/sr3.dto';
+import { min } from 'class-validator';
 
 @Injectable()
 export class SrPdfService {
@@ -435,6 +437,8 @@ export class SrPdfService {
         `;
         return html;
     }
+    
+
     private buildSr2Html(userResults: UserResult2[], fontFamily: string, fontFiles: { regular: string; bold?: string }) {
         // Embed fonts as base64 @font-face (same as before)
         const regularAbs = this.toAbsolute(fontFiles.regular);
@@ -696,6 +700,237 @@ export class SrPdfService {
                         <h1>بسمه تعالی</h1>
                         <h1>نتایج قبولی رشته‌ها</h1>
                     </div>
+                    ${pagesHtml}
+                </body>
+            </html>
+        `;
+        return html;
+    }
+    private buildSr3Html(minorResults: MinorResult[], fontFamily: string, fontFiles: { regular: string; bold?: string }) {
+        // Embed fonts as base64 @font-face
+        const regularAbs = this.toAbsolute(fontFiles.regular);
+        const regularB64 = this.loadFontAsBase64(regularAbs);
+        const regularExt = path.extname(regularAbs).replace('.', '') || 'ttf';
+        const boldB64 = fontFiles.bold ? this.loadFontAsBase64(this.toAbsolute(fontFiles.bold)) : regularB64;
+        const boldExt = fontFiles.bold ? path.extname(this.toAbsolute(fontFiles.bold)).replace('.', '') : regularExt;
+    
+        const fontCss = `
+            @font-face {
+                font-family: '${fontFamily}';
+                src: url('data:font/${regularExt};base64,${regularB64}') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+            @font-face {
+                font-family: '${fontFamily}';
+                src: url('data:font/${boldExt};base64,${boldB64}') format('truetype');
+                font-weight: bold;
+                font-style: normal;
+            }
+        `;
+    
+        // Build individual pages for each minor
+        let pagesHtml = '';
+    
+        for (const minor of minorResults) {
+            // Minor information section
+            const minorInfoHtml = `
+                <div class="minor-info">
+                    <h2>${this.escapeHtml(minor.name)}</h2>
+                    <table class="minor-details">
+                        <tr>
+                            <th>ظرفیت رشته</th>
+                            <td>${minor.capacity}</td>
+                        </tr>
+                        <tr>
+                            <th>تعداد پذیرفته شده</th>
+                            <td>${minor.acceptedCount}</td>
+                        </tr>
+                        <tr>
+                            <th>تعداد کل داوطلبان</th>
+                            <td>${minor.priorities.length}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+    
+            // Build table rows for students
+            let studentsRowsHtml = '';
+            let index = 1;
+            
+            for (const priority of minor.priorities) {
+                const student = priority.student;
+                const isAccepted = priority.isAccepted;
+                
+                studentsRowsHtml += `
+                    <tr>
+                        <td style="text-align:center">${index}</td>
+                        <td style="${isAccepted ? "color: rgb(0, 0, 255);" : ""}">
+                            ${this.escapeHtml(student.fullname)}
+                        </td>
+                        <td>${this.escapeHtml(student.university.name)}</td>
+                        <td style="text-align:center">${student.university.grade}</td>
+                        <td style="text-align:center">${student.grade}</td>
+                        <td style="text-align:center">${student.points}</td>
+                        <td style="text-align:center">${isAccepted ? "✓" : "✗"}</td>
+                    </tr>
+                `;
+                index++;
+            }
+    
+            if (minor.priorities.length === 0) {
+                studentsRowsHtml = `<tr><td colspan="7" style="text-align:center">هیچ داوطلبی برای این رشته وجود ندارد</td></tr>`;
+            }
+    
+            // Students table
+            const studentsTableHtml = `
+                <div class="students-section">
+                    <h3>لیست داوطلبان</h3>
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th>ردیف</th>
+                                <th>نام داوطلب</th>
+                                <th>دانشگاه</th>
+                                <th>اولویت</th>
+                                <th>معدل</th>
+                                <th>امتیاز</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${studentsRowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+    
+            // Create a page for each minor with page break
+            pagesHtml += `
+                <div class="page">
+                    <div class="header">
+                        <h1>بسمه تعالی</h1>
+                        <h1>نتایج انتخاب رشته</h1>
+                    </div>
+                    ${minorInfoHtml}
+                    ${studentsTableHtml}
+                </div>
+            `;
+        }
+    
+        if (minorResults.length === 0) {
+            pagesHtml = `<div class="page"><p style="text-align:center">هیچ نتیجه‌ای یافت نشد</p></div>`;
+        }
+    
+        // Full HTML with improved styling and page breaks
+        const html = `
+            <!doctype html>
+            <html lang="fa">
+                <head>
+                    <meta charset="utf-8"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                    <style>
+                        ${fontCss}
+                        body {
+                            font-family: '${fontFamily}', sans-serif;
+                            direction: rtl;
+                            text-align: right;
+                            margin: 0;
+                            padding: 15mm 10mm;
+                            color: #000;
+                            line-height: 1.5;
+                        }
+                        .page {
+                            page-break-after: always;
+                            margin-bottom: 30mm;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 10px;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 22px;
+                            font-weight: bold;
+                        }
+                        .minor-info {
+                            margin-bottom: 30px;
+                        }
+                        .minor-info h2 {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            color: #333;
+                            font-size: 24px;
+                            background-color: #f0f0f0;
+                            padding: 15px;
+                            border-radius: 5px;
+                            border: 2px solid #333;
+                        }
+                        .minor-details {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 20px;
+                            border: 1px solid #333;
+                        }
+                        .minor-details th, .minor-details td {
+                            border: 1px solid #333;
+                            padding: 12px;
+                            text-align: right;
+                        }
+                        .minor-details th {
+                            background-color: #e0e0e0;
+                            font-weight: bold;
+                            width: 40%;
+                        }
+                        .students-section {
+                            margin-top: 30px;
+                        }
+                        .students-section h3 {
+                            text-align: center;
+                            margin: 0 0 20px 0;
+                            color: #333;
+                            font-size: 20px;
+                        }
+                        .students-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            border: 2px solid #333;
+                            font-size: 12px;
+                            margin-bottom: 10px;
+                        }
+                        .students-table th, .students-table td {
+                            border: 1px solid #333;
+                            padding: 8px 5px;
+                            word-break: break-word;
+                            text-align: center;
+                        }
+                        .students-table th {
+                            background-color: #e0e0e0;
+                            font-weight: bold;
+                            padding: 12px 5px;
+                        }
+                        /* Column widths for students table */
+                        .students-table th:nth-child(1), .students-table td:nth-child(1) { width: 5%; }
+                        .students-table th:nth-child(2), .students-table td:nth-child(2) { width: 23%; }
+                        .students-table th:nth-child(3), .students-table td:nth-child(3) { width: 23%; }
+                        .students-table th:nth-child(4), .students-table td:nth-child(4) { width: 10%; }
+                        .students-table th:nth-child(5), .students-table td:nth-child(5) { width: 10%; }
+                        .students-table th:nth-child(6), .students-table td:nth-child(6) { width: 10%; }
+                        .students-table th:nth-child(7), .students-table td:nth-child(7) { width: 9%; }
+                        
+                        @media print {
+                            .page {
+                                page-break-after: always;
+                            }
+                            body {
+                                padding: 0;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
                     ${pagesHtml}
                 </body>
             </html>
@@ -1316,6 +1551,96 @@ export class SrPdfService {
         return { runId: run.id, outPath };
     }
     
+
+    async generateSr3(
+        outPath: string,
+        fontFamily: string,
+        fontFiles: { regular: string; bold?: string },
+        runId?: number,
+    ): Promise<{ runId: number; outPath: string }> {
+        // find run
+        let run;
+        if (runId) {
+            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
+            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        } else {
+            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!run) throw new Error('No AllocationRun found in DB');
+        }
+       
+        // Get all students with their priorities
+        const allStudents = await this.prisma.user.findMany({
+            include: {
+                university: true,
+                acceptances: true,
+                priorities: {
+                    include: {
+                        minor: true
+                    }
+                }
+            }
+        });
+        const allMinors = await this.prisma.minor.findMany({
+            include:{
+                priorities:{
+                    include:{
+                        student: {
+                            include: {
+                                acceptances: true,
+                                university: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+          
+        const minorResults: MinorResult[] = [];
+        
+          
+        for(const minor of allMinors){
+            minor.priorities.sort((a , b) => {
+                return (b.student.points || 0) - (a.student.points  || 0)
+            });
+            let acceptedCount = 0;
+            for(const priority of minor.priorities){
+                if(priority.isAccepted){
+                    acceptedCount++;
+                }
+            }
+            const newMinorResult : MinorResult = {
+                acceptedCount: acceptedCount,
+                name : minor.name,
+                capacity : minor.capacity,
+                priorities : []
+            }
+            for (let index = 0; index < minor.priorities.length; index++) {
+                const priority = minor.priorities[index];
+                newMinorResult.priorities.push({
+                    isAccepted: priority.isAccepted || false,
+                    student:{
+                        fullname: priority.student.firstname+ " " + priority.student.lastname,
+                        grade: priority.student.grade,
+                        points: priority.student.points || 0,
+                        university: priority.student.university
+                    }
+                })
+                
+            }
+            minorResults.push(newMinorResult);
+        }
+
+
+
+        // console.log(userResults[1])
+        const html = this.buildSr3Html(minorResults, fontFamily, fontFiles);
+    
+        await this.convertHtmlToPdfPuppeteer(html, outPath);
+    
+        return { runId: run.id, outPath };
+    }
+
     async generateSr4(
         outPath: string,
         fontFamily: string,

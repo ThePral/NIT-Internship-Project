@@ -144,6 +144,10 @@ export class AdminController {
     async generateSr2PDF() {
         return this.adminService.buildSr2();
     }
+    @Get("results/pdf/sr3")
+    async generateSr3PDF() {
+        return this.adminService.buildSr3();
+    }
     @Get("results/pdf/sr4")
     async generateSr4PDF() {
         return this.adminService.buildSr4();

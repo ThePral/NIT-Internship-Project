@@ -377,6 +377,13 @@ export class AdminService {
             { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
         );
     }
+    async buildSr3() {
+        return this.srv.generateSr3(
+            './output/sr3.pdf',
+            'Vazir',
+            { regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }
+        );
+    }
     async buildSr4() {
         return this.srv.generateSr4(
             './output/sr4.pdf',
