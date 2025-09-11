@@ -6,46 +6,48 @@ export async function GetRules() {
   try {
     const result = await getFetch(APIURL + `rules`);
     const jsonResult = await result.json();
+
     if (result.ok) {
-      console.log(jsonResult, "success");
+      console.log("قوانین با موفقیت دریافت شدند", jsonResult);
       return jsonResult;
-    } else {
-      switch (result.status) {
-        case 400:
-          toast.error("خطای درخواست", {
-            description: jsonResult.message || "درخواست نامعتبر است",
-          });
-          break;
-        case 401:
-          toast.error("عدم دسترسی", {
-            description: "لطفاً ابتدا وارد حساب کاربری خود شوید",
-          });
-          break;
-        case 403:
-          toast.error("ممنوع", { description: "دسترسی به قوانین ممنوع است" });
-          break;
-        case 404:
-          toast.error("یافت نشد", { description: "هیچ قانونی یافت نشد" });
-          break;
-        case 409:
-          toast.error("تضاد", { description: "تضاد در دریافت قوانین" });
-          break;
-        case 500:
-          toast.error("خطای سرور", {
-            description: "خطایی در دریافت قوانین رخ داده است",
-          });
-          break;
-        default:
-          toast.error("خطای ناشناخته", {
-            description:
-              jsonResult.error || "خطایی در دریافت قوانین رخ داده است",
-          });
-      }
-      throw new Error(jsonResult.error);
     }
+
+    // Default error message
+    let message = "مشکلی در دریافت قوانین رخ داده است.";
+
+    switch (result.status) {
+      case 400:
+        message = jsonResult.message || "درخواست نامعتبر است.";
+        toast.error("خطای درخواست", { description: message });
+        break;
+      case 401:
+        message = "لطفاً ابتدا وارد حساب کاربری خود شوید.";
+        toast.error("عدم دسترسی", { description: message });
+        break;
+      case 403:
+        message = "دسترسی به قوانین ممنوع است.";
+        toast.error("ممنوع", { description: message });
+        break;
+      case 404:
+        message = "هیچ قانونی یافت نشد.";
+        toast.error("یافت نشد", { description: message });
+        break;
+      case 409:
+        message = "تضاد در دریافت قوانین.";
+        toast.error("تضاد", { description: message });
+        break;
+      case 500:
+        message = "خطایی در دریافت قوانین رخ داده است.";
+        toast.error("خطای سرور", { description: message });
+        break;
+      default:
+        message = jsonResult.error || message;
+        toast.error("خطای ناشناخته", { description: message });
+    }
+
+    throw new Error(message);
   } catch (error) {
-    console.error("Error getting rules:", error);
-    toast.error("خطا", { description: "خطایی در دریافت قوانین رخ داده است" });
+    console.error("خطا در دریافت قوانین:", error);
     throw error;
   }
 }

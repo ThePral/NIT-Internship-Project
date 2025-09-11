@@ -2,7 +2,10 @@ import { APIURL } from "@/data/consts";
 import { updateFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
-export async function EditMyPasswordService(formData: any , mode: "user" | "admin" | "superAdmin") {
+export async function EditMyPasswordService(
+  formData: any,
+  mode: "user" | "admin" | "superAdmin"
+) {
   const result = await updateFetch(
     APIURL + `${mode}s/me`,
     JSON.stringify(formData),
