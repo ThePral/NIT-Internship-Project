@@ -9,6 +9,7 @@ import {
 import { QueueService } from 'src/queue/queue.service';
 import { PriorityResultDto } from 'src/user/dto';
 import { first } from 'rxjs';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class AllocationService {
@@ -456,6 +457,7 @@ export class AllocationService {
           orderBy: { priority: 'asc' },
           // take: 3,
           select: {
+            id: true,
             priority: true,
             isAccepted: true,
             minor: {
@@ -464,10 +466,6 @@ export class AllocationService {
                 name: true,
                 capacity: true,
                 req: true,
-                acceptances: {
-                  select: { studentId: true },
-                  orderBy: { points: 'desc' },
-                },
               },
             },
           },
@@ -475,42 +473,92 @@ export class AllocationService {
       },
     });
 
-    if (!student) {
-      throw new Error('Student not found');
+    if (!student) throw new NotFoundException('Student not found');
+
+    const minorIds = Array.from(
+      new Set(student.priorities.map((p) => p.minor.id)),
+    );
+    if (minorIds.length === 0) {
+      return {
+        firstname: student.firstname,
+        lastname: student.lastname,
+        points: student.points,
+        university: student.university,
+        req: null,
+        priorities: [],
+      };
     }
 
-    const results = await Promise.all(
-      student.priorities.map(async (p) => {
-        const minor = p.minor;
+    const applicantRows = await this.prisma.studentPriority.findMany({
+      where: { minorId: { in: minorIds } },
+      select: {
+        minorId: true,
+        studentId: true,
+        student: { select: { points: true } },
+      },
+      orderBy: [{ student: { points: 'desc' } }, { studentId: 'asc' }],
+    });
 
-        const applicants = await this.prisma.studentPriority.findMany({
-          where: { minorId: minor.id },
-          select: {
-            studentId: true,
-            student: { select: { points: true } },
-          },
-          orderBy: { student: { points: 'desc' } },
-        });
+    const applicantsByMinor = new Map<
+      number,
+      { studentId: number; points: number | null }[]
+    >();
+    for (const r of applicantRows) {
+      const arr = applicantsByMinor.get(r.minorId) ?? [];
+      arr.push({ studentId: r.studentId, points: r.student.points });
+      applicantsByMinor.set(r.minorId, arr);
+    }
 
-        const studentRank =
-          applicants.findIndex((a) => a.studentId === studentId) + 1 || null;
+    const latestRun = await this.prisma.allocationRun.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
 
-        const lastAcceptedRank =
-          applicants.length >= minor.capacity
-            ? minor.capacity
-            : applicants.length;
+    const acceptanceRows = latestRun
+      ? await this.prisma.acceptance.findMany({
+          where: { runId: latestRun.id, minorId: { in: minorIds } },
+          select: { minorId: true, studentId: true },
+        })
+      : [];
 
-        return {
-          priority: p.priority,
-          minorName: minor.name,
-          minorReq: minor.req,
-          capacity: minor.capacity,
-          studentRank,
-          lastAcceptedRank,
-          isAccepted: p.isAccepted,
-        };
-      }),
-    );
+    const acceptedByMinor = new Map<number, number[]>();
+    for (const a of acceptanceRows) {
+      const arr = acceptedByMinor.get(a.minorId) ?? [];
+      arr.push(a.studentId);
+      acceptedByMinor.set(a.minorId, arr);
+    }
+
+    const topReq =
+      student.priorities.length > 0 ? student.priorities[0].minor.req : null;
+
+    const results = student.priorities.map((p) => {
+      const minor = p.minor;
+      const applicants = applicantsByMinor.get(minor.id) ?? [];
+
+      const rankMap = new Map<number, number>();
+      applicants.forEach((a, idx) => rankMap.set(a.studentId, idx + 1));
+
+      const studentRank = rankMap.get(studentId) ?? null;
+
+      const acceptedIds = acceptedByMinor.get(minor.id) ?? [];
+      const acceptedRanks: number[] = [];
+      for (const sid of acceptedIds) {
+        const r = rankMap.get(sid);
+        if (typeof r === 'number') acceptedRanks.push(r);
+      }
+      const lastAcceptedRank = acceptedRanks.length
+        ? Math.max(...acceptedRanks)
+        : null;
+
+      return {
+        priority: p.priority,
+        minorName: minor.name,
+        minorReq: minor.req,
+        capacity: minor.capacity,
+        studentRank,
+        lastAcceptedRank,
+        isAccepted: p.isAccepted,
+      };
+    });
 
     return {
       firstname: student.firstname,
@@ -519,6 +567,7 @@ export class AllocationService {
       grade: student.grade,
       majorName: student.majorName,
       university: student.university,
+      req: topReq,
       priorities: results,
     };
   }
