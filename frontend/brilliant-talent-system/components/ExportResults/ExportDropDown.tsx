@@ -246,7 +246,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
           </ResponsiveModalTitle>
         </ResponsiveModalHeader>
        
-        <div className="relative inline-block text-right" dir="rtl">
+        <div className="relative w-full flex-col items-center inline-block text-right" dir="rtl">
           <div ref={popoverRef} className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-sm font-medium text-gray-900">استخراج PDF نتایج</h3>
