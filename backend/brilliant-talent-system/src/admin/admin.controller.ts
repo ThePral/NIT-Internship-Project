@@ -181,7 +181,7 @@ export class AdminController {
     async downloadSr3(): Promise<StreamableFile> {
         return this.adminService.downloadsr3();
     }
-    @Get('download/sr4')p
+    @Get('download/sr4')
     @Header('Content-Type', 'application/pdf')
     @Header('Content-Disposition', 'attachment; filename="sr4.pdf"')
     async downloadSr4(): Promise<StreamableFile> {
