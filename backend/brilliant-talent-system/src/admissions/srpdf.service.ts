@@ -1214,6 +1214,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
@@ -1295,6 +1298,7 @@ export class SrPdfService {
                 chosenMinors: []
             };
             let counter = 0;
+            
             for( const priority of student.priorities){
                 counter++;
                 let accepted = false;
@@ -1359,7 +1363,12 @@ export class SrPdfService {
             //         lastAccepted: lastAccepted
             //     });
             // }
-    
+            // if(student.grade == 16.92){
+            //     console.log("student",student.priorities[0].minor)
+            //     console.log("student",student.priorities[1].minor)
+            //     console.log("student",student.priorities[2].minor)
+            //     console.log("userResult",userResult)
+            // }
             userResults.push(userResult);
         }
         // console.log(userResults[1])
@@ -1416,6 +1425,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
@@ -1576,6 +1588,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
