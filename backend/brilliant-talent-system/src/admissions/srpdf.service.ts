@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PrismaService } from '../prisma/prisma.service';
-import { PuppeteerService } from './puppeteer.service';
+// import { PuppeteerService } from './puppeteer.service';
 import { AcceptedUser, MinorAcceptance } from './dto/srpdf-service';
 import { Sr4AcceptedUser, Sr4MinorAcceptance } from './dto/srpdf-service/sr4.dto';
 import { UserResult } from './dto/srpdf-service/sr1.dto';
@@ -10,14 +10,16 @@ import { UserResult2 } from './dto/srpdf-service/sr2.dto';
 import { MinorResult } from './dto/srpdf-service/sr3.dto';
 import { min } from 'class-validator';
 import { RedisService } from 'src/redis/redis.service';
+import { generatePdfWithWeasyPrint } from './weasyprint.service';
 
 @Injectable()
 export class SrPdfService {
     private readonly logger = new Logger(SrPdfService.name);
 
-    constructor(private readonly prisma: PrismaService, private puppeteerService: PuppeteerService, 
-            private readonly redisService: RedisService) {}
-
+    // constructor(private readonly prisma: PrismaService, private puppeteerService: PuppeteerService, 
+    //         private readonly redisService: RedisService) {}
+constructor(private readonly prisma: PrismaService, private readonly redisService: RedisService) {}
+    
     private toAbsolute(p: string) {
         if (path.isAbsolute(p)) return p;
         return path.resolve(process.cwd(), p);
@@ -45,33 +47,33 @@ export class SrPdfService {
         });
     }
 
-    private async convertHtmlToPdfPuppeteer(html: string, outPath: string) {
+    // private async convertHtmlToPdfPuppeteer(html: string, outPath: string) {
 
-        // const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-        const page = await this.puppeteerService.acquirePage();
-        try {
-            // const page = await browser.newPage();
-            // set content and wait for layout
-            await page.setContent(html, { waitUntil: 'networkidle0' });
+    //     // const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    //     const page = await this.puppeteerService.acquirePage();
+    //     try {
+    //         // const page = await browser.newPage();
+    //         // set content and wait for layout
+    //         await page.setContent(html, { waitUntil: 'networkidle0' });
 
-            // Create out directory if needed
-            const outDir = path.dirname(outPath);
-            if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    //         // Create out directory if needed
+    //         const outDir = path.dirname(outPath);
+    //         if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-            await page.pdf({
-                path: outPath,
-                format: 'A4',
-                printBackground: true,
-                margin: { top: '15mm', bottom: '15mm', left: '10mm', right: '10mm' },
-            });
+    //         await page.pdf({
+    //             path: outPath,
+    //             format: 'A4',
+    //             printBackground: true,
+    //             margin: { top: '15mm', bottom: '15mm', left: '10mm', right: '10mm' },
+    //         });
 
-            this.logger.log(`PDF written to ${outPath}`);
-        } finally {
-            // await browser.close();
-            await this.puppeteerService.releasePage(page);
-        }
+    //         this.logger.log(`PDF written to ${outPath}`);
+    //     } finally {
+    //         // await browser.close();
+    //         await this.puppeteerService.releasePage(page);
+    //     }
 
-    }
+    // }
 
     /**
      * Build the HTML string for sr0 using the provided minors array.
@@ -1166,7 +1168,8 @@ export class SrPdfService {
         const html = this.buildSr0Html(minors, fontFamily, fontFiles);
 
         // Render HTML to PDF via Puppeteer
-        await this.convertHtmlToPdfPuppeteer(html, outPath);
+        // await this.convertHtmlToPdfPuppeteer(html, outPath);
+        await generatePdfWithWeasyPrint(html , outPath);
 
         return { runId: run.id, outPath };
     }
@@ -1374,7 +1377,8 @@ export class SrPdfService {
         // console.log(userResults[1])
         const html = this.buildSr1Html(userResults, fontFamily, fontFiles);
     
-        await this.convertHtmlToPdfPuppeteer(html, outPath);
+        // await this.convertHtmlToPdfPuppeteer(html, outPath);
+        await generatePdfWithWeasyPrint(html , outPath);
     
         return { runId: run.id, outPath };
     }
@@ -1560,7 +1564,8 @@ export class SrPdfService {
         // console.log(userResults[1])
         const html = this.buildSr2Html(userResults, fontFamily, fontFiles);
     
-        await this.convertHtmlToPdfPuppeteer(html, outPath);
+        // await this.convertHtmlToPdfPuppeteer(html, outPath);
+        await generatePdfWithWeasyPrint(html , outPath);
     
         return { runId: run.id, outPath };
     }
@@ -1653,7 +1658,8 @@ export class SrPdfService {
         // console.log(userResults[1])
         const html = this.buildSr3Html(minorResults, fontFamily, fontFiles);
     
-        await this.convertHtmlToPdfPuppeteer(html, outPath);
+        // await this.convertHtmlToPdfPuppeteer(html, outPath);
+        await generatePdfWithWeasyPrint(html , outPath);
     
         return { runId: run.id, outPath };
     }
@@ -1712,7 +1718,8 @@ export class SrPdfService {
         const html = this.buildSr4Html(minors, fontFamily, fontFiles);
 
         // Render HTML to PDF via Puppeteer
-        await this.convertHtmlToPdfPuppeteer(html, outPath);
+        // await this.convertHtmlToPdfPuppeteer(html, outPath);
+        await generatePdfWithWeasyPrint(html , outPath);
 
         return { runId: run.id, outPath };
     }

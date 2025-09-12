@@ -4,18 +4,21 @@ services:
   app:
     build: .
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
     volumes:
       - .:/app
-      - /app/node_modules
-      - .env.test:/app/.env.test:ro
+      - /app/node_modules  # This prevents host node_modules from overwriting container node_modules
     env_file:
       - .env
     environment:
       - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-changeme}
     depends_on:
       redis:
         condition: service_healthy
+    command: npm run start:dev
 
   redis:
     image: redis:7-alpine
@@ -30,7 +33,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "-p", "${REDIS_PORT:-6379}", "PING"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
