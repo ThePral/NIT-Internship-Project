@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
@@ -11,6 +11,7 @@ import { SrPdfService } from 'src/admissions/srpdf.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import { QueueService } from 'src/queue/queue.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AdminService {
@@ -20,6 +21,7 @@ export class AdminService {
         private allocationService: AllocationService,
         private srv: SrPdfService,
         private queueService: QueueService,
+        private readonly redisService: RedisService
     ) {}
     
     async editAdmin(admin: Admin, dto: EditAdminDto) {
@@ -293,7 +295,14 @@ export class AdminService {
     }
 
     async allocateUserAcceptances() {
+        const isPdfCreating = await this.redisService.get("pdfCreating");
+        if(isPdfCreating == "true" || isPdfCreating == true){
+            throw new BadRequestException("پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید");
+        }
+        await this.redisService.set("pdfCreating","true");
+        
         const result = await this.allocationService.runAllocation();
+        this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
         return {
             message: "User Acceptance Calculated",
             data: result
@@ -392,4 +401,164 @@ export class AdminService {
         );
     }
 
+    async pdfChecker(runId: number) {
+        const isPdfCreating = await this.redisService.get("pdfCreating");
+        console.log(isPdfCreating)
+        let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+        if (!run) {
+            return({
+                result: {
+                    sr0: false,
+                    sr1: false,
+                    sr2: false,
+                    sr3: false,
+                    sr4: false,
+                }
+            });
+        };
+        if(run.id == runId){
+            if(isPdfCreating == "true" || isPdfCreating == true){
+                return({message : "پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید",
+                    result: {
+                        sr0: false,
+                        sr1: false,
+                        sr2: false,
+                        sr3: false,
+                        sr4: false,
+                    }
+                });
+            }
+        }
+        
+        // if(isPdfCreating == "error"){
+        //     return({message : "مشکلی در ساخت پی دی اف ها به وجود آمد، لطفا دوباره تلاش کنید",
+        //         result: {
+        //             sr0: false,
+        //             sr1: false,
+        //             sr2: false,
+        //             sr3: false,
+        //             sr4: false,
+        //         }
+        //     });
+        // }
+        const filePath0 = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
+        const filePath1 = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
+        const filePath2 = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
+        const filePath3 = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
+        const filePath4 = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
+        return({
+            result:{
+                sr0: fs.existsSync(filePath0),
+                    sr1: fs.existsSync(filePath1),
+                    sr2: fs.existsSync(filePath2),
+                    sr3: fs.existsSync(filePath3),
+                    sr4: fs.existsSync(filePath4)
+            }
+        })
+
+    }
+
+    // async downloadsr0() {
+    //     const filePath = path.join(process.cwd(), `./output/sr0.pdf`);
+    //     if(!fs.existsSync(filePath)){
+    //         throw new BadRequestException("فایل وجود ندارد");
+    //     }
+    //     const stats = fs.statSync(filePath);
+
+    //     // Set proper headers for PDF download
+    //     res.setHeader('Content-Disposition', `attachment; filename="${req.params.roomID}-${pdfHeader}.pdf"`);
+    //     res.setHeader('Content-Type', 'application/pdf');
+    //     res.setHeader('Content-Length', stats.size);
+    //     res.setHeader('Cache-Control', 'no-cache');
+
+    //     // Stream the file (NO encoding for binary files!)
+    //     const fileStream = fs.createReadStream(filePath);
+
+    //     fileStream.pipe(res);
+
+    //     // Handle stream errors
+    //     fileStream.on('error', (error) => {
+    //         console.error('File stream error:', error);
+    //         if (!res.headersSent) {
+    //             res.status(500).json({ error: 'Error reading file' });
+    //         }
+    //     });
+
+    //     // Handle client disconnect
+    //     req.on('close', () => {
+    //         fileStream.destroy();
+    //     });
+        
+    // }
+
+    async downloadsr0(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
+        
+        if (!fs.existsSync(filePath)) {
+            throw new BadRequestException("فایل وجود ندارد");
+        }
+
+        const fileStream = fs.createReadStream(filePath);
+        
+        return new StreamableFile(fileStream, {
+            disposition: `attachment; filename="sr0_${runId}.pdf"`,
+            type: 'application/pdf',
+        });
+    }
+    async downloadsr1(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
+        
+        if (!fs.existsSync(filePath)) {
+            throw new BadRequestException("فایل وجود ندارد");
+        }
+
+        const fileStream = fs.createReadStream(filePath);
+        
+        return new StreamableFile(fileStream, {
+            disposition: `attachment; filename="sr1_${runId}.pdf"`,
+            type: 'application/pdf',
+        });
+    }
+    async downloadsr2(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
+        
+        if (!fs.existsSync(filePath)) {
+            throw new BadRequestException("فایل وجود ندارد");
+        }
+
+        const fileStream = fs.createReadStream(filePath);
+        
+        return new StreamableFile(fileStream, {
+            disposition: `attachment; filename="sr2_${runId}.pdf"`,
+            type: 'application/pdf',
+        });
+    }
+    async downloadsr3(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
+        
+        if (!fs.existsSync(filePath)) {
+            throw new BadRequestException("فایل وجود ندارد");
+        }
+
+        const fileStream = fs.createReadStream(filePath);
+        
+        return new StreamableFile(fileStream, {
+            disposition: `attachment; filename="sr3_${runId}.pdf"`,
+            type: 'application/pdf',
+        });
+    }
+    async downloadsr4(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
+        
+        if (!fs.existsSync(filePath)) {
+            throw new BadRequestException("فایل وجود ندارد");
+        }
+
+        const fileStream = fs.createReadStream(filePath);
+        
+        return new StreamableFile(fileStream, {
+            disposition: `attachment; filename="sr4_${runId}.pdf"`,
+            type: 'application/pdf',
+        });
+    }
 }

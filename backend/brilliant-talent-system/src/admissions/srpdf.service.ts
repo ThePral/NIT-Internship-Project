@@ -9,12 +9,14 @@ import { UserResult } from './dto/srpdf-service/sr1.dto';
 import { UserResult2 } from './dto/srpdf-service/sr2.dto';
 import { MinorResult } from './dto/srpdf-service/sr3.dto';
 import { min } from 'class-validator';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class SrPdfService {
     private readonly logger = new Logger(SrPdfService.name);
 
-    constructor(private readonly prisma: PrismaService, private puppeteerService: PuppeteerService) {}
+    constructor(private readonly prisma: PrismaService, private puppeteerService: PuppeteerService, 
+            private readonly redisService: RedisService) {}
 
     private toAbsolute(p: string) {
         if (path.isAbsolute(p)) return p;
@@ -1212,6 +1214,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
@@ -1265,7 +1270,7 @@ export class SrPdfService {
         for (const minor of finalMinors){
                         for (let index = 0; index < minor.priorities.length; index++) {
                             const element = minor.priorities[index];
-                            console.log(element)
+                            // console.log(element)
                             if(element.isAccepted){
                                 if((index + 1) > minor.lastAccepted){
                                     minor.lastAccepted = index + 1 ;
@@ -1273,7 +1278,7 @@ export class SrPdfService {
                             }
                         }
                 }
-        console.log(finalMinors[2].lastAccepted)
+        // console.log(finalMinors[2].lastAccepted)
 
         // Pre-calculate rankings for each minor
         
@@ -1293,6 +1298,7 @@ export class SrPdfService {
                 chosenMinors: []
             };
             let counter = 0;
+            
             for( const priority of student.priorities){
                 counter++;
                 let accepted = false;
@@ -1357,7 +1363,12 @@ export class SrPdfService {
             //         lastAccepted: lastAccepted
             //     });
             // }
-    
+            // if(student.grade == 16.92){
+            //     console.log("student",student.priorities[0].minor)
+            //     console.log("student",student.priorities[1].minor)
+            //     console.log("student",student.priorities[2].minor)
+            //     console.log("userResult",userResult)
+            // }
             userResults.push(userResult);
         }
         // console.log(userResults[1])
@@ -1414,6 +1425,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
@@ -1450,7 +1464,7 @@ export class SrPdfService {
         for (const minor of finalMinors){
                         for (let index = 0; index < minor.priorities.length; index++) {
                             const element = minor.priorities[index];
-                            console.log(element)
+                            // console.log(element)
                             if(element.isAccepted){
                                 if((index + 1) > minor.lastAccepted){
                                     minor.lastAccepted = index + 1 ;
@@ -1458,7 +1472,7 @@ export class SrPdfService {
                             }
                         }
                 }
-        console.log(finalMinors[2].lastAccepted)
+        // console.log(finalMinors[2].lastAccepted)
 
 
         const userResults: UserResult2[] = [];
@@ -1574,6 +1588,9 @@ export class SrPdfService {
                 university: true,
                 acceptances: true,
                 priorities: {
+                    orderBy:{
+                        priority: 'asc'
+                    },
                     include: {
                         minor: true
                     }
@@ -1698,6 +1715,36 @@ export class SrPdfService {
         await this.convertHtmlToPdfPuppeteer(html, outPath);
 
         return { runId: run.id, outPath };
+    }
+    async generateAllPDFs(
+        fontFamily: string,
+        fontFiles: { regular: string; bold?: string },
+        runId?: number,
+    ): Promise<void> {
+        try {
+            // await Promise.all([
+            //     this.generateSr0('./output/sr0.pdf', fontFamily, fontFiles, runId),
+            //     this.generateSr1('./output/sr1.pdf', fontFamily, fontFiles, runId),
+            //     this.generateSr2('./output/sr2.pdf', fontFamily, fontFiles, runId),
+            //     this.generateSr3('./output/sr3.pdf', fontFamily, fontFiles, runId),
+            //     this.generateSr4('./output/sr4.pdf', fontFamily, fontFiles, runId),
+            // ]);
+            let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!run) throw new Error('No AllocationRun found in DB');
+           await   this.generateSr0(`./output/sr0_${run.id}.pdf`, fontFamily, fontFiles, runId),
+               await   this.generateSr1(`./output/sr1_${run.id}.pdf`, fontFamily, fontFiles, runId),
+               await   this.generateSr2(`./output/sr2_${run.id}.pdf`, fontFamily, fontFiles, runId),
+               await   this.generateSr3(`./output/sr3_${run.id}.pdf`, fontFamily, fontFiles, runId),
+               await   this.generateSr4(`./output/sr4_${run.id}.pdf`, fontFamily, fontFiles, runId),
+               console.log("pdf done")
+            await this.redisService.del("pdfCreating");
+        } catch (error) {
+            console.log("pdf error")
+            console.log(error)
+            await this.redisService.set("pdfCreating","error");
+        }
+        
+    
     }
 }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors , Header } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
@@ -8,12 +8,13 @@ import { GetUser } from 'src/auth/decorator';
 import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
 import { QueueService } from 'src/queue/queue.service';
-
+import { RedisService } from 'src/redis/redis.service';
+import { StreamableFile } from '@nestjs/common';
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
 export class AdminController {
-    constructor(private adminService: AdminService, private readonly queueService: QueueService) {}
+    constructor(private adminService: AdminService, private readonly queueService: QueueService ) {}
     
     @UseGuards(AdminJwtGuard)
     @ApiOperation({ summary: 'Get me' })
@@ -152,5 +153,38 @@ export class AdminController {
     async generateSr4PDF() {
         return this.adminService.buildSr4();
     }
-    
+    @Get("pdfChecker/:id")
+    async pdfChecker(@Param('id') userId: number) {
+        return this.adminService.pdfChecker(userId);
+    }
+    @Get('download/sr0/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr0.pdf"')
+    async downloadSr0(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr0(userId);
+    }
+    @Get('download/sr1/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr1.pdf"')
+    async downloadSr1(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr1(userId);
+    }
+    @Get('download/sr2/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr2.pdf"')
+    async downloadSr2(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr2(userId);
+    }
+    @Get('download/sr3/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr3.pdf"')
+    async downloadSr3(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr3(userId);
+    }
+    @Get('download/sr4/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr4.pdf"')
+    async downloadSr4(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr4(userId);
+    }
 }
