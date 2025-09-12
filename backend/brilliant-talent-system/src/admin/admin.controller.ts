@@ -164,26 +164,26 @@ export class AdminController {
         return this.adminService.downloadsr0(userId);
     }
     @Get('download/sr1/:id')
-    @Header('Content-Type', 'application/pdf')
-    @Header('Content-Disposition', 'attachment; filename="sr1.pdf"')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr1.pdf"')
     async downloadSr1(@Param('id') userId: number): Promise<StreamableFile> {
         return this.adminService.downloadsr1(userId);
     }
     @Get('download/sr2/:id')
-    @Header('Content-Type', 'application/pdf')
-    @Header('Content-Disposition', 'attachment; filename="sr2.pdf"')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr2.pdf"')
     async downloadSr2(@Param('id') userId: number): Promise<StreamableFile> {
         return this.adminService.downloadsr2(userId);
     }
     @Get('download/sr3/:id')
-    @Header('Content-Type', 'application/pdf')
-    @Header('Content-Disposition', 'attachment; filename="sr3.pdf"')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr3.pdf"')
     async downloadSr3(@Param('id') userId: number): Promise<StreamableFile> {
         return this.adminService.downloadsr3(userId);
     }
     @Get('download/sr4/:id')
-    @Header('Content-Type', 'application/pdf')
-    @Header('Content-Disposition', 'attachment; filename="sr4.pdf"')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr4.pdf"')
     async downloadSr4(@Param('id') userId: number): Promise<StreamableFile> {
         return this.adminService.downloadsr4(userId);
     }
