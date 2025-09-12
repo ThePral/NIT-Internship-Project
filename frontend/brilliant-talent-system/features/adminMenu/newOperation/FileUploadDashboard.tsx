@@ -20,6 +20,7 @@ import { UploadState } from "@/interfaces/operation";
 import { AddToDB } from "@/services/AddToDB";
 import { CheckAddToDB } from "@/services/CheckAddToDB";
 import { toLocalDateTime } from "@/functions/toLocalDateTime";
+import { RunAlocService } from "@/services/RunAlocService";
 
 interface UploadCardProps {
   Icon: LucideIcon;
@@ -53,10 +54,13 @@ const UploadCard = ({
     mutationFn: ({ type, file }: { type: string; file: File }) =>
       UploadFileService(type, file),
     onSuccess: () => {
+
       queryClient.invalidateQueries({ queryKey: ["uploadeds"] });
       console.log("successful upload");
     },
   });
+
+
 
   return (
     <label
@@ -134,6 +138,8 @@ export const FileUploadDashboard = () => {
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<JobInterface | null>(null);
   const [isPolling, setIsPolling] = useState(false);
+  const queryClient = useQueryClient();
+
 
   // Check for existing job on component mount
   useEffect(() => {
@@ -159,7 +165,8 @@ export const FileUploadDashboard = () => {
           setJobId(null);
 
           if (jobData.state === "completed") {
-            toast.success("پردازش با موفقیت انجام شد");
+            // toast.success("پردازش با موفقیت انجام شد");
+            runAloc.mutate()
           } else {
             toast.error(
               `پردازش ناموفق: ${jobData.failedReason || "دلیل نامشخص"}`
@@ -190,6 +197,15 @@ export const FileUploadDashboard = () => {
         description: error.message,
       });
       console.error("Add to DB error:", error);
+    },
+  });
+
+    const runAloc = useMutation({
+    mutationFn: () => RunAlocService(),
+    onSuccess: () => { 
+      queryClient.invalidateQueries({ queryKey: ["acceptedStudents"] });
+      queryClient.invalidateQueries({ queryKey: ["historyRun"] });
+      console.log("successful upload");
     },
   });
 

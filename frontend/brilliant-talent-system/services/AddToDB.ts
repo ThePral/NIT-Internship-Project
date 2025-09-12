@@ -9,7 +9,7 @@ export async function AddToDB() {
   let jsonResult: any = {};
   try {
     jsonResult = await result.json();
-  } catch {}
+  } catch { }
 
   if (!result.ok) {
     const error = mapBackendError(result.status, jsonResult);
@@ -18,6 +18,6 @@ export async function AddToDB() {
     throw error;
   }
 
-  toast.success("افزودن با موفقیت انجام شد");
+  // toast.success("افزودن با موفقیت انجام شد");
   return jsonResult;
 }
