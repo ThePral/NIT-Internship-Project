@@ -153,38 +153,38 @@ export class AdminController {
     async generateSr4PDF() {
         return this.adminService.buildSr4();
     }
-    @Get("pdfChecker")
-    async pdfChecker() {
-        return this.adminService.pdfChecker();
+    @Get("pdfChecker/:id")
+    async pdfChecker(@Param('id') userId: number) {
+        return this.adminService.pdfChecker(userId);
     }
-    @Get('download/sr0')
-    @Header('Content-Type', 'application/pdf')
-    @Header('Content-Disposition', 'attachment; filename="sr0.pdf"')
-    async downloadSr0(): Promise<StreamableFile> {
-        return this.adminService.downloadsr0();
+    @Get('download/sr0/:id')
+    // @Header('Content-Type', 'application/pdf')
+    // @Header('Content-Disposition', 'attachment; filename="sr0.pdf"')
+    async downloadSr0(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr0(userId);
     }
-    @Get('download/sr1')
+    @Get('download/sr1/:id')
     @Header('Content-Type', 'application/pdf')
     @Header('Content-Disposition', 'attachment; filename="sr1.pdf"')
-    async downloadSr1(): Promise<StreamableFile> {
-        return this.adminService.downloadsr1();
+    async downloadSr1(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr1(userId);
     }
-    @Get('download/sr2')
+    @Get('download/sr2/:id')
     @Header('Content-Type', 'application/pdf')
     @Header('Content-Disposition', 'attachment; filename="sr2.pdf"')
-    async downloadSr2(): Promise<StreamableFile> {
-        return this.adminService.downloadsr2();
+    async downloadSr2(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr2(userId);
     }
-    @Get('download/sr3')
+    @Get('download/sr3/:id')
     @Header('Content-Type', 'application/pdf')
     @Header('Content-Disposition', 'attachment; filename="sr3.pdf"')
-    async downloadSr3(): Promise<StreamableFile> {
-        return this.adminService.downloadsr3();
+    async downloadSr3(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr3(userId);
     }
-    @Get('download/sr4')
+    @Get('download/sr4/:id')
     @Header('Content-Type', 'application/pdf')
     @Header('Content-Disposition', 'attachment; filename="sr4.pdf"')
-    async downloadSr4(): Promise<StreamableFile> {
-        return this.adminService.downloadsr4();
+    async downloadSr4(@Param('id') userId: number): Promise<StreamableFile> {
+        return this.adminService.downloadsr4(userId);
     }
 }

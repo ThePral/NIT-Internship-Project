@@ -300,8 +300,9 @@ export class AdminService {
             throw new BadRequestException("پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید");
         }
         await this.redisService.set("pdfCreating","true");
-        this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
+        
         const result = await this.allocationService.runAllocation();
+        this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
         return {
             message: "User Acceptance Calculated",
             data: result
@@ -400,11 +401,12 @@ export class AdminService {
         );
     }
 
-    async pdfChecker() {
+    async pdfChecker(runId: number) {
         const isPdfCreating = await this.redisService.get("pdfCreating");
         console.log(isPdfCreating)
-        if(isPdfCreating == "true" || isPdfCreating == true){
-            return({message : "پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید",
+        let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+        if (!run) {
+            return({
                 result: {
                     sr0: false,
                     sr1: false,
@@ -413,23 +415,37 @@ export class AdminService {
                     sr4: false,
                 }
             });
+        };
+        if(run.id == runId){
+            if(isPdfCreating == "true" || isPdfCreating == true){
+                return({message : "پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید",
+                    result: {
+                        sr0: false,
+                        sr1: false,
+                        sr2: false,
+                        sr3: false,
+                        sr4: false,
+                    }
+                });
+            }
         }
-        if(isPdfCreating == "error"){
-            return({message : "مشکلی در ساخت پی دی اف ها به وجود آمد، لطفا دوباره تلاش کنید",
-                result: {
-                    sr0: false,
-                    sr1: false,
-                    sr2: false,
-                    sr3: false,
-                    sr4: false,
-                }
-            });
-        }
-        const filePath0 = path.join(process.cwd(), `./output/sr0.pdf`);
-        const filePath1 = path.join(process.cwd(), `./output/sr1.pdf`);
-        const filePath2 = path.join(process.cwd(), `./output/sr2.pdf`);
-        const filePath3 = path.join(process.cwd(), `./output/sr3.pdf`);
-        const filePath4 = path.join(process.cwd(), `./output/sr4.pdf`);
+        
+        // if(isPdfCreating == "error"){
+        //     return({message : "مشکلی در ساخت پی دی اف ها به وجود آمد، لطفا دوباره تلاش کنید",
+        //         result: {
+        //             sr0: false,
+        //             sr1: false,
+        //             sr2: false,
+        //             sr3: false,
+        //             sr4: false,
+        //         }
+        //     });
+        // }
+        const filePath0 = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
+        const filePath1 = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
+        const filePath2 = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
+        const filePath3 = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
+        const filePath4 = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
         return({
             result:{
                 sr0: fs.existsSync(filePath0),
@@ -475,8 +491,8 @@ export class AdminService {
         
     // }
 
-    async downloadsr0(): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), './output/sr0.pdf');
+    async downloadsr0(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -485,12 +501,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: 'attachment; filename="sr0.pdf"',
+            disposition: `attachment; filename="sr0_${runId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr1(): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), './output/sr1.pdf');
+    async downloadsr1(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -499,12 +515,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: 'attachment; filename="sr1.pdf"',
+            disposition: `attachment; filename="sr1_${runId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr2(): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), './output/sr2.pdf');
+    async downloadsr2(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -513,12 +529,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: 'attachment; filename="sr2.pdf"',
+            disposition: `attachment; filename="sr2_${runId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr3(): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), './output/sr3.pdf');
+    async downloadsr3(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -527,12 +543,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: 'attachment; filename="sr3.pdf"',
+            disposition: `attachment; filename="sr3_${runId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr4(): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), './output/sr4.pdf');
+    async downloadsr4(runId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -541,7 +557,7 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: 'attachment; filename="sr4.pdf"',
+            disposition: `attachment; filename="sr4_${runId}.pdf"`,
             type: 'application/pdf',
         });
     }
