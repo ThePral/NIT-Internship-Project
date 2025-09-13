@@ -26,11 +26,11 @@ import SuperAdminDropDown from "./SuperAdminDropDown";
 import UserDropDown from "../User/UserDropDown";
 
 interface SuperAdminNavbarProps {
-  userRole?: "user" | "admin" | "superadmin";
+  userRole?: "user" | "admin" | "superAdmin";
 }
 
 export default function SuperAdminNavbar({
-  userRole = "superadmin",
+  userRole = "superAdmin",
 }: SuperAdminNavbarProps) {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 

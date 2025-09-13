@@ -7,7 +7,7 @@ export interface User {
   universityId?: number;
   points?: number;
   cohort?: number;
-  role: "user" | "admin" | "superadmin" | "superAdmin";
+  role: "user" | "admin" | "superAdmin";
   birthDate: Date;
   nationalCode: string;
   majorName: string;

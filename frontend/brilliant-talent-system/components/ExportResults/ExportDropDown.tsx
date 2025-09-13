@@ -109,6 +109,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
                     option.id === "sr3" ? sr3 :
                     option.id === "sr4" ? sr4 : false
         })))
+        stopPollingPDF()
         setInProgress(false)
         setIsOpen(true)
       } else if (message == 'پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید') {
@@ -116,11 +117,13 @@ const ExportDropDown = ({ runID, poll }: Props) => {
         startPollingPDF()
       } else if (message == 'مشکلی در ساخت پی دی اف ها به وجود آمد، لطفا دوباره تلاش کنید') {
         toast.error(message)
+        stopPollingPDF()
       }
     },
     onError: (error) => {
       console.log('pdf check failed')
       toast.error('مشکلی رخ داده است')
+      stopPollingPDF()
     },
   })
 

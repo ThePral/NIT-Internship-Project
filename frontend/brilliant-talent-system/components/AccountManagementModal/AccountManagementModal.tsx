@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { EditMyPasswordService } from "@/services/EditMyPasswordService";
 
 interface AccountManagementModalProps {
-  role: "user" | "admin" | "superadmin" | "superAdmin";
+  role: "user" | "admin" | "superAdmin";
   isOpen: boolean;
   onOpen: (sth: boolean) => void;
   trigger?: React.ReactNode;
@@ -50,7 +50,7 @@ const AccountManagementModal = ({
           current_password: oldPassword,
           new_password: newPassword,
         },
-        role == "superadmin" ? "superAdmin" : role
+        role
       ),
     onSuccess: (res) => {
       console.log("res", res);
@@ -116,8 +116,6 @@ const AccountManagementModal = ({
     switch (role) {
       case "admin":
         return "تغییر رمز ادمین";
-      case "superadmin":
-        return "تغییر رمز مدیر کل";
       case "superAdmin":
         return "تغییر رمز مدیر کل";
       default:

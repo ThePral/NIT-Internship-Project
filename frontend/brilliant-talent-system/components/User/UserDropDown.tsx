@@ -36,7 +36,7 @@ const UserDropDown = () => {
                 <p className="text-xs text-muted-foreground truncate">
                   {user?.role === "admin"
                     ? "ادمین"
-                    : user?.role === "superadmin" || user?.role === "superAdmin"
+                    : user?.role === "superAdmin"
                     ? "مدیر کل"
                     : user?.role}
                 </p>

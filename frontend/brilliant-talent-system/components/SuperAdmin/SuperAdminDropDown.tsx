@@ -39,7 +39,7 @@ const UserDropDown = () => {
             </div>
           </div>
           <AccountManagementModal
-            role={user?.role ?? "superadmin"}
+            role={user?.role ?? "superAdmin"}
             isOpen={isAccountModalOpen}
             onOpen={setIsAccountModalOpen}
           />
