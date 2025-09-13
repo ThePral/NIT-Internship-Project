@@ -181,7 +181,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
       toast.success(`فایل ${type} با موفقیت دانلود شد`)
     },
     onError: () => {
-      toast.error('خطایی پیش آمده لطفا دوباره تلاش کنید')
+      // toast.error('خطایی پیش آمده لطفا دوباره تلاش کنید')
     }
   })
 
@@ -198,7 +198,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
         await downloadPDF.mutateAsync(option.id)
       } catch (error) {
         console.error(`Error downloading ${option.id}:`, error)
-        toast.error(`خطا در دانلود ${option.id}`)
+        // toast.error(`خطا در دانلود ${option.id}`)
       }
     }
     
