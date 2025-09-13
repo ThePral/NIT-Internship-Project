@@ -1,21 +1,7 @@
-'use client'
 import React from 'react'
 import loginImage from "@/asset/login.png";
 import { Button } from '@/components';
-import { useUser } from '@/hooks';
-import { useRouter } from 'next/navigation';
 const not_found = () => {
-    const {user} = useUser()
-    const router = useRouter()
-    const handleNav = ()=>{
-        if(!user || user.role=='user'){
-            router.push("/home")
-        }else if(user.role == "admin"){
-            router.push("/admin/home")
-        }else{
-            router.push("/superAdmin/home")
-        }
-    }
     return (
     <div className='w-full flex flex-col justify-center gap-5 items-center h-screen'>
         <div className="fixed inset-0 -z-10">
@@ -69,7 +55,7 @@ const not_found = () => {
             </span>
             </div>
             <p className='text-3xl font-semibold text-primary'>صفحه یافت نشد</p>
-            <Button onClick={()=>handleNav()} >بازگشت به صفحه اصلی</Button>
+            {/* <Button onClick={()=>handleNav()} >بازگشت به صفحه اصلی</Button> */}
         </div>
     </div>
   )
