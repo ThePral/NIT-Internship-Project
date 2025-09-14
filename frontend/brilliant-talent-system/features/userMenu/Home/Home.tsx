@@ -2,6 +2,7 @@
 import useGetStudentResult from "@/hooks/useGetStudentResult";
 import { ProfileCard } from "./ProfileCard";
 import { ResultCard } from "./ResultCard";
+import { useUser } from "@/hooks";
 
 function toPersianOrdinal(num: number): string {
   const map: Record<number, string> = {
@@ -42,7 +43,7 @@ function toPersianOrdinal(num: number): string {
 
 export default function Home() {
   const { data: result, isLoading } = useGetStudentResult();
-
+  // const {user} = useUser()
   if (isLoading || !result) return null;
 
   if (!result.priorities || result.priorities.length === 0) {

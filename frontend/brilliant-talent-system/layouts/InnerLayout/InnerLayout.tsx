@@ -20,9 +20,11 @@ const InnerLayout = ({
 }) => {
   let [user, setUser] = useState<User>();
   let [loading, setLoading] = useState<any>(true);
+  let [shouldRedirect, setShouldRedirect] = useState(false);
   let serverUser: any | undefined;
   let error: any;
   let isLoading: boolean = false;
+  
   if (role === "user") {
     const userHookResult = useUserCheckToken();
     serverUser = userHookResult.data;
@@ -39,55 +41,53 @@ const InnerLayout = ({
     error = superAdminHookResult.error;
     isLoading = superAdminHookResult.isLoading;
   }
+  
   const router = useRouter();
 
   useEffect(() => {
     setLoading(isLoading);
-    if (!isLoading && !serverUser) {
-      if (role == "user") {
-        router.push("/user/auth");
-      } else if (role == "admin") {
-        router.push("/admin/auth");
-      } else if (role == "superAdmin") {
-        router.push("/superAdmin/auth");
-      }
-    }
-    if (error) {
-      setUser(undefined);
-      if (role == "user") {
-        router.push("/user/auth");
-      } else if (role == "admin") {
-        router.push("/admin/auth");
-      } else if (role == "superAdmin") {
-        router.push("/superAdmin/auth");
-      }
-    } else if (serverUser?.id && !_.isEqual(serverUser, user)) {
-      if (serverUser.role != role) {
-        setUser(undefined);
-        if (role == "user") {
-          router.push("/user/auth");
-        } else if (role == "admin") {
-          router.push("/admin/auth");
-        } else if (role == "superAdmin") {
-          router.push("/superAdmin/auth");
+    
+    if (!isLoading) {
+      if (!serverUser || error) {
+        setShouldRedirect(true);
+      } else if (serverUser?.id && !_.isEqual(serverUser, user)) {
+        if (serverUser.role != role) {
+          setShouldRedirect(true);
+        } else {
+          setUser(serverUser);
         }
       }
-      setUser(serverUser);
     }
+  }, [serverUser, isLoading, error]);
 
-    console.log("user", serverUser);
-  }, [serverUser, isLoading]);
+  useEffect(() => {
+    if (shouldRedirect) {
+      if (role == "user") {
+        router.push("/user/auth");
+      } else if (role == "admin") {
+        router.push("/admin/auth");
+      } else if (role == "superAdmin") {
+        router.push("/superAdmin/auth");
+      }
+    }
+  }, [shouldRedirect, role, router]);
+
+  if (shouldRedirect) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Spinner className="size-14" />
+      </div>
+    );
+  }
 
   return (
     <userContext.Provider
       value={{ user: user, setUser: setUser, isLoading: loading }}
     >
-      {/* <UserNav/>      */}
       <div className="flex flex-col">
         {isLoading ? (
           <div className="w-full h-screen flex justify-center items-center">
-            {" "}
-            <Spinner className="size-14" />{" "}
+            <Spinner className="size-14" />
           </div>
         ) : (
           <>
@@ -95,7 +95,6 @@ const InnerLayout = ({
             <MainFooter />
           </>
         )}
-        {/* <Toaster /> */}
       </div>
     </userContext.Provider>
   );
