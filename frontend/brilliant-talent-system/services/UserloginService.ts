@@ -19,7 +19,6 @@ export async function UserLoginService(username: string, password: string) {
     });
     return jsonResult;
   } else {
-    // Handle different error status codes
     switch (result.status) {
       case 400:
         toast.error("خطای درخواست", {

@@ -24,7 +24,6 @@ export default function PriorityCard({
   return (
     <Card className="bg-card border border-border rounded-lg shadow-sm w-full hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-3 sm:p-4 md:p-5 space-y-3 md:space-y-4 text-right">
-        {/* Priority Label */}
         <div className="flex items-center gap-2">
           <Icon
             className={isSuccess ? "text-success" : "text-danger"}
@@ -39,12 +38,10 @@ export default function PriorityCard({
           </span>
         </div>
 
-        {/* Title */}
         <div className="bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm sm:text-base font-medium leading-relaxed">
           {title}
         </div>
 
-        {/* Details */}
         <div className="space-y-2 sm:space-y-3">
           {[
             { label: "ظرفیت", value: capacity },

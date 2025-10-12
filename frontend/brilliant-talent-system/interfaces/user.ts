@@ -12,6 +12,7 @@ export interface User {
   nationalCode: string;
   majorName: string;
 }
+
 export interface Admin {
   id: number;
   username: string;
