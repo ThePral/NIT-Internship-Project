@@ -2,16 +2,16 @@ version: "3.8"
 
 services:
   next-app:
-  image: node:18-alpine
-  working_dir: /app
-  volumes:
-    - ./:/app
-    - /app/node_modules
-  ports:
-    - "3000:3000"
-  command: sh -c "npm install && npm run dev"
-  environment:
-    - NODE_ENV=development
-    - WATCHPACK_POLLING=true
-    - NEXT_TELEMETRY_DISABLED=1
-  restart: unless-stopped
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
