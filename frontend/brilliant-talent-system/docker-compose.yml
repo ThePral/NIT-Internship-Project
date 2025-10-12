@@ -10,18 +10,15 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-      - /app/.next
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
-      NEXT_TELEMETRY_DISABLED: "1"
     command: npm run dev
     restart: unless-stopped
     stdin_open: true
     tty: true
-    profiles: ["development"]
 
   next-app-prod:
     build:
@@ -33,4 +30,3 @@ services:
     environment:
       NODE_ENV: production
     restart: unless-stopped
-    profiles: ["production"]
