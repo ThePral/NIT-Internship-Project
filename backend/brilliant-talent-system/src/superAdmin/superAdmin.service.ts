@@ -38,6 +38,11 @@ export class SuperAdminService {
         }
     }
 
+    // src/super-admin/super-admin.service.ts
+
+    
+  
+
     async editSuperAdmin(superAdmin: SuperAdmin, dto: EditSuperAdminDto) {
 
         let hash: string | undefined;

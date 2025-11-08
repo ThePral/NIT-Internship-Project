@@ -26,7 +26,7 @@ async function bootstrap() {
       'access_token',
     )
     .build();
-
+    
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
@@ -38,6 +38,7 @@ async function bootstrap() {
       disableErrorMessages: false,
     }),
   );
-  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+
+  await app.listen(process.env.PORT ?? 3333, '0.0.0.0');
 }
 bootstrap();
