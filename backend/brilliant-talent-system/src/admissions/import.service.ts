@@ -4,7 +4,7 @@ import ExcelJS from 'exceljs';
 import * as argon from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'; // adjust path to your PrismaService
 import { QueueService } from 'src/queue/queue.service';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 type Cohort = 1 | 2;
 
 @Injectable()
@@ -29,17 +29,62 @@ export class ImportService {
         return String(s).trim().toLowerCase().replace(/\s+/g, ' ');
     }
 
-    private normalizeUniversityName(name: string): string {
-        let n = this.normalizeText(name);
+    // private normalizeUniversityName(name: string): string {
+    //     let n = this.normalizeText(name);
 
-        // Remove common Persian prefixes
-        n = n.replace(/^دانشگاه\s+/, ''); 
-        n = n.replace(/^مؤسسه\s+/, '');   
-        n = n.replace(/^موسسه\s+/, '');  
+    //     // Remove common Persian prefixes
+    //     n = n.replace(/^دانشگاه\s+/, ''); 
+    //     n = n.replace(/^مؤسسه\s+/, '');   
+    //     n = n.replace(/^موسسه\s+/, '');  
+    //     n = n.replace(/\s+/g, '');
+    //     n = n.replace('ي', 'ی');
+
+    //     return n;
+    // }
+    private normalizeUniversityName(name: string): string {
+        if (name === null || name === undefined) return '';
+
+        let n = String(name);
+
+        // 1) Unicode normalization
+        // NFKC helps unify compatibility variants
+        n = n.normalize('NFKC');
+
+        // 2) Remove invisible / formatting characters
+        // Includes ZWNJ, ZWJ, BOM, directional marks, etc.
+        n = n.replace(/[\u200B-\u200F\uFEFF\u2060\u2061\u2062\u2063\u2064\u206A-\u206F]/g, '');
+
+        // 3) Normalize Arabic/Persian letter variants
+        n = n
+            .replace(/ي/g, 'ی')   // Arabic Yeh -> Persian Yeh
+            .replace(/ى/g, 'ی')   // Arabic Alef Maksura -> Persian Yeh
+            .replace(/ك/g, 'ک')   // Arabic Kaf -> Persian Kaf
+            .replace(/ە/g, 'ه')   // Kurdish Heh -> Persian Heh (optional, useful in some datasets)
+            .replace(/ؤ/g, 'و')   // Optional normalization
+            .replace(/ئ/g, 'ی');  // Optional normalization
+
+        // 4) Remove diacritics and Arabic vowel marks
+        n = n.replace(/[\u064B-\u065F\u0670\u0610-\u061A]/g, '');
+
+        // 5) Remove tatweel
+        n = n.replace(/ـ/g, '');
+
+        // 6) Normalize punctuation to spaces
+        n = n.replace(/[.,،؛:!؟"'`()\[\]{}<>|\\/+=_*~\-–—]/g, ' ');
+
+        // 7) Normalize whitespace
+        n = n.replace(/\s+/g, ' ').trim().toLowerCase();
+
+        // 8) Remove common university-related prefixes
+        // Add/remove based on your data
+        n = n.replace(/^(دانشگاه|مؤسسه|موسسه|مرکز آموزش عالی|مركز آموزش عالي)\s+/, '');
+
+        // 9) Remove all spaces for strict name comparison
         n = n.replace(/\s+/g, '');
 
         return n;
     }
+
 
 
     private findHeaderIndex(headerRow: ExcelJS.Row, candidates: string[]): number | null {
@@ -79,6 +124,28 @@ export class ImportService {
         // 3) No match found
         return null;
     }
+
+    private parsePersianNumber(input: string): number {
+        const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+        const arabicDigits  = '٠١٢٣٤٥٦٧٨٩';
+
+        let normalized = input
+            // Convert Persian digits
+            .replace(/[۰-۹]/g, d => persianDigits.indexOf(d).toString())
+            // Convert Arabic digits
+            .replace(/[٠-٩]/g, d => arabicDigits.indexOf(d).toString())
+            // Replace ANY non-digit (that could be decimal separator) with "."
+            .replace(/[^\d]/g, '.');
+
+        // If multiple separators exist, keep only the first one
+        const parts = normalized.split('.');
+        if (parts.length > 2) {
+            normalized = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        return Number(normalized);
+        }
+
 
 
     /* ----------------- Universities import ----------------- */
@@ -235,7 +302,7 @@ export class ImportService {
         const FIRST_HEADERS = ['نام', 'firstname', 'first name'];
         const LAST_HEADERS = ['نام خانوادگي', 'نام خانوادگی', 'lastname', 'family name'];
         const GRADE_HEADERS = ['معدل تا پايان نيمسال ششم', 'نمره', 'grade', 'معدل', 'نمره کل'];
-        const UNIVERSITY_HEADERS = ['دانشگاه محل اخذ مدرك كارشناسي', 'نام دانشگاه', 'university', 'سازمان آموزشي', 'محل تحصيل'];
+        const UNIVERSITY_HEADERS = ['دانشگاه محل اخذ مدرك كارشناسي','دانشگاه محل اخذ مدرك كارشناسی', 'نام دانشگاه', 'university', 'سازمان آموزشي', 'محل تحصيل'];
         const MAJOR_HEADERS = ['گرايش', 'گرایش', 'گرايش (هاي) انتخابي', 'گرايش (های) انتخابي', 'major', 'choices'];
         const BIRTHDATE_HEADERS = ['تاريخ تولد', 'birth_date', 'birthdate', 'تاریخ متولد شدن'];
         const MAJORNAME_HEADERS = ['رشته تحصيلي كارشناسي', 'رشته تحصيلي ', 'رشته تحصيلی كارشناسی', 'رشته تحصيلی', 'major_name', 'majorname', 'major name', 'major'];
@@ -246,6 +313,7 @@ export class ImportService {
         const lastIdx = tryFind(options?.lastnameColumn, LAST_HEADERS) as number | null;
         const gradeIdx = tryFind(options?.gradeColumn, GRADE_HEADERS) as number | null;
         const uniIdx = tryFind(options?.universityColumn, UNIVERSITY_HEADERS) as number | null;
+        console.log("uniIdx ",uniIdx);
         const majorIdx = tryFind(options?.majorColumn, MAJOR_HEADERS) as number | null;
         const birthdateIdx = tryFind(options?.birthdateColumn, BIRTHDATE_HEADERS) as number | null;
         const majornameIdx = tryFind(options?.majornameColumn, MAJORNAME_HEADERS) as number | null;
@@ -281,8 +349,10 @@ export class ImportService {
             const firstname = String(row.getCell(firstIdx || 0).value || '').trim() || undefined;
             const lastname = String(row.getCell(lastIdx || 0).value || '').trim() || undefined;
             const gradeRaw = String(row.getCell(gradeIdx || 0).value || '');
-            const grade = gradeRaw !== null && gradeRaw !== undefined ? Number(gradeRaw) : undefined;
+            let grade = gradeRaw !== null && gradeRaw !== undefined ? Number(gradeRaw) : undefined;
+            if (!grade) grade = this.parsePersianNumber(gradeRaw);
             const uniName = String(row.getCell(uniIdx || 0).value || '').trim() || undefined;
+            // console.log("uniName", uniName);
             const majorText = String(row.getCell(majorIdx).value || '').trim() || undefined;
             const majorName = String(row.getCell(majornameIdx || 0).value || '').trim() || 'نامشخص';
             const birthDateText = String(row.getCell(birthdateIdx || 0).value || '').trim() || undefined;
@@ -337,6 +407,8 @@ export class ImportService {
         // preload minors and universities
         const minors = await this.prisma.minor.findMany();
         const uniList = await this.prisma.university.findMany();
+        // console.log("uni:",uniList)
+        // console.log("minors:",minors)
         const minorEntries = minors.map(m => ({ id: m.id, nameNorm: this.normalizeText(m.name), rawName: m.name }));
         const uniNameToId = new Map<string, number>();
         uniList.forEach(u => uniNameToId.set(this.normalizeUniversityName(u.name), u.id));
@@ -349,6 +421,7 @@ export class ImportService {
         for (const [username, st] of studentsMap.entries()) {
             usernameList.push(username);
             const uniId = st.universityName ? uniNameToId.get(this.normalizeUniversityName(st.universityName)) ?? null : null;
+            // console.log("uniId", uniId);
             const isLocal = this.normalizeUniversityName(st.universityName!) === this.normalizeUniversityName(this.privilegedUniName)
             // compute points if uni grade exists and student grade known
             const uniGrade = uniId ? (uniIdToGrade.get(uniId) ?? 0) : 0;

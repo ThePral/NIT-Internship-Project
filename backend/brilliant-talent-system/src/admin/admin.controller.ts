@@ -10,6 +10,7 @@ import { ExcelUploadDecorator } from './decorators';
 import { QueueService } from 'src/queue/queue.service';
 import { RedisService } from 'src/redis/redis.service';
 import { StreamableFile } from '@nestjs/common';
+
 @ApiBearerAuth('access_token')
 @UseGuards(AnyAdminJwtGuard)
 @Controller('admins')
@@ -70,7 +71,7 @@ export class AdminController {
     @ApiOperation({ summary: "upload Excel files" })
     @ExcelUploadDecorator('file')
     // @ApiOkResponse( { type: UploadResponseDto})
-    @Post("upload/:type")
+    @Post("upload/:type/:cycle")
     async uploadExcel(@UploadedFile() file: Express.Multer.File) {
         return {
             message: 'File uploaded succesfully',

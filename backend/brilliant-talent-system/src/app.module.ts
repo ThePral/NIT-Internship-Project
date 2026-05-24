@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from '@nestjs/config';
 import { AdmissionsModule } from './admissions/admissions.module';
 import { QueueModule } from './queue/queue.module';
+import { CycleModule } from './cycle/cycle.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { QueueModule } from './queue/queue.module';
     UserModule, 
     SuperAdminModule, 
     AdminModule, 
-    AdmissionsModule, QueueModule
+    AdmissionsModule, QueueModule, CycleModule
   ]
 })
 export class AppModule implements NestModule {
