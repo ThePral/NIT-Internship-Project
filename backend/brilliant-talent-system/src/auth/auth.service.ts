@@ -4,13 +4,15 @@ import { PrismaService } from "src/prisma/prisma.service";
 import * as argon from 'argon2'
 import { AdminLoginDto, SuperAdminLoginDto, UserLoginDto } from "./dto";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 
 
 @Injectable()
 export class AuthService{
     constructor(
         private prisma: PrismaService,
-        private jwt: JwtService
+        private jwt: JwtService,
+        private config: ConfigService
     ) {}
 
     async userLogin(dto: UserLoginDto) {
@@ -93,11 +95,11 @@ export class AuthService{
         const [access_token, refresh_token] = await Promise.all([
             this.jwt.signAsync(accessTokenPayload, {
                 expiresIn: '7d',
-                secret: process.env.JWT_ACCESS_SECRET
+                secret: this.config.get<string>('JWT_ACCESS_SECRET')
             }),
             this.jwt.signAsync(refreshTokenPayload, {
                 expiresIn: '7d',
-                secret: process.env.JWT_REFRESH_SECRET
+                secret: this.config.get<string>('JWT_REFRESH_SECRET')
             })
         ]);
 
@@ -110,7 +112,7 @@ export class AuthService{
     async refreshTokens(refreshToken: string) {
         try {
             const payload = await this.jwt.verifyAsync(refreshToken, {
-                secret: process.env.JWT_REFRESH_SECRET
+                secret: this.config.get<string>('JWT_REFRESH_SECRET')
             });
 
             if (!payload.isRefreshToken) {

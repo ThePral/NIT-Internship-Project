@@ -45,7 +45,7 @@ export class AdminController {
     @ApiResponse({ type: UserDto })
     @Get('users/:id')
     getUserById(@Param('id') userId: number): Promise<UserDto>{
-        return this.adminService.getUserById(userId);
+        return this.adminService.getUserById(Number(userId));
     }
 
     @ApiOperation({ summary: 'Edit user by id' })
@@ -56,14 +56,14 @@ export class AdminController {
         @Body() dto: EditUserByAdminDto,
         @Param('id') userId: number
     ): Promise<UserDto>{
-        return this.adminService.editUserById(userId, dto);
+        return this.adminService.editUserById(Number(userId), dto);
     }
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete user by id' })
     @Delete('users/:id')
     deleteUserById(@Param('id') userId: number){
-        return this.adminService.deleteUserById(userId);
+        return this.adminService.deleteUserById(Number(userId));
     }
 
 
