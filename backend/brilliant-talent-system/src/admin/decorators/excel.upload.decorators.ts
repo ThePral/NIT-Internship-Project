@@ -14,6 +14,7 @@ export function ExcelUploadDecorator(fieldName = 'file') {
                     destination: destination,
                     filename: (req, file, callback) => {
                         const type = req.params.type;
+                        const cycle = req.params.cycle;
                         const nameMap = {
                             students1: 'Students1',
                             students2: 'Students2',
@@ -22,13 +23,16 @@ export function ExcelUploadDecorator(fieldName = 'file') {
                         };
                         const baseName = nameMap[type];
                         if (!baseName) callback(new BadRequestException('Invalid or missing type field'), "null");
-                        const fileName = baseName + extname(file.originalname);
+                        const fileName = baseName + "_" + cycle + extname(file.originalname);
                         callback(null, fileName);
                     },
                 }),
                 fileFilter: (req, file, callback) => {
                     const allowed = ['students1', 'students2', 'minors', 'universities'];
                     const type = req.params?.type;
+                    const cycle = req.params?.cycle;
+
+                    if (!cycle) return callback(new BadRequestException('دوره انتخاب نشد'), false);
 
                     if (!type || !allowed.includes(type)) return callback(new BadRequestException('تایپ نادرست برای فایل'), false);
                     if (!file.originalname.match(/\.(xlsx|xls)$/)) return callback(new BadRequestException('تنها فایل های اکسل قابل قبول هستند'), false);
