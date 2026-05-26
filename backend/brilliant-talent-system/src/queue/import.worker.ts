@@ -17,12 +17,13 @@ export class ImportWorker implements OnModuleDestroy {
         };
 
         // concurrency: how many imports this worker can run in parallel
-        const concurrency = Number(process.env.IMPORT_WORKER_CONCURRENCY || 2);
+        // const concurrency = Number(process.env.IMPORT_WORKER_CONCURRENCY || 2);
+        const concurrency = 1;
 
         this.worker = new Worker(
             'import-queue',
             async (job: Job) => {
-                this.logger.log(`Processing import job ${job.id}`);
+                this.logger.log(`Processing Import job ${job.id}`);
                 try {
                     await job.updateProgress({ step: 'starting' });
 

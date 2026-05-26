@@ -121,17 +121,17 @@ export class AdminController {
         return this.adminService.removeAllocationRunById(runId);
     }
 
-    @ApiOperation({ summary: "Get Allocation Run Result By ID" })
+    @ApiOperation({ summary: "Get Allocation Run History Result By ID" })
     @Get("history/allocation/:id")
     getAllocationRunsHistory(@Param('id', ParseIntPipe) runId: number) {
         return this.adminService.allocationHistoryData(runId);
     }
 
-    @ApiOperation({ summary: "Last allocations results"})
+    @ApiOperation({ summary: "Get allocations results By Cycle ID"})
     @ApiResponse({ type: [userResults]})
-    @Get("results/table")
-    getResultsTable() {
-        return this.adminService.userAcceptanceData();
+    @Get("results/table/:cycle")
+    getResultsTable(@Param('cycle', ParseIntPipe) cycleId: number) {
+        return this.adminService.userAcceptanceData(cycleId);
     }
 
     @Get("results/pdf/sr0")

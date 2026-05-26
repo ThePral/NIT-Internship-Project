@@ -34,7 +34,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  username      String    @unique
+  username      String    
   hash_password String                
   firstname     String?
   lastname      String?
@@ -55,13 +55,14 @@ model User {
   priorities    StudentPriority[]
   acceptances   Acceptance[]
 
+  @@unique([cycleId, username])
   @@map("users")    
   @@index([cohort, points])
 }
 
 model University {
   id       Int     @id @default(autoincrement())
-  name     String  @unique
+  name     String  
   grade    Float
   cycleId  Int
 
@@ -73,13 +74,13 @@ model University {
 }
 
 model Minor {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
+  id       Int      @id @default(autoincrement())
+  name     String   
   req      String?  
   capacity Int
   cycleId  Int
 
-  cycle    Cycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  cycle    Cycle    @relation(fields: [cycleId], references: [id], onDelete: Cascade)
 
   priorities  StudentPriority[]
   acceptances Acceptance[]
@@ -95,7 +96,7 @@ model StudentPriority {
   isAccepted  Boolean?
   cycleId     Int
 
-  cycle       Cycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  cycle       Cycle  @relation(fields: [cycleId], references: [id], onDelete: Cascade)
   student     User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   minor       Minor  @relation(fields: [minorId], references: [id], onDelete: Cascade)
 

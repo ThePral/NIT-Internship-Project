@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   MinorCap,
@@ -41,6 +41,8 @@ export class AllocationService {
       select: { id: true, capacity: true } ,
       where: { cycleId }
     });
+
+    if (minors.length === 0) throw new BadRequestException("داده کافی برای پردازش وجود ندارد");
 
     const capMap = new Map<number, MinorCap>();
     for (const m of minors) {

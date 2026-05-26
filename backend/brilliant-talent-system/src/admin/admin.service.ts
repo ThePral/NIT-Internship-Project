@@ -307,7 +307,7 @@ export class AdminService {
 
         for (const path of Object.values(filePaths)) {
             try {
-                await fs.promises.unlink(path);
+                if (path) await fs.promises.unlink(path);
             } catch (err) {
                 // Log and continue; don't throw so we try to delete other files.
                 this.logger.warn(`Failed to delete ${path}: ${(err as Error).message}`);
@@ -320,6 +320,8 @@ export class AdminService {
     async importDocsJob(filePaths: ExcelPaths, cycleId: number, progressCb?: (progress: number | object) => void) {
 
         await this.importService.deleteCycleData(cycleId);
+
+        progressCb?.({message: "cycle data deleted"});
         
         const hashPassword = true;
         
@@ -389,12 +391,18 @@ export class AdminService {
         }
         await this.redisService.set("pdfCreating","true");
         
-        const result = await this.allocationService.runAllocation(cycleId);
-        this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
-        return {
-            message: "User Acceptance Calculated",
-            data: result
-        };
+        try {
+            const result = await this.allocationService.runAllocation(cycleId);
+            this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
+            return {
+                message: "User Acceptance Calculated",
+                data: result
+            };
+            
+        } catch (error) {
+            this.redisService.set("pdfCreating","error");
+            throw new BadRequestException(error)
+        }
     }
 
     async allocationRunsData() {
@@ -418,7 +426,7 @@ export class AdminService {
         });
     }
 
-    async userAcceptanceData() {
+    async userAcceptanceData(cycleId: number) {
 
         const data: userResults[] = await this.prisma.user.findMany({
             select: {
@@ -447,8 +455,11 @@ export class AdminService {
                         }
                     }
                 }
-            }
+            },
+            where: { cycleId }
         });
+
+        if (data.length === 0) throw new NotFoundException("نتیجه ای برای این دوره وجود ندارد");
 
         return data;
     }

@@ -226,32 +226,33 @@ export class ImportService {
         const header = sheet.getRow(1);
         const nameIdx = this.findHeaderIndex(header, ['name', 'نام', 'نام دانشگاه']);
         const gradeIdx = this.findHeaderIndex(header, ['grade', 'نمره']);
-        const idIdx = this.findHeaderIndex(header, ['id', 'شناسه']);
+        // const idIdx = this.findHeaderIndex(header, ['id', 'شناسه']);
 
         if (nameIdx === null) {
             throw new Error('Could not detect "name" column in universities file. Provide a header named "name" or "نام".');
         }
 
-        const rows: { id?: number; name: string; grade: number }[] = [];
+        const rows: { name: string; grade: number; cycleId: number }[] = [];
         sheet.eachRow({ includeEmpty: false }, (row, rn) => {
             if (rn === 1) return; // skip header
             const name = this.normalizeText(row.getCell(nameIdx).value);
             if (!name) return;
             const gradeCell = gradeIdx ? row.getCell(gradeIdx).value : null;
             const grade = gradeCell !== null && gradeCell !== undefined ? Number(gradeCell) : 0;
-            const id = idIdx ? Number(row.getCell(idIdx).value) : undefined;
-            rows.push({ id: id || undefined, name, grade });
+            // const id = idIdx ? Number(row.getCell(idIdx).value) : undefined;
+            rows.push({ name, grade, cycleId });
         });
 
-        const results = { upserted: 0, skipped: 0 };
+        const results = { inserted: 0, skipped: 0 };
         for (const r of rows) {
             // Upsert by name (name is unique in schema)
-            await this.prisma.university.upsert({
-                where: { name: r.name },
-                update: { grade: r.grade },
-                create: { name: r.name, grade: r.grade, cycleId },
-            });
-            results.upserted++;
+            // await this.prisma.university.upsert({
+            //     where: { name: r.name },
+            //     update: { grade: r.grade },
+            //     create: { name: r.name, grade: r.grade, cycleId },
+            // });
+            await this.prisma.university.create({ data: r });
+            results.inserted++;
         }
 
         return { message: 'Universities imported', report: results };
@@ -281,7 +282,7 @@ export class ImportService {
             throw new Error('Could not detect required columns in minors file. Need "name" and "capacity" headers.');
         }
 
-        const rows: { name: string; req?: string; capacity: number }[] = [];
+        const rows: { name: string; req?: string; capacity: number; cycleId: number }[] = [];
         sheet.eachRow({ includeEmpty: false }, (row, rn) => {
             if (rn === 1) return;
             const name = String(row.getCell(nameIdx).value || '').trim();
@@ -289,20 +290,21 @@ export class ImportService {
             const req = String(row.getCell(reqIdx || 0).value || '').trim() || undefined;
             const capRaw = row.getCell(capIdx).value;
             const capacity = capRaw !== null && capRaw !== undefined ? parseInt(String(capRaw), 10) || 0 : 0;
-            rows.push({ name, req, capacity });
+            rows.push({ name, req, capacity, cycleId });
         });
 
-        const report = { upserted: 0, errors: [] as string[] };
+        const report = { inserted: 0, errors: [] as string[] };
         for (const r of rows) {
             try {
-                await this.prisma.minor.upsert({
-                    where: { name: r.name },
-                    create: { name: r.name, req: r.req, capacity: r.capacity, cycleId },
-                    update: { req: r.req, capacity: r.capacity },
-                });
-                report.upserted++;
+                // await this.prisma.minor.upsert({
+                //     where: { name: r.name },
+                //     create: { name: r.name, req: r.req, capacity: r.capacity, cycleId },
+                //     update: { req: r.req, capacity: r.capacity },
+                // });
+                await this.prisma.minor.create({ data: r});
+                report.inserted++;
             } catch (err) {
-                report.errors.push(`Failed to upsert minor ${r.name}: ${(err as Error).message}`);
+                report.errors.push(`Failed to insert minor ${r.name}: ${(err as Error).message}`);
             }
         }
 
@@ -387,7 +389,6 @@ export class ImportService {
         const lastIdx = tryFind(options?.lastnameColumn, LAST_HEADERS) as number | null;
         const gradeIdx = tryFind(options?.gradeColumn, GRADE_HEADERS) as number | null;
         const uniIdx = tryFind(options?.universityColumn, UNIVERSITY_HEADERS) as number | null;
-        console.log("uniIdx ",uniIdx);
         const majorIdx = tryFind(options?.majorColumn, MAJOR_HEADERS) as number | null;
         const birthdateIdx = tryFind(options?.birthdateColumn, BIRTHDATE_HEADERS) as number | null;
         const majornameIdx = tryFind(options?.majornameColumn, MAJORNAME_HEADERS) as number | null;
@@ -479,8 +480,8 @@ export class ImportService {
         this.logger.log(`Parsed ${studentsMap.size} unique students (grouped by username).`);
 
         // preload minors and universities
-        const minors = await this.prisma.minor.findMany();
-        const uniList = await this.prisma.university.findMany();
+        const minors = await this.prisma.minor.findMany({ where: { cycleId }});
+        const uniList = await this.prisma.university.findMany({ where: { cycleId }});
         // console.log("uni:",uniList)
         // console.log("minors:",minors)
         const minorEntries = minors.map(m => ({ id: m.id, nameNorm: this.normalizeText(m.name), rawName: m.name }));
@@ -547,7 +548,7 @@ export class ImportService {
 
         // fetch user ids for usernames (both existing and newly created)
         const users = await this.prisma.user.findMany({
-            where: { username: { in: usernameList } },
+            where: { username: { in: usernameList }, cycleId },
             select: { id: true, username: true, universityId: true },
         });
         const usernameToId = new Map(users.map(u => [u.username, u.id]));

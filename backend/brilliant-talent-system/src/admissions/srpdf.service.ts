@@ -1738,12 +1738,12 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
             // ]);
             let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
             if (!run) throw new Error('No AllocationRun found in DB');
-           await   this.generateSr0(`./output/sr0_${run.id}.pdf`, fontFamily, fontFiles, runId),
-               await   this.generateSr1(`./output/sr1_${run.id}.pdf`, fontFamily, fontFiles, runId),
-               await   this.generateSr2(`./output/sr2_${run.id}.pdf`, fontFamily, fontFiles, runId),
-               await   this.generateSr3(`./output/sr3_${run.id}.pdf`, fontFamily, fontFiles, runId),
-               await   this.generateSr4(`./output/sr4_${run.id}.pdf`, fontFamily, fontFiles, runId),
-               console.log("pdf done")
+            await   this.generateSr0(`./output/sr0_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            await   this.generateSr1(`./output/sr1_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            await   this.generateSr2(`./output/sr2_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            await   this.generateSr3(`./output/sr3_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            await   this.generateSr4(`./output/sr4_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            console.log("pdf done")
             await this.redisService.del("pdfCreating");
         } catch (error) {
             console.log("pdf error")

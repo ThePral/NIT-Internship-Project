@@ -21,7 +21,7 @@ export class HistoryWorker implements OnModuleDestroy {
         this.worker = new Worker(
             'history-queue',
             async (job: Job) => {
-                this.logger.log(`Processing import job ${job.id}`);
+                this.logger.log(`Processing History job ${job.id}`);
                 try {
                     await job.updateProgress({ step: 'starting' });
 

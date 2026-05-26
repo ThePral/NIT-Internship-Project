@@ -7,14 +7,14 @@ import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 export class AuthController{
     constructor(private authService: AuthService) {}
 
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({ summary: 'User login' })
-    @ApiBody({ type: UserLoginDto })
-    @ApiResponse({ type: TokensDto })
-    @Post('user')
-    userlogin(@Body() dto: UserLoginDto): Promise<TokensDto> {
-        return this.authService.userLogin(dto);
-    }
+    // @HttpCode(HttpStatus.OK)
+    // @ApiOperation({ summary: 'User login' })
+    // @ApiBody({ type: UserLoginDto })
+    // @ApiResponse({ type: TokensDto })
+    // @Post('user')
+    // userlogin(@Body() dto: UserLoginDto): Promise<TokensDto> {
+    //     return this.authService.userLogin(dto);
+    // }
 
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Admin login' })

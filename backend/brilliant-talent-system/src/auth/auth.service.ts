@@ -15,25 +15,25 @@ export class AuthService{
         private config: ConfigService
     ) {}
 
-    async userLogin(dto: UserLoginDto) {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                username: dto.username,
-            },
-        });
+    // async userLogin(dto: UserLoginDto) {
+    //     const user = await this.prisma.user.findUnique({
+    //         where: {
+    //             username: dto.username,
+    //         },
+    //     });
 
-        if (!user) {
-            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
-        }
+    //     if (!user) {
+    //         throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
+    //     }
 
-        const pwMatches = await argon.verify(user.hash_password, dto.password);
+    //     const pwMatches = await argon.verify(user.hash_password, dto.password);
         
-        if (!pwMatches) {
-            throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
-        }
+    //     if (!pwMatches) {
+    //         throw new ForbiddenException('کاربری با اطلاعات وارد شده یافت نشد');
+    //     }
 
-        return this.generateTokens(user.id, user.username, 'user');
-    }
+    //     return this.generateTokens(user.id, user.username, 'user');
+    // }
 
     async adminLogin(dto: AdminLoginDto) {
         const admin = await this.prisma.admin.findUnique({
