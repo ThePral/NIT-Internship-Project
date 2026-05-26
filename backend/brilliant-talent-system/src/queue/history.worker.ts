@@ -25,7 +25,7 @@ export class HistoryWorker implements OnModuleDestroy {
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    const result = await this.allocationService.allocationHistoryJob(job.data.runId, async (p) => {
+                    const result = await this.allocationService.allocationHistoryJob(job.data.runId, job.data.cycleId, async (p) => {
                         await job.updateProgress(p);
                     });
 

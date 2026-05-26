@@ -33,10 +33,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit{
         const hash = await argon.hash(password);
     
         await this.superAdmin.create({
-        data: {
-            username,
-            hash_password: hash,
-        },
+            data: {
+                username,
+                hash_password: hash,
+            },
         });
     
         this.logger.log('✅ Default SuperAdmin created successfully');

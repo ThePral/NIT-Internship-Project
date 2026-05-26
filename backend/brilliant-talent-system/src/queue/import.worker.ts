@@ -26,7 +26,7 @@ export class ImportWorker implements OnModuleDestroy {
                 try {
                     await job.updateProgress({ step: 'starting' });
 
-                    const result = await this.adminService.importDocsJob(job.data.filePaths, async (p) => {
+                    const result = await this.adminService.importDocsJob(job.data.filePaths, job.data.cycleId, async (p) => {
                         await job.updateProgress(p);
                     });
 

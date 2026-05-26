@@ -35,10 +35,11 @@ export class AllocationService {
    * Run allocation with given privileged university id (your university).
    * Returns a summary including runId and counts.
    */
-  async runAllocation() {
+  async runAllocation(cycleId: number) {
     // 1) Load minors and build capacity map
     const minors = await this.prisma.minor.findMany({
-      select: { id: true, capacity: true },
+      select: { id: true, capacity: true } ,
+      where: { cycleId }
     });
 
     const capMap = new Map<number, MinorCap>();
@@ -55,15 +56,13 @@ export class AllocationService {
     this.logger.log(`Loaded ${capMap.size} minors and computed quotas.`);
 
     // 2) Helper that loads students for a cohort into memory (with priorities)
-    const loadStudents = async (
-      cohort: Cohort,
-      isLocal: boolean,
-    ): Promise<StudentStaging[]> => {
+    const loadStudents = async (cohort: Cohort, isLocal: boolean): Promise<StudentStaging[]> => {
       // Only load students that have priorities
       const users = await this.prisma.user.findMany({
         where: {
           cohort: cohort,
           isLocal,
+          cycleId,
           priorities: { some: {} },
         },
         select: {
@@ -272,6 +271,7 @@ export class AllocationService {
     const run = await this.prisma.allocationRun.create({
       data: {
         cohortPolicy: 'students1-first',
+        cycleId
       },
     });
 
@@ -283,6 +283,7 @@ export class AllocationService {
       priority: a.priority,
       points: a.points,
       cohort: a.cohort,
+      cycleId
     }));
 
     // insert acceptances in chunks
@@ -323,11 +324,12 @@ export class AllocationService {
 
     const job = await this.queueService.historyQueue.add('history', {
       runId: run.id,
+      cycleId
     });
 
     const acceptedCount = assignments.length;
     const totalStudents = await this.prisma.user.count({
-      where: { priorities: { some: {} } },
+      where: { priorities: { some: {} }, cycleId },
     });
     const unmatchedCount = totalStudents - acceptedCount;
 
@@ -345,6 +347,7 @@ export class AllocationService {
 
   async allocationHistoryJob(
     runId: number,
+    cycleId: number,
     progressCb?: (progress: number | object) => void,
   ) {
     // const acceptances = await this.prisma.acceptance.findMany({
@@ -397,6 +400,7 @@ export class AllocationService {
           },
         },
       },
+      where: { cycleId },
     });
 
     progressCb?.({ message: 'fetched allocation data' });
@@ -421,6 +425,7 @@ export class AllocationService {
       minorCap: user.acceptances[0]?.minor.capacity || null,
       acceptedPriority: user.acceptances[0]?.priority || null,
       points: user.points || 0,
+      cycleId
     }));
 
     const chunks = this.chunk(allocationHistoryInsert);

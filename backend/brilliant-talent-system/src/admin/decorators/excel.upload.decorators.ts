@@ -49,6 +49,12 @@ export function ExcelUploadDecorator(fieldName = 'file') {
             schema: { type: 'string' },
             enum: ['students1','students2','minors','universities'] 
         }),
+        ApiParam({
+            name: 'cycle',
+            required: true,
+            description: 'The ID of the academic cycle',
+            schema: { type: 'integer' }
+        }),
         ApiBody({
             schema: {
                 type: 'object',

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, StreamableFile } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
@@ -15,6 +15,8 @@ import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AdminService {
+    private readonly logger = new Logger(AdminService.name);
+    
     constructor(
         private prisma: PrismaService, 
         private importService: ImportService, 
@@ -153,12 +155,19 @@ export class AdminService {
         });
     }
 
-    private readonly patterns: Record<string, RegExp> = {
-        students1: /students[^a-z0-9]*1/i,       // matches Students_1, Students-1, students1, etc.
-        students2: /students[^a-z0-9]*2/i,       // matches Students_2, Students2, ...
-        minors: /\bminors?\b/i,                  // minor or minors
-        universities: /\buniversit/i,            // university or universities (partial match)
-    };
+    // private readonly patterns: Record<string, RegExp> = {
+    //     // Matches: students1_405, Students1_405, STUDENTS1_405, students1-405, etc.
+    //     students1: /^students1[-_]?\d+\.(xlsx|xls)$/i,
+        
+    //     // Matches: students2_405, Students2_405, STUDENTS2_405, students2-405, etc.
+    //     students2: /^students2[-_]?\d+\.(xlsx|xls)$/i,
+        
+    //     // Matches: minors_405, Minors_405, MINORS_405, minors-405, etc.
+    //     minors: /^minors[-_]?\d+\.(xlsx|xls)$/i,
+        
+    //     // Matches: universities_405, Universities_405, UNIVERSITIES_405, universities-405, etc.
+    //     universities: /^universities[-_]?\d+\.(xlsx|xls)$/i,
+    // };
 
     private getResourcesDir(): string {
         return path.resolve(process.cwd(), 'resources');
@@ -178,7 +187,47 @@ export class AdminService {
         }
     }
 
-    async listExcelPresence(): Promise<PresenceResult> {
+    private async ExtractCycleExcelsPath(cycleId: string): Promise<ExcelPaths> {
+
+        if (!cycleId) {
+            throw new BadRequestException('cycleId is required');
+        }
+
+        const files = await this.readDirSafe();
+        const dir = this.getResourcesDir();
+
+        const filePaths: ExcelPaths = {
+            students1: null,
+            students2: null,
+            minors: null,
+            universities: null,
+        };
+
+        // Generate patterns for the specific cycleId
+        const patternsWithCycle: Record<string, RegExp> = {
+            students1: new RegExp(`^students1[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+            students2: new RegExp(`^students2[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+            minors: new RegExp(`^minors[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+            universities: new RegExp(`^universities[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+        };
+
+        for (const f of files) {
+            if (!f.match(/\.(xlsx|xls)$/i)) continue;
+            for (const [key, pattern] of Object.entries(patternsWithCycle)) {
+                if (pattern.test(f)) {
+                    filePaths[key as keyof ExcelPaths] = path.join(dir, f);
+                    break;
+                }
+            }
+        }
+
+        return filePaths;
+    }
+
+    async listExcelPresence(cycleId: string): Promise<PresenceResult> {
+        if (!cycleId) {
+            throw new BadRequestException('cycleId is required');
+        }
 
         const files = await this.readDirSafe();
 
@@ -201,22 +250,33 @@ export class AdminService {
             },
         };
 
+        // Map of expected basenames to their patterns
+        const expectedFiles = {
+            students1: `Students1_${cycleId}`,
+            students2: `Students2_${cycleId}`,
+            minors: `minors_${cycleId}`,
+            universities: `universities_${cycleId}`
+        };
+
         for (const f of files) {
             // only consider .xls/.xlsx files
             if (!f.match(/\.(xlsx|xls)$/i)) continue;
 
-            for (const key of Object.keys(this.patterns)) {
-                if (this.patterns[key].test(f)) {
-                    // (present as any)[key] = true;
-                    present[key].exists = true;
+            // Get filename without extension
+            const nameWithoutExt = f.replace(/\.(xlsx|xls)$/i, '');
+            
+            // Check against expected patterns
+            for (const [key, expectedName] of Object.entries(expectedFiles)) {
+                if (nameWithoutExt === expectedName) {
+                    present[key as keyof PresenceResult].exists = true;
                     const filePath = path.join(this.getResourcesDir(), f);
                     try {
-                        const stats = fs.statSync(filePath)
-                        // present[key].date_created = stats.birthtime;
-                        present[key].date_created = stats.mtime;
+                        const stats = fs.statSync(filePath);
+                        present[key as keyof PresenceResult].date_created = stats.mtime;
                     } catch (error) {
-                        console.error(error);
+                        console.error(`Error reading file stats for ${f}:`, error);
                     }
+                    break; // Found match for this file, move to next file
                 }
             }
         }
@@ -224,69 +284,97 @@ export class AdminService {
         return present;
     }
 
-    async deleteDocs() {
-        const files = await this.readDirSafe();
-        const dir = this.getResourcesDir();
+    async deleteDocs(cycleId: string) {
+        // const files = await this.readDirSafe();
+        // const dir = this.getResourcesDir();
+        
+        // for (const f of files) {
+        //     const abs = path.join(dir, f);
+            
+        //     try {
+        //         // use unlinkSync or promises - use promises for non-blocking
+        //         await fs.promises.unlink(abs);
+        //         // deleted[key].push(f);
+        //     } catch (err) {
+        //         // Log and continue; don't throw so we try to delete other files.
+        //         console.warn(`Failed to delete ${abs}: ${(err as Error).message}`);
+        //     }
+        // }
+        
+        // await this.prisma.cleanExcelsData();
+        
+        const filePaths = await this.ExtractCycleExcelsPath(cycleId);
 
-        for (const f of files) {
-            const abs = path.join(dir, f);
-
+        for (const path of Object.values(filePaths)) {
             try {
-                // use unlinkSync or promises - use promises for non-blocking
-                await fs.promises.unlink(abs);
-                // deleted[key].push(f);
+                await fs.promises.unlink(path);
             } catch (err) {
                 // Log and continue; don't throw so we try to delete other files.
-                console.warn(`Failed to delete ${abs}: ${(err as Error).message}`);
+                this.logger.warn(`Failed to delete ${path}: ${(err as Error).message}`);
             }
         }
-            
-        await this.prisma.cleanExcelsData();
 
-        return { message: "all resources files deleted succesfuly" };
+        return { message: "cycle resource files deleted succesfuly" };
     }
 
-    async importDocsJob(filePaths: ExcelPaths, progressCb?: (progress: number | object) => void) {
+    async importDocsJob(filePaths: ExcelPaths, cycleId: number, progressCb?: (progress: number | object) => void) {
 
+        await this.importService.deleteCycleData(cycleId);
+        
         const hashPassword = true;
         
-        await this.importService.importUniversities(filePaths["universities"]!);
+        await this.importService.importUniversities(filePaths["universities"]!, cycleId);
         progressCb?.({message: "universities data imported"});
-        await this.importService.importMinors(filePaths["minors"]!);
+        await this.importService.importMinors(filePaths["minors"]!, cycleId);
         progressCb?.({message: "minors data imported"});
-        await this.importService.importStudents(filePaths["students1"]!, 1, {hashPassword});
+        await this.importService.importStudents(filePaths["students1"]!, 1, cycleId, {hashPassword});
         progressCb?.({message: "students1 data imported"});
-        await this.importService.importStudents(filePaths["students2"]!, 2, {hashPassword});
+        await this.importService.importStudents(filePaths["students2"]!, 2, cycleId, {hashPassword});
         progressCb?.({message: "students2 data imported"});
     }
 
-    async importDocs() {
+    async importDocs(cycleId: string) {
 
-        const files = await this.readDirSafe();
-        const dir = this.getResourcesDir();
+        // if (!cycleId) {
+        //     throw new BadRequestException('cycleId is required');
+        // }
 
-        const filePaths: ExcelPaths = {
-            students1: null,
-            students2: null,
-            minors: null,
-            universities: null,
-        };
+        // const files = await this.readDirSafe();
+        // const dir = this.getResourcesDir();
 
-        for (const f of files) {
-            if (!f.match(/\.(xlsx|xls)$/i)) continue;
-            for (const key of Object.keys(this.patterns)) {
-                if (this.patterns[key].test(f)) {
-                    filePaths[key] = path.join(dir, f);
-                }
-            }
-        }
+        // const filePaths: ExcelPaths = {
+        //     students1: null,
+        //     students2: null,
+        //     minors: null,
+        //     universities: null,
+        // };
+
+        // // Generate patterns for the specific cycleId
+        // const patternsWithCycle: Record<string, RegExp> = {
+        //     students1: new RegExp(`^students1[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+        //     students2: new RegExp(`^students2[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+        //     minors: new RegExp(`^minors[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+        //     universities: new RegExp(`^universities[-_]${cycleId}\\.(xlsx|xls)$`, 'i'),
+        // };
+
+        // for (const f of files) {
+        //     if (!f.match(/\.(xlsx|xls)$/i)) continue;
+        //     for (const [key, pattern] of Object.entries(patternsWithCycle)) {
+        //         if (pattern.test(f)) {
+        //             filePaths[key as keyof ExcelPaths] = path.join(dir, f);
+        //             break;
+        //         }
+        //     }
+        // }
+
+        const filePaths = await this.ExtractCycleExcelsPath(cycleId);
 
         
         if (!filePaths.minors || !filePaths.universities || !filePaths.students1 || !filePaths.students2) {
             throw new BadRequestException("همه اکسل ها باید آپلود شده باشند");
         }
 
-        const job = await this.queueService.importQueue.add('import', {filePaths});
+        const job = await this.queueService.importQueue.add('import', {filePaths, cycleId: Number(cycleId)});
 
         return {
             message: 'File imports queued',
@@ -294,14 +382,14 @@ export class AdminService {
         };
     }
 
-    async allocateUserAcceptances() {
+    async allocateUserAcceptances(cycleId: number) {
         const isPdfCreating = await this.redisService.get("pdfCreating");
         if(isPdfCreating == "true" || isPdfCreating == true){
             throw new BadRequestException("پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید");
         }
         await this.redisService.set("pdfCreating","true");
         
-        const result = await this.allocationService.runAllocation();
+        const result = await this.allocationService.runAllocation(cycleId);
         this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
         return {
             message: "User Acceptance Calculated",

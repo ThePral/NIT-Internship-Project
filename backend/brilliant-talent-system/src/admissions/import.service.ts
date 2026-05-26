@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import ExcelJS from 'exceljs';
 // import * as bcrypt from 'bcryptjs';
 import * as argon from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'; // adjust path to your PrismaService
 import { QueueService } from 'src/queue/queue.service';
-import { Prisma, User } from '@prisma/client';
+import { Cycle, Prisma, User } from '@prisma/client';
 type Cohort = 1 | 2;
 
 @Injectable()
@@ -144,9 +144,68 @@ export class ImportService {
         }
 
         return Number(normalized);
+    }
+
+    // private parseExcelFilename(filename: string): { basename: string; cycleId: string } {
+    //     if (!filename) {
+    //         throw new BadRequestException('Filename is required');
+    //     }
+
+    //     const nameWithoutExtension = filename.replace(/\.[^/.]+$/, '');
+    //     const lastUnderscoreIndex = nameWithoutExtension.lastIndexOf('_');
+        
+    //     if (lastUnderscoreIndex === -1) {
+    //         throw new BadRequestException(
+    //             `Invalid filename format: "${filename}". Expected format: "basename_cycleId.xlsx"`
+    //         );
+    //     }
+        
+    //     const basename = nameWithoutExtension.substring(0, lastUnderscoreIndex);
+    //     const cycleId = nameWithoutExtension.substring(lastUnderscoreIndex + 1);
+        
+    //     if (!cycleId) {
+    //         throw new BadRequestException(
+    //             `No cycleId found in filename: "${filename}"`
+    //         );
+    //     }
+        
+    //     return { basename, cycleId };
+    // }
+
+    public async extractCycle(filename: string): Promise<number> {
+        if (!filename) {
+            throw new BadRequestException('Filename is required');
         }
 
+        // Remove the extension first
+        const nameWithoutExtension = filename.replace(/\.[^/.]+$/, '');
+        
+        // Split by underscore and get the last part (cycleId)
+        const parts = nameWithoutExtension.split('_');
+        
+        if (parts.length < 2) {
+            throw new BadRequestException(
+                `Invalid filename format: "${filename}". Expected format: "basename_cycleId.xlsx"`
+            );
+        }
+        
+        // The cycleId is the part after the last underscore
+        const cycleId = Number(parts[parts.length - 1]);
+        
+        if (!cycleId) {
+            throw new BadRequestException(
+                `No cycleId found in filename: "${filename}"`
+            );
+        }
 
+        const cycle: Cycle|null = await this.prisma.cycle.findUnique({
+            where: {id: cycleId}
+        });
+
+        if (!cycle) throw new NotFoundException(`دوره ${cycleId} یافت نشد`);
+        
+        return cycleId;
+    }
 
     /* ----------------- Universities import ----------------- */
 
@@ -154,7 +213,12 @@ export class ImportService {
      * Upserts universities from the given Excel file.
      * Expects columns: (optionally) id, name, grade. Header detection is fuzzy.
      */
-    async importUniversities(filePath: string) {
+    async importUniversities(filePath: string, cycleId: number) {
+
+        const excelCycleId = await this.extractCycle(filePath);
+
+        if (excelCycleId !== cycleId) throw new BadRequestException("دوره اکسل و درخواست یکی نیستند");
+
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(filePath);
         const sheet = workbook.worksheets[0];
@@ -185,7 +249,7 @@ export class ImportService {
             await this.prisma.university.upsert({
                 where: { name: r.name },
                 update: { grade: r.grade },
-                create: { name: r.name, grade: r.grade },
+                create: { name: r.name, grade: r.grade, cycleId },
             });
             results.upserted++;
         }
@@ -198,7 +262,12 @@ export class ImportService {
     /**
      * Import minors/majors. Expects columns: name, req (optional), capacity.
      */
-    async importMinors(filePath: string) {
+    async importMinors(filePath: string, cycleId: number) {
+
+        const excelCycleId = await this.extractCycle(filePath);
+
+        if (excelCycleId !== cycleId) throw new BadRequestException("دوره اکسل و درخواست یکی نیستند");
+
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(filePath);
         const sheet = workbook.worksheets[0];
@@ -228,7 +297,7 @@ export class ImportService {
             try {
                 await this.prisma.minor.upsert({
                     where: { name: r.name },
-                    create: { name: r.name, req: r.req, capacity: r.capacity },
+                    create: { name: r.name, req: r.req, capacity: r.capacity, cycleId },
                     update: { req: r.req, capacity: r.capacity },
                 });
                 report.upserted++;
@@ -254,6 +323,7 @@ export class ImportService {
     async importStudents(
         filePath: string,
         cohort: Cohort = 1,
+        cycleId: number,
         options?: {
             hashPassword?: boolean; // default true
             //   saltRounds?: number;
@@ -275,6 +345,10 @@ export class ImportService {
            For big imports, you can parallelize within chunks using Promise.all. 
            Or import with hashPassword: false and run a separate background hasher — but only do that if operationally necessary. 
         */
+
+        const excelCycleId = await this.extractCycle(filePath);
+
+        if (excelCycleId !== cycleId) throw new BadRequestException("دوره اکسل و درخواست یکی نیستند");
 
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(filePath);
@@ -440,6 +514,7 @@ export class ImportService {
                 majorName: st.majorName,
                 birthDate: st.birthDate,
                 nationalCode: st.nationalCode,
+                cycleId
             });
         }
         
@@ -478,7 +553,7 @@ export class ImportService {
         const usernameToId = new Map(users.map(u => [u.username, u.id]));
 
         // Build priorities create payload (map major text -> minorId)
-        const prioritiesToCreate: { studentId: number; minorId: number; priority: number }[] = [];
+        const prioritiesToCreate: { studentId: number; minorId: number; priority: number; cycleId: number }[] = [];
         const unmatchedPriorities: { username: string; priorityText: string }[] = [];
 
         for (const [username, st] of studentsMap.entries()) {
@@ -513,6 +588,7 @@ export class ImportService {
                     studentId,
                     minorId: matched.id,
                     priority: i + 1, // 1-based priority
+                    cycleId
                 });
             }
         }
@@ -555,5 +631,20 @@ export class ImportService {
         }
 
         return { success: true, message: "users passwords hashed succesfully"};
+    }
+
+    async deleteCycleData(cycleId: number) {
+        try {
+            await this.prisma.$transaction(async tx => {
+                await tx.user.deleteMany({ where: {cycleId}});
+                await tx.minor.deleteMany({ where: {cycleId}});
+                await tx.university.deleteMany({ where: {cycleId}});
+                await tx.studentPriority.deleteMany({ where: {cycleId}});
+                await tx.acceptance.deleteMany({ where: {cycleId}});
+            });
+        } catch (error) {
+            this.logger.error("Error with deleting cycle data transaction", error);
+            throw new InternalServerErrorException(error);
+        }
     }
 }

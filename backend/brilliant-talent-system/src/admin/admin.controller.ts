@@ -83,29 +83,29 @@ export class AdminController {
     @HttpCode(HttpStatus.ACCEPTED)
     @ApiOperation({ summary: "Import Excels Data to DB" })
     @ApiOkResponse( { type: UploadResponseDto})
-    @Post("excels")
-    async submitExcelsData() {
-        return this.adminService.importDocs();
+    @Post("excels/:cycle")
+    submitExcelsData(@Param('cycle') cycleId: string) {
+        return this.adminService.importDocs(cycleId);
     }
 
     @ApiOperation({ summary: 'Get Excel Files Existance' })
     @ApiResponse({ type: PresenceResult })
-    @Get("excels")
-    getExcelsExistance() {
-        return this.adminService.listExcelPresence();
+    @Get("excels/:cycle")
+    getExcelsExistance(@Param('cycle') cycleId: string) {
+        return this.adminService.listExcelPresence(cycleId);
     }
 
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Deletes Excel Files' })
-    @Delete("excels")
-    deleteExcels() {
-        return this.adminService.deleteDocs();
+    @Delete("excels/:cycle")
+    deleteExcels(@Param('cycle') cycleId: string) {
+        return this.adminService.deleteDocs(cycleId);
     }
 
     @ApiOperation({ summary: "Allocates Users Minor Acceptance" })
-    @Post("allocation/run")
-    async caclulateUserAcceptance() {
-        return await this.adminService.allocateUserAcceptances();
+    @Post("allocation/run/:cycle")
+    async caclulateUserAcceptance(@Param('cycle', ParseIntPipe) cycleId: number) {
+        return await this.adminService.allocateUserAcceptances(cycleId);
     }
 
     @ApiOperation({ summary: "Get All Allocation Runs" })
