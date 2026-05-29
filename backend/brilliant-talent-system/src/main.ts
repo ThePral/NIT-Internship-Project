@@ -26,7 +26,7 @@ async function bootstrap() {
       'access_token',
     )
     .build();
-    
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 

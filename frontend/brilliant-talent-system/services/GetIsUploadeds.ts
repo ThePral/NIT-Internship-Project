@@ -45,7 +45,7 @@ export async function GetIsUploadeds() {
         toast.error("خطای ناشناخته", { description: message });
     }
 
-    throw new Error(message);
+    // 
   } catch (error) {
     console.error("خطا در دریافت آپلودها:", error);
     throw error;

@@ -21,6 +21,7 @@ import { AddToDB } from "@/services/AddToDB";
 import { CheckAddToDB } from "@/services/CheckAddToDB";
 import { toLocalDateTime } from "@/functions/toLocalDateTime";
 import { RunAlocService } from "@/services/RunAlocService";
+import {SelectCycle} from "./SelectCycle";
 
 interface UploadCardProps {
   Icon: LucideIcon;
@@ -139,6 +140,7 @@ export const FileUploadDashboard = () => {
   const [jobStatus, setJobStatus] = useState<JobInterface | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const queryClient = useQueryClient();
+  const [cycleID , setCycleID] = useState<number>()
 
 
   // Check for existing job on component mount
@@ -220,8 +222,12 @@ export const FileUploadDashboard = () => {
           <CardTitle className="text-2xl font-bold text-primary">
             عملیات جدید
           </CardTitle>
-          <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4">
+          {/* <h2>{cycleID}llll</h2> */}
+          {/* <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4"> */}
+          {/* </CardDescription> */}
+          <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4 flex justify-between">
             آپلود جداول
+            <SelectCycle setCycleID={setCycleID} /> 
           </CardDescription>
         </CardHeader>
         <CardContent>

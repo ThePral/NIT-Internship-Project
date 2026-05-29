@@ -44,7 +44,7 @@ export async function GetHistories() {
         toast.error("خطای ناشناخته", { description: message });
     }
 
-    throw new Error(message);
+
   } catch (error) {
     console.error("خطا در دریافت سوابق:", error);
     throw error;

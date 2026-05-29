@@ -7,7 +7,7 @@ export async function SuperAdminLoginService(
   password: string
 ) {
   const result = await postFetch(
-    APIURL + "auth/superadmin",
+    APIURL + "auth/superAdmin",
     JSON.stringify({
       username,
       password,

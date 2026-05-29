@@ -40,3 +40,9 @@ export interface HistoryRow {
     id: number;
     createdAt: Date;
 }
+
+export interface Cycle {
+    id: number;
+    name: string
+
+}
