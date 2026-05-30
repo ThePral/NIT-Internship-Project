@@ -80,7 +80,7 @@ export class AdminService {
     //     }
     // }
 
-    async getUsers() {
+    async getUsers(cycleId: number) {
         // return await this.prisma.user.findMany({
         //     select: {
         //         id: true,
@@ -94,7 +94,7 @@ export class AdminService {
         //         universityId: true
         //     }
         // });
-        return await this.prisma.user.findMany();
+        return await this.prisma.user.findMany({ where: { cycleId }});
     }
 
     async getUserById(userId: number) {

@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiRe
 import { AdminJwtGuard, AnyAdminJwtGuard } from 'src/auth/guard';
 import { AdminService } from './admin.service';
 import { AdminDto, AdminWithRoleDto, EditAdminDto, UploadResponseDto, PresenceResult, userResults } from './dto';
-import { Admin } from '@prisma/client';
+import { Admin, User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { EditUserByAdminDto, UserDto } from 'src/user/dto/user.dto';
 import { ExcelUploadDecorator } from './decorators';
@@ -35,11 +35,11 @@ export class AdminController {
         return this.adminService.editAdmin(admin, dto);
     }
 
-    @ApiOperation({ summary: 'Get users' })
+    @ApiOperation({ summary: 'Get Users By Cycle ID' })
     @ApiResponse({ type: UserDto, isArray: true })
-    @Get('users')
-    getUsers(): Promise<UserDto[]>{
-        return this.adminService.getUsers();
+    @Get('users/:cycle')
+    getUsers(@Param('cycle', ParseIntPipe) cycleId: number): Promise<User[]>{
+        return this.adminService.getUsers(cycleId);
     }
 
     @ApiOperation({ summary: 'Get user by id' })
