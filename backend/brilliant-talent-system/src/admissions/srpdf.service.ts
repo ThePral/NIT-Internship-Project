@@ -1094,32 +1094,32 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
 
     /**
      * Public: generate sr0.pdf from DB using Puppeteer.
-     * If runId is omitted, uses the most recent AllocationRun.
+     * If cycleId is omitted, uses the most recent AllocationRun.
      *
      * @param outPath path to write PDF, e.g. './output/sr0.pdf'
      * @param fontFamily name to use in the embedded @font-face
      * @param fontFiles paths { regular: 'assets/fonts/Vazir-Regular.ttf', bold?: 'assets/fonts/Vazir-Bold.ttf' }
-     * @param runId optional allocation run id to use
+     * @param cycleId optional allocation cycle id to use
      */
     async generateSr0(
         outPath: string,
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
-    ): Promise<{ runId: number; outPath: string }> {
-        // find run
-        let run;
-        if (runId) {
-            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
-            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        cycleId?: number,
+    ): Promise<{ cycleId: number; outPath: string }> {
+        // find cycle
+        let cycle;
+        if (cycleId) {
+            cycle = await this.prisma.cycle.findUnique({ where: { id: cycleId } });
+            if (!cycle) throw new Error(`cycle with id=${cycleId} not found`);
         } else {
-            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
+            cycle = await this.prisma.cycle.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
         }
 
-        // fetch acceptances for the run, include student + minor + student.university (explicit select)
+        // fetch acceptances for the cycle, include student + minor + student.university (explicit select)
         const acceptances = await this.prisma.acceptance.findMany({
-            where: { runId: run.id },
+            where: { cycleId: cycle.id },
             orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
             select: {
                 id: true,
@@ -1171,25 +1171,25 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         // await this.convertHtmlToPdfPuppeteer(html, outPath);
         await generatePdfWithWeasyPrint(html , outPath);
 
-        return { runId: run.id, outPath };
+        return { cycleId: cycle.id, outPath };
     }
     async generateSr1(
         outPath: string,
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
-    ): Promise<{ runId: number; outPath: string }> {
-        // find run
-        let run;
-        if (runId) {
-            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
-            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        cycleId?: number,
+    ): Promise<{ cycleId: number; outPath: string }> {
+        // find cycle
+        let cycle;
+        if (cycleId) {
+            cycle = await this.prisma.allocationRun.findUnique({ where: { id: cycleId } });
+            if (!cycle) throw new Error(`AllocationRun with id=${cycleId} not found`);
         } else {
-            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
+            cycle = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
         }
         // const acceptances = await this.prisma.acceptance.findMany({
-        //     where: { runId: run.id },
+        //     where: { cycleId: cycle.id },
         //     orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
         //     select: {
         //         id: true,
@@ -1380,7 +1380,7 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         // await this.convertHtmlToPdfPuppeteer(html, outPath);
         await generatePdfWithWeasyPrint(html , outPath);
     
-        return { runId: run.id, outPath };
+        return { cycleId: cycle.id, outPath };
     }
     
 
@@ -1389,19 +1389,19 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         outPath: string,
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
-    ): Promise<{ runId: number; outPath: string }> {
-        // find run
-        let run;
-        if (runId) {
-            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
-            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        cycleId?: number,
+    ): Promise<{ cycleId: number; outPath: string }> {
+        // find cycle
+        let cycle;
+        if (cycleId) {
+            cycle = await this.prisma.allocationRun.findUnique({ where: { id: cycleId } });
+            if (!cycle) throw new Error(`AllocationRun with id=${cycleId} not found`);
         } else {
-            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
+            cycle = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
         }
         // const acceptances = await this.prisma.acceptance.findMany({
-        //     where: { runId: run.id },
+        //     where: { cycleId: cycle.id },
         //     orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
         //     select: {
         //         id: true,
@@ -1567,7 +1567,7 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         // await this.convertHtmlToPdfPuppeteer(html, outPath);
         await generatePdfWithWeasyPrint(html , outPath);
     
-        return { runId: run.id, outPath };
+        return { cycleId: cycle.id, outPath };
     }
     
 
@@ -1575,16 +1575,16 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         outPath: string,
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
-    ): Promise<{ runId: number; outPath: string }> {
-        // find run
-        let run;
-        if (runId) {
-            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
-            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        cycleId?: number,
+    ): Promise<{ cycleId: number; outPath: string }> {
+        // find cycle
+        let cycle;
+        if (cycleId) {
+            cycle = await this.prisma.allocationRun.findUnique({ where: { id: cycleId } });
+            if (!cycle) throw new Error(`AllocationRun with id=${cycleId} not found`);
         } else {
-            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
+            cycle = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
         }
        
         // Get all students with their priorities
@@ -1661,28 +1661,28 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         // await this.convertHtmlToPdfPuppeteer(html, outPath);
         await generatePdfWithWeasyPrint(html , outPath);
     
-        return { runId: run.id, outPath };
+        return { cycleId: cycle.id, outPath };
     }
 
     async generateSr4(
         outPath: string,
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
-    ): Promise<{ runId: number; outPath: string }> {
-        // find run
-        let run;
-        if (runId) {
-            run = await this.prisma.allocationRun.findUnique({ where: { id: runId } });
-            if (!run) throw new Error(`AllocationRun with id=${runId} not found`);
+        cycleId?: number,
+    ): Promise<{ cycleId: number; outPath: string }> {
+        // find cycle
+        let cycle;
+        if (cycleId) {
+            cycle = await this.prisma.allocationRun.findUnique({ where: { id: cycleId } });
+            if (!cycle) throw new Error(`AllocationRun with id=${cycleId} not found`);
         } else {
-            run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
+            cycle = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
         }
 
-        // fetch acceptances for the run, include student + minor + student.university (explicit select)
+        // fetch acceptances for the cycle, include student + minor + student.university (explicit select)
         const acceptances = await this.prisma.acceptance.findMany({
-            where: { runId: run.id },
+            where: { cycleId: cycle.id },
             orderBy: [{ minorId: 'asc' }, { points: 'desc' }],
             select: {
                 id: true,
@@ -1721,28 +1721,28 @@ constructor(private readonly prisma: PrismaService, private readonly redisServic
         // await this.convertHtmlToPdfPuppeteer(html, outPath);
         await generatePdfWithWeasyPrint(html , outPath);
 
-        return { runId: run.id, outPath };
+        return { cycleId: cycle.id, outPath };
     }
     async generateAllPDFs(
         fontFamily: string,
         fontFiles: { regular: string; bold?: string },
-        runId?: number,
+        cycleId?: number,
     ): Promise<void> {
         try {
             // await Promise.all([
-            //     this.generateSr0('./output/sr0.pdf', fontFamily, fontFiles, runId),
-            //     this.generateSr1('./output/sr1.pdf', fontFamily, fontFiles, runId),
-            //     this.generateSr2('./output/sr2.pdf', fontFamily, fontFiles, runId),
-            //     this.generateSr3('./output/sr3.pdf', fontFamily, fontFiles, runId),
-            //     this.generateSr4('./output/sr4.pdf', fontFamily, fontFiles, runId),
+            //     this.generateSr0('./output/sr0.pdf', fontFamily, fontFiles, cycleId),
+            //     this.generateSr1('./output/sr1.pdf', fontFamily, fontFiles, cycleId),
+            //     this.generateSr2('./output/sr2.pdf', fontFamily, fontFiles, cycleId),
+            //     this.generateSr3('./output/sr3.pdf', fontFamily, fontFiles, cycleId),
+            //     this.generateSr4('./output/sr4.pdf', fontFamily, fontFiles, cycleId),
             // ]);
-            let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
-            if (!run) throw new Error('No AllocationRun found in DB');
-            await   this.generateSr0(`./output/sr0_${run.id}.pdf`, fontFamily, fontFiles, runId),
-            await   this.generateSr1(`./output/sr1_${run.id}.pdf`, fontFamily, fontFiles, runId),
-            await   this.generateSr2(`./output/sr2_${run.id}.pdf`, fontFamily, fontFiles, runId),
-            await   this.generateSr3(`./output/sr3_${run.id}.pdf`, fontFamily, fontFiles, runId),
-            await   this.generateSr4(`./output/sr4_${run.id}.pdf`, fontFamily, fontFiles, runId),
+            let cycle = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+            if (!cycle) throw new Error('No AllocationRun found in DB');
+            await   this.generateSr0(`./output/sr0_${cycle.id}.pdf`, fontFamily, fontFiles, cycleId),
+            await   this.generateSr1(`./output/sr1_${cycle.id}.pdf`, fontFamily, fontFiles, cycleId),
+            await   this.generateSr2(`./output/sr2_${cycle.id}.pdf`, fontFamily, fontFiles, cycleId),
+            await   this.generateSr3(`./output/sr3_${cycle.id}.pdf`, fontFamily, fontFiles, cycleId),
+            await   this.generateSr4(`./output/sr4_${cycle.id}.pdf`, fontFamily, fontFiles, cycleId),
             console.log("pdf done")
             await this.redisService.del("pdfCreating");
         } catch (error) {

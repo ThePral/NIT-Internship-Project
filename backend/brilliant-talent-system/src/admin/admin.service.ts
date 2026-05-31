@@ -393,7 +393,7 @@ export class AdminService {
         
         try {
             const result = await this.allocationService.runAllocation(cycleId);
-            this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' });
+            this.srv.generateAllPDFs( 'Vazir',{ regular: 'assets/fonts/Vazir-Regular.ttf', bold: 'assets/fonts/Vazir-Bold.ttf' }, cycleId);
             return {
                 message: "User Acceptance Calculated",
                 data: result
@@ -590,8 +590,8 @@ export class AdminService {
         
     // }
 
-    async downloadsr0(runId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
+    async downloadsr0(cycleId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr0_${cycleId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -600,12 +600,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr0_${runId}.pdf"`,
+            disposition: `attachment; filename="sr0_${cycleId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr1(runId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
+    async downloadsr1(cycleId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr1_${cycleId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -614,12 +614,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr1_${runId}.pdf"`,
+            disposition: `attachment; filename="sr1_${cycleId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr2(runId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
+    async downloadsr2(cycleId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr2_${cycleId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -628,12 +628,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr2_${runId}.pdf"`,
+            disposition: `attachment; filename="sr2_${cycleId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr3(runId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
+    async downloadsr3(cycleId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr3_${cycleId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -642,12 +642,12 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr3_${runId}.pdf"`,
+            disposition: `attachment; filename="sr3_${cycleId}.pdf"`,
             type: 'application/pdf',
         });
     }
-    async downloadsr4(runId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
+    async downloadsr4(cycleId: number): Promise<StreamableFile> {
+        const filePath = path.join(process.cwd(), `./output/sr4_${cycleId}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -656,7 +656,7 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr4_${runId}.pdf"`,
+            disposition: `attachment; filename="sr4_${cycleId}.pdf"`,
             type: 'application/pdf',
         });
     }
