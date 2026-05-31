@@ -32,7 +32,10 @@ export function DeleteCycleOrResult({cycle}:Props) {
     mutationFn: async () => {cycle!==undefined && DeleteResultsAndExcels(cycle?.id)},
     onSuccess: (res) => {
       console.log("res", res);
-      queryClient.invalidateQueries({ queryKey: ["history"] });
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["history"] });
+        
+      }, 1000);
       toast.success(`نتایج و اکسل های دوره ${cycle?.name} با موفقیت حذف شدند`)
       setOpen(false)
     },
@@ -61,7 +64,7 @@ export function DeleteCycleOrResult({cycle}:Props) {
   return (
     <AlertDialog open={open}>
       <AlertDialogTrigger asChild>
-        <button onClick={()=>setOpen(true)} disabled={cycle==undefined} className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"><Trash2 className='text-danger hover:bg-accent transition-colors size-8 '/></button>
+        <button onClick={()=>setOpen(true)} disabled={cycle==undefined} className="cursor-pointer p-1 rounded-lg transition-all hover:bg-gray-100 text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"><Trash2 className='text-danger hover:bg-accent transition-colors size-8 '/></button>
       </AlertDialogTrigger>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>

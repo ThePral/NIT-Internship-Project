@@ -33,9 +33,9 @@ const AcceptedHistoryTable = () => {
               isError={error ? true : false}
               searchPlaceholder="جستجوی دانشجو..."
           >
-            <div className='flex gap-2 w-full'>
+            <div className='flex gap-1 w-full items-center'>
               <SelectCycle setCycle={setCycle} />
-              {/* <ExportDropDown poll={index == 0} runID={item.id} />    */}
+              <ExportDropDown  cycleID={cycle?.id} />   
               <DeleteCycleOrResult cycle={cycle}/>
             </div>
           </GenericDataTable>

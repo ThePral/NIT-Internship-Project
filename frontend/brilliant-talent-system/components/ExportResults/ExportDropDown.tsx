@@ -13,8 +13,8 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 
 interface Props {
-  runID: number
-  poll: boolean
+  cycleID: number|undefined
+
 }
 
 interface PDFOption {
@@ -24,7 +24,7 @@ interface PDFOption {
   selected: boolean
 }
 
-const ExportDropDown = ({ runID, poll }: Props) => {
+const ExportDropDown = ({ cycleID }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const [showToast, setShowToast] = useState(true)
   const [inProgress, setInProgress] = useState(true)
@@ -96,7 +96,8 @@ const ExportDropDown = ({ runID, poll }: Props) => {
   }, [])
 
   const PDFChecker = useMutation<any, Error>({
-    mutationFn: async () => PDFCheckerService(runID),
+    
+    mutationFn: async () => {cycleID && PDFCheckerService(cycleID)},
     onSuccess: async ({ result: { sr0, sr1, sr2, sr3, sr4 }, message }: PDFResultCheck) => {
       console.log('pdf checked')
 
@@ -149,7 +150,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
 
   const downloadPDF = useMutation({
     mutationFn: async (type: "sr0" | "sr1" | "sr2" | "sr3" | "sr4") => {
-      const response = await getFetch(APIURL + `admins/download/${type}/${runID}`)
+      const response = await getFetch(APIURL + `admins/download/${type}/${cycleID}`)
       if (!response.ok) {
         throw new Error('Failed to download PDF')
       }
@@ -215,7 +216,7 @@ const ExportDropDown = ({ runID, poll }: Props) => {
       <ResponsiveModalTrigger asChild>
         <button
           onClick={() => PDFChecker.mutate()}
-          className="flex items-center justify-center p-2 rounded-lg transition-all hover:bg-gray-100 text-gray-500"
+          className="flex items-center justify-center p-1 rounded-lg transition-all hover:bg-gray-100 text-gray-500"
           aria-label="خروجی PDF گزارش"
         >
           <div className="relative group">
