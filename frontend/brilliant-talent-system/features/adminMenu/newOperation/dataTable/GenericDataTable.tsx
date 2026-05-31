@@ -123,8 +123,8 @@ export function GenericDataTable<TData>({
       </div>
 
       <div className="w-full overflow-x-auto">
-        <div className="grid grid-cols-5 items-center justify-between py-4 gap-4">
-          <div className="flex flex-row col-span-3 items-center min gap-4">
+        <div className="grid grid-cols-4 items-center justify-between py-4 gap-4">
+          <div className="flex flex-row col-span-2 items-center min gap-4">
             <Input
               placeholder={searchPlaceholder}
               value={globalFilter ?? ""}

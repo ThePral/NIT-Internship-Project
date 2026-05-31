@@ -314,6 +314,8 @@ export class AdminService {
             }
         }
 
+        await this.importService.deleteCycleData(Number(cycleId));
+
         return { message: "cycle resource files deleted succesfuly" };
     }
 

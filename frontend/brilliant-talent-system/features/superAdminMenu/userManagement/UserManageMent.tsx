@@ -7,19 +7,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditUserPasswordService } from "@/services/EditUserPasswordService";
 import { GenericDataTable } from "@/features/adminMenu/newOperation/dataTable/GenericDataTable";
 import SelectCycle from "@/features/adminMenu/newOperation/SelectCycle";
+import { Cycle } from "@/interfaces/operation";
 
 export default function UserManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [cycleID , setCycleID] = useState<number>(2)
+  const [cycle , setCycle] = useState<Cycle>()
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const {data , isLoading , error: serverError} = useGetUsers(cycleID);
+  const {data , isLoading , error: serverError} = useGetUsers(cycle?.id);
   const queryClient = useQueryClient();
 
   useEffect(()=>{
       queryClient.invalidateQueries({ queryKey: ["users"]})
-  },[cycleID])
+  },[cycle])
   
   // useEffect(() => {
   //   const handleEditUser = (event: CustomEvent) => {
@@ -102,7 +103,7 @@ export default function UserManagement() {
             // isError={error}
             searchPlaceholder="جستجوی دانشجو..."
           >
-            <SelectCycle setCycleID={setCycleID}  />
+            <SelectCycle setCycle={setCycle}  />
           </GenericDataTable>
         </CardContent>
       </Card>

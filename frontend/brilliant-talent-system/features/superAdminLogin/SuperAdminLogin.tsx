@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import loginImage from "@/asset/login.png";
 import { AdminLoginService } from "@/services/AdminloginService";
 import { SuperAdminLoginService } from "@/services/SuperAdminloginService";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,7 +77,7 @@ export default function LoginPage() {
       </div>
       <div className="fixed inset-0 bg-black/30" />
       <Card className="relative z-10 w-full max-w-md shadow-lg mx-4 ">
-        <div className="flex justify-center mb-4">
+        <div className="flex flex-col items-center justify-center mb-4">
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -110,6 +111,7 @@ export default function LoginPage() {
               transform="translate(116,153)"
             />
           </svg>
+          <p className="text-primary font-semibold">ورود ادمین</p>
         </div>
         <CardHeader>
           <CardTitle className="text-center text-foreground text-lg font-bold md:text-xl lg:text-2xl">
@@ -162,6 +164,7 @@ export default function LoginPage() {
               {isLoading ? "در حال ورود..." : "ورود"}
             </Button>
           </form>
+          <Link className=""  href="/user/auth"> <Button className="w-full" variant="link">ورود به عنوان دانشجو</Button></Link>
         </CardContent>
       </Card>
     </div>

@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import loginImage from "@/asset/login.png";
 import { AdminLoginService } from "@/services/AdminloginService";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -116,7 +117,7 @@ export default function LoginPage() {
             <p>دانشگاه صنعتی نوشیروانی بابل</p>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="">
           <form
             className="space-y-4"
             onSubmit={(e) => {
@@ -161,6 +162,7 @@ export default function LoginPage() {
               {isLoading ? "در حال ورود..." : "ورود"}
             </Button>
           </form>
+          <Link className=""  href="/superAdmin/auth"> <Button className="w-full" variant="link">ورود به عنوان ادمین</Button></Link>
         </CardContent>
       </Card>
     </div>

@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UploadFileService } from "@/services/UploadFileService";
 import { toast } from "sonner";
 import useGetIsUploadeds from "@/hooks/useGetIsUploadeds";
-import { UploadState } from "@/interfaces/operation";
+import { Cycle, UploadState } from "@/interfaces/operation";
 import { AddToDB } from "@/services/AddToDB";
 import { CheckAddToDB } from "@/services/CheckAddToDB";
 import { toLocalDateTime } from "@/functions/toLocalDateTime";
@@ -148,12 +148,12 @@ export const FileUploadDashboard = () => {
   const [jobStatus, setJobStatus] = useState<JobInterface | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const queryClient = useQueryClient();
-  const [cycleID , setCycleID] = useState<number>()
-  const { data: isUploadeds } = useGetIsUploadeds(cycleID);
+  const [cycle , setCycle] = useState<Cycle>()
+  const { data: isUploadeds } = useGetIsUploadeds(cycle?.id);
 
   useEffect(()=>{
     queryClient.invalidateQueries({ queryKey: ["uploadeds"]})
-  },[cycleID])
+  },[cycle])
 
 
   // Check for existing job on component mount
@@ -200,7 +200,7 @@ export const FileUploadDashboard = () => {
   };
 
   const addToDB = useMutation({
-    mutationFn: () => AddToDB(cycleID),
+    mutationFn: () => AddToDB(cycle?.id),
     onSuccess: (data: { message: string; jobId: string }) => {
       toast.success("افزودن با موفقیت انجام شد");
       setJobId(data.jobId);
@@ -216,7 +216,7 @@ export const FileUploadDashboard = () => {
   });
 
     const runAloc = useMutation({
-    mutationFn: () => RunAlocService(cycleID),
+    mutationFn: () => RunAlocService(cycle?.id),
     onSuccess: () => { 
       queryClient.invalidateQueries({ queryKey: ["acceptedStudents"] });
       queryClient.invalidateQueries({ queryKey: ["historyRun"] });
@@ -235,12 +235,12 @@ export const FileUploadDashboard = () => {
           <CardTitle className="text-2xl font-bold text-primary">
             عملیات جدید
           </CardTitle>
-          {/* <h2>{cycleID}llll</h2> */}
+          {/* <h2>{cycle.id}llll</h2> */}
           {/* <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4"> */}
           {/* </CardDescription> */}
           <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4 grid grid-cols-2">
             آپلود جداول
-            <SelectCycle setCycleID={setCycleID} allowAdd={true} /> 
+            <SelectCycle setCycle={setCycle} allowAdd={true} /> 
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -261,13 +261,13 @@ export const FileUploadDashboard = () => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {uploadItems.map((item, index) => (
               <UploadCard
-                cycle={cycleID}
+                cycle={cycle?.id}
                 key={index}
                 Icon={item.Icon}
                 title={item.title}
                 description={item.description}
                 type={item.type}
-                disabled={cycleID == undefined}
+                disabled={cycle == undefined}
                 hasBeenUploaded={
                   isUploadeds
                     ? isUploadeds[item.type as keyof UploadState]
