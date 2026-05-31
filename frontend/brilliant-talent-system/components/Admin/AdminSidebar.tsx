@@ -48,11 +48,11 @@ export const AdminSidebar = () => {
       link: "/admin/newOperation",
       icon: <FilePlus className="h-5 w-5" />,
     },
-    {
-      title: "قوانین",
-      link: "/admin/rules",
-      icon: <FileText className="h-5 w-5" />,
-    },
+    // {
+    //   title: "قوانین",
+    //   link: "/admin/rules",
+    //   icon: <FileText className="h-5 w-5" />,
+    // },
     {
       title: "تاریخچه",
       link: "/admin/history",

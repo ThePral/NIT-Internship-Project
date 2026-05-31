@@ -40,11 +40,11 @@ export const SuperAdminSidebar = () => {
       link: "/superAdmin/home",
       icon: <Home className="h-5 w-5" />,
     },
-    {
-      title: "مدیریت ادمین‌ها",
-      link: "/superAdmin/adminManagement",
-      icon: <UserCog className="h-5 w-5" />, // Represents admin users with settings
-    },
+    // {
+    //   title: "مدیریت ادمین‌ها",
+    //   link: "/superAdmin/adminManagement",
+    //   icon: <UserCog className="h-5 w-5" />, // Represents admin users with settings
+    // },
     {
       title: "مدیریت دانشجویان",
       link: "/superAdmin/userManagement",
@@ -55,11 +55,11 @@ export const SuperAdminSidebar = () => {
       link: "/superAdmin/newOperation",
       icon: <FilePlus className="h-5 w-5" />,
     },
-    {
-      title: "قوانین",
-      link: "/superAdmin/rules",
-      icon: <FileText className="h-5 w-5" />,
-    },
+    // {
+    //   title: "قوانین",
+    //   link: "/superAdmin/rules",
+    //   icon: <FileText className="h-5 w-5" />,
+    // },
     {
       title: "تاریخچه",
       link: "/superAdmin/history",
