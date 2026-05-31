@@ -17,28 +17,27 @@ export interface StudentResult {
 }
 
 export interface Priority {
-    priority: number;
-    minorName: string;
-    capacity: number;
-    studentRank: number;
-    lastAcceptedRank: number;
-    isAccepted: boolean;
+    isAccepted: boolean, piority: number, minor: Minor
 }
 
-export interface HistoryResult {
-    "studentName": string,
-    "universityName": string,
-    "minorName": string,
-    "minorReq": string,
-    majorName: string
-    "minorCap": number,
-    "acceptedPriority": number,
-    "points": number,
+export interface Minor {
+    name: string, req: string, capacity: number
 }
+
+// export interface HistoryResult {
+//     "studentName": string,
+//     "universityName": string,
+//     "minorName": string,
+//     "minorReq": string,
+//     majorName: string
+//     "minorCap": number,
+//     "acceptedPriority": number,
+//     "points": number,
+// }
 
 export interface HistoryRow {
     id: number;
-    createdAt: Date;
+    name: string;
 }
 
 export interface Cycle {

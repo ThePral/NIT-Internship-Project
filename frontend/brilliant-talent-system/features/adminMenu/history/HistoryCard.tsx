@@ -39,24 +39,24 @@ export const HistoryCard = () => {
   };
 
   // Filter history items based on date range
-  const filteredHistoryItems = useMemo(() => {
-    if (!historyItems) return [];
+  // const filteredHistoryItems = useMemo(() => {
+  //   if (!historyItems) return [];
     
-    if (!startDate || !endDate) {
-      return historyItems;
-    }
+  //   if (!startDate || !endDate) {
+  //     return historyItems;
+  //   }
     
-    const start = new Date(startDate);
-    start.setHours(0, 0, 0, 0);
+  //   const start = new Date(startDate);
+  //   start.setHours(0, 0, 0, 0);
     
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
+  //   const end = new Date(endDate);
+  //   end.setHours(23, 59, 59, 999);
     
-    return historyItems.filter(item => {
-      const itemDate = new Date(item.createdAt);
-      return itemDate >= start && itemDate <= end;
-    });
-  }, [historyItems, startDate, endDate]);
+  //   return historyItems.filter(item => {
+  //     const itemDate = new Date(item.createdAt);
+  //     return itemDate >= start && itemDate <= end;
+  //   });
+  // }, [historyItems, startDate, endDate]);
 
   const clearFilter = () => {
     setStartDate("");
@@ -64,15 +64,15 @@ export const HistoryCard = () => {
   };
 
   return (
-    <div className="w-full rounded-xl md:mx-auto shadow-primary bg-card p-6 font-primary shadow-sm mt-4">
-      <header className="mb-4 flex justify-start">
+    <div className="w-full  rounded-xl md:mx-auto shadow-primary bg-card p-6 font-primary shadow-sm mt-4">
+      {/* <header className="mb-4 flex justify-start">
         <h2 className="text-xl font-bold text-primary">نتایج کنونی</h2>
       </header>
       <main className="mb-5">
         <AcceptedModal isOpen={open2} onOpen={setOpen2} />
-      </main>
+      </main> */}
 
-      <Separator className="opacity-50 my-5" />
+      {/* <Separator className="opacity-50 my-5" /> */}
 
       <header className="mb-4 flex flex-col sm:grid grid-cols-2 sm:items-center   gap-5">
         <h2 className="text-xl font-bold text-primary">تاریخچه</h2>
@@ -107,8 +107,8 @@ export const HistoryCard = () => {
 
       <main className="max-h-72 overflow-auto overflow-x-hidden ps-5">
         <Accordion type="single" collapsible className="w-full space-y-2">
-          {filteredHistoryItems?.length > 0 ? (
-            filteredHistoryItems.slice().reverse().map((item , index) => (
+          {historyItems && historyItems?.length > 0 ? (
+            historyItems.slice().reverse().map((item , index) => (
               <div key={item.id} className="flex gap-3">
                 <AccordionItem
                   value={`item-${item.id}`}
@@ -116,10 +116,7 @@ export const HistoryCard = () => {
                 >
                   <AccordionTrigger className="flex justify-between px-4 py-3 text-right">
                     <span className="font-semibold">
-                      {toLocalDateTime({
-                        date: item.createdAt,
-                        type: "DateTimeToFarsi",
-                      })}
+                      {item.name}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4 text-sm text-muted-foreground">

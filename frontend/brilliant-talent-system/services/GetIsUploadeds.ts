@@ -2,9 +2,9 @@ import { APIURL } from "@/data/consts";
 import { getFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
-export async function GetIsUploadeds() {
+export async function GetIsUploadeds(cycle: number) {
   try {
-    const result = await getFetch(APIURL + `admins/excels`);
+    const result = await getFetch(APIURL + `admins/excels/${cycle}`);
     const jsonResult = await result.json();
 
     if (result.ok) {
@@ -30,7 +30,7 @@ export async function GetIsUploadeds() {
         break;
       case 404:
         message = "هیچ آپلودی در سیستم یافت نشد.";
-        toast.error("یافت نشد", { description: message });
+        // toast.error("یافت نشد", { description: message });
         break;
       case 409:
         message = "مشکلی در دریافت آپلودها رخ داده است.";

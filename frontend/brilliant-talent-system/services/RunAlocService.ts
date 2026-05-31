@@ -4,8 +4,9 @@ import { postFetch } from "@/lib/fetch";
 import { mapBackendErrorToPersian } from "@/lib/mapBackendErrorToPersian";
 import { toast } from "sonner";
 
-export async function RunAlocService() {
-    const result = await postFetch(APIURL + "admins/allocation/run", {});
+export async function RunAlocService(cycle?: number) {
+    if (!cycle) return
+    const result = await postFetch(APIURL + `admins/allocation/run/${cycle}`, {});
     let jsonResult: any = {};
     try {
         jsonResult = await result.json();

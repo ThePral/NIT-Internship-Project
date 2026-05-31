@@ -4,8 +4,9 @@ import { postFetch } from "@/lib/fetch";
 import { mapBackendErrorToPersian } from "@/lib/mapBackendErrorToPersian";
 import { toast } from "sonner";
 
-export async function AddToDB() {
-  const result = await postFetch(APIURL + "admins/excels/", {});
+export async function AddToDB(cycleID?: number) {
+  if (!cycleID) return
+  const result = await postFetch(APIURL + `admins/excels/${cycleID}`, {});
   let jsonResult: any = {};
   try {
     jsonResult = await result.json();

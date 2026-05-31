@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 
 interface GenericDataTableProps<TData> {
-  data: TData[];
+  data?: TData[];
   columns: ColumnDef<TData>[];
   title?: string;
   emptyMessage?: string;
@@ -42,6 +42,7 @@ interface GenericDataTableProps<TData> {
   onAdd?: () => void; // New prop for add action
   addButtonLabel?: string; // New prop for add button text
   searchPlaceholder?: string;
+  children?:React.ReactNode
 }
 
 export function GenericDataTable<TData>({
@@ -53,6 +54,7 @@ export function GenericDataTable<TData>({
   isError = false,
   onRefresh,
   onAdd,
+  children,
   addButtonLabel = "افزودن",
   searchPlaceholder = "جستجو...",
 }: GenericDataTableProps<TData>) {
@@ -66,7 +68,7 @@ export function GenericDataTable<TData>({
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -86,22 +88,22 @@ export function GenericDataTable<TData>({
     },
   });
 
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <p className="text-error">خطا در دریافت داده‌ها</p>
-        {onRefresh && (
-          <Button
-            variant="outline"
-            onClick={onRefresh}
-            className="btn btn-error"
-          >
-            تلاش مجدد
-          </Button>
-        )}
-      </div>
-    );
-  }
+  // if (isError) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center space-y-4 py-8">
+  //       <p className="text-error">خطا در دریافت داده‌ها</p>
+  //       {onRefresh && (
+  //         <Button
+  //           variant="outline"
+  //           onClick={onRefresh}
+  //           className="btn btn-error"
+  //         >
+  //           تلاش مجدد
+  //         </Button>
+  //       )}
+  //     </div>
+  //   );
+  // }
 
   if (isLoading) {
     return (
@@ -130,7 +132,7 @@ export function GenericDataTable<TData>({
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center w-fit justify-end gap-2">
             {onAdd && (
               <Button
                 onClick={onAdd}
@@ -141,7 +143,7 @@ export function GenericDataTable<TData>({
                 <p className=" text-card hidden sm:flex"> {addButtonLabel}</p>
               </Button>
             )}
-
+            {children?<>{children}</>:
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -183,6 +185,7 @@ export function GenericDataTable<TData>({
                   })}
               </DropdownMenuContent>
             </DropdownMenu>
+            }
           </div>
         </div>
 

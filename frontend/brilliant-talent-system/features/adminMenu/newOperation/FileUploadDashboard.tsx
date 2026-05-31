@@ -49,11 +49,13 @@ const UploadCard = ({
   className,
   type,
   hasBeenUploaded,
-}: UploadCardProps) => {
+  cycle, 
+  disabled
+}: UploadCardProps & { cycle?: number , disabled:boolean }) => {
   const queryClient = useQueryClient();
   const uploadFile = useMutation({
-    mutationFn: ({ type, file }: { type: string; file: File }) =>
-      UploadFileService(type, file),
+    mutationFn: ({ type, file , cycle }: { type: string; file: File  ,cycle:number }) =>
+      UploadFileService(type, file , cycle),
     onSuccess: () => {
 
       queryClient.invalidateQueries({ queryKey: ["uploadeds"] });
@@ -66,26 +68,33 @@ const UploadCard = ({
   return (
     <label
       className={cn(
-        "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border bg-card p-6 text-center transition-colors hover:border-primary/80 hover:bg-accent",
+        `flex ${disabled ? "cursor-not-allowed" : "cursor-pointer"} flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-border bg-card p-6 text-center transition-colors hover:border-primary/80 hover:bg-accent`,
         className
       )}
     >
-      <input
-        type="file"
-        onChange={(e) =>
-          e.target.files &&
-          uploadFile.mutate({ type: type, file: e.target.files[0] })
-        }
-        className="hidden"
-      />
-      <input
-        type="file"
-        onChange={(e) =>
-          e.target.files &&
-          uploadFile.mutate({ type: type, file: e.target.files[0] })
-        }
-        className="hidden"
-      />
+      {cycle ?
+      <>
+        <input
+          type="file"
+          onChange={(e) =>
+            e.target.files &&
+            uploadFile.mutate({ type: type, file: e.target.files[0], cycle: cycle })
+          }
+          className="hidden"
+          disabled={disabled}
+        />
+        <input
+          type="file"
+          onChange={(e) =>
+            e.target.files &&
+            uploadFile.mutate({ type: type, file: e.target.files[0], cycle: cycle })
+          }
+          className="hidden"
+          disabled={disabled}
+        />
+      </>
+      : <></>
+      }
       {hasBeenUploaded?.exists && (
         <div className="flex flex-col md:flex-col sm:flex-row xl:flex-row justify-center items-center gap-3">
           <p className="text-primary ">{!uploadFile.isPending ? "آپلود شده" : <span className="flex gap-2">در حال بارگزاری <Loader2 className="animate-spin"/></span> }</p>
@@ -135,12 +144,16 @@ export const FileUploadDashboard = () => {
     },
   ];
 
-  const { data: isUploadeds } = useGetIsUploadeds();
   const [jobId, setJobId] = useState<string | null>(null);
   const [jobStatus, setJobStatus] = useState<JobInterface | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const queryClient = useQueryClient();
   const [cycleID , setCycleID] = useState<number>()
+  const { data: isUploadeds } = useGetIsUploadeds(cycleID);
+
+  useEffect(()=>{
+    queryClient.invalidateQueries({ queryKey: ["uploadeds"]})
+  },[cycleID])
 
 
   // Check for existing job on component mount
@@ -187,7 +200,7 @@ export const FileUploadDashboard = () => {
   };
 
   const addToDB = useMutation({
-    mutationFn: () => AddToDB(),
+    mutationFn: () => AddToDB(cycleID),
     onSuccess: (data: { message: string; jobId: string }) => {
       toast.success("افزودن با موفقیت انجام شد");
       setJobId(data.jobId);
@@ -203,7 +216,7 @@ export const FileUploadDashboard = () => {
   });
 
     const runAloc = useMutation({
-    mutationFn: () => RunAlocService(),
+    mutationFn: () => RunAlocService(cycleID),
     onSuccess: () => { 
       queryClient.invalidateQueries({ queryKey: ["acceptedStudents"] });
       queryClient.invalidateQueries({ queryKey: ["historyRun"] });
@@ -248,11 +261,13 @@ export const FileUploadDashboard = () => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {uploadItems.map((item, index) => (
               <UploadCard
+                cycle={cycleID}
                 key={index}
                 Icon={item.Icon}
                 title={item.title}
                 description={item.description}
                 type={item.type}
+                disabled={cycleID == undefined}
                 hasBeenUploaded={
                   isUploadeds
                     ? isUploadeds[item.type as keyof UploadState]

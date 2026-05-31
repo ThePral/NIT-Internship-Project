@@ -11,7 +11,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useQueryParams } from "@/hooks";
-import { HistoryResult } from "@/interfaces/operation";
+import { Priority, StudentResult } from "@/interfaces/operation";
 
 const SortableHeader = ({
   column,
@@ -37,32 +37,47 @@ const SortableHeader = ({
   );
 };
 
-export const acceptedHistoryColumns: ColumnDef<HistoryResult>[] = [
+export const acceptedHistoryColumns: ColumnDef<StudentResult>[] = [
   {
-    accessorKey: "studentName",
+    accessorKey: "firstname",
     header: ({ column }) => (
       <SortableHeader
         column={column}
-        sortKey="studentName"
-        label="نام دانشجو"
+        sortKey="firstname"
+        label="نام"
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("studentName")}</div>
+      <div className="text-center">{row.getValue("firstname")}</div>
     ),
   },
   {
-    accessorKey: "universityName",
+    accessorKey: "lastname",
     header: ({ column }) => (
       <SortableHeader
         column={column}
-        sortKey="universityName"
-        label="دانشگاه"
+        sortKey="lastname"
+        label="نام خانوادگی"
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("universityName")}</div>
+      <div className="text-center">{row.getValue("lastname")}</div>
     ),
+  },
+  {
+    accessorKey: "university",
+    header: ({ column }) => (
+      <SortableHeader
+        column={column}
+        sortKey="university"
+        label="دانشگاه"
+      />
+    ),
+    cell: ({ row }) => {
+      const uni:{name:string} = row.getValue("university")
+      const uniName = uni.name
+      return <div className="text-center">{uniName}</div>
+    },
   },
   {
     accessorKey: "majorName",
@@ -72,66 +87,45 @@ export const acceptedHistoryColumns: ColumnDef<HistoryResult>[] = [
     ),
   },
   {
-    accessorKey: "minorName",
+    accessorKey: "priorities",
     header: ({ column }) => (
       <SortableHeader
         column={column}
-        sortKey="minorName"
-        label="نام رشته قبولی"
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("minorName")}</div>
-    ),
-  },
-  {
-    accessorKey: "minorReq",
-    header: "نیازمندی رشته",
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("minorReq")}</div>
-    ),
-  },
-  {
-    accessorKey: "minorCap",
-    header: ({ column }) => (
-      <SortableHeader column={column} sortKey="minorCap" label="ظرفیت" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("minorCap")}</div>
-    ),
-  },
-  {
-    accessorKey: "acceptedPriority",
-    header: ({ column }) => (
-      <SortableHeader
-        column={column}
-        sortKey="acceptedPriority"
+        sortKey="priorities"
         label="اولویت پذیرفته شده"
       />
     ),
     cell: ({ row }) => {
-      const priority = row.getValue("acceptedPriority") as number;
+      let priority = undefined
+      const priorities :Priority[] = row.getValue("priorities")
 
-      const priorityMap: Record<number, string> = {
-        1: "اول",
-        2: "دوم",
-        3: "سوم",
-        4: "چهارم",
-        5: "پنجم",
-        6: "ششم",
-        7: "هفتم",
-        8: "هشتم",
-        9: "نهم",
-        10: "دهم",
-      };
+      priorities.forEach((p)=>{
+        if(p.isAccepted){
+          priority =  p.minor.name
+        }
+      }
+      )
+
+      // const priorityMap: Record<number, string> = {
+      //   1: "اول",
+      //   2: "دوم",
+      //   3: "سوم",
+      //   4: "چهارم",
+      //   5: "پنجم",
+      //   6: "ششم",
+      //   7: "هفتم",
+      //   8: "هشتم",
+      //   9: "نهم",
+      //   10: "دهم",
+      // };
 
       return (
         <div
           className={`text-center font-medium ${
-            priority > 0 ? "text-success" : "text-danger"
+            priority  ? "text-success" : "text-danger"
           }`}
         >
-          {priority > 0 ? `اولویت ${priorityMap[priority]}` : "پذیرفته نشده"}
+          {priority  ? priority : "پذیرفته نشده"}
         </div>
       );
     },
@@ -152,12 +146,19 @@ export const acceptedHistoryColumns: ColumnDef<HistoryResult>[] = [
       const student = row.original;
 
       const copyStudentName = () => {
-        navigator.clipboard.writeText(student.studentName);
+        navigator.clipboard.writeText(student.firstname + '-' + student.lastname );
       };
 
       const copyMinorInfo = () => {
-        const info = `${student.minorName} - ${student.universityName}`;
-        navigator.clipboard.writeText(info);
+        let priority = undefined
+        const priorities :Priority[] = row.getValue("priorities")
+
+        priorities.forEach((p)=>{
+          if(p.isAccepted){
+            priority =  p.minor.name
+          }
+        })
+        navigator.clipboard.writeText(priority ?? 'پذیرفته نشده');
       };
 
       return (

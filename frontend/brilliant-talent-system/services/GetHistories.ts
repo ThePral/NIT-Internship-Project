@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export async function GetHistories() {
   try {
-    const result = await getFetch(APIURL + `admins/allocation/all`);
+    const result = await getFetch(APIURL + `cycle`);
     const jsonResult = await result.json();
 
     if (result.ok) {

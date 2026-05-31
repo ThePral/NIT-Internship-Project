@@ -4,15 +4,15 @@ import { postFetch } from "@/lib/fetch";
 import { mapBackendErrorToPersian } from "@/lib/mapBackendErrorToPersian";
 import { toast } from "sonner";
 
-export async function UploadFileService(type: string, file: File) {
+export async function UploadFileService(type: string, file: File, cycle: number) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const result = await postFetch(APIURL + "admins/upload/" + type, formData);
+  const result = await postFetch(APIURL + `admins/upload/${type}/${cycle}`, formData);
   let jsonResult: any = {};
   try {
     jsonResult = await result.json();
-  } catch {}
+  } catch { }
 
   if (!result.ok) {
     const error = mapBackendError(result.status, jsonResult);

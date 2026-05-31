@@ -1,11 +1,18 @@
-import { HistoryResult } from "@/interfaces/operation";
+
+import { StudentResult } from "@/interfaces/operation";
 import { GetAcceptedStudentsHistory } from "@/services/GetAcceptedStudentsHistory";
 import { useQuery } from "@tanstack/react-query";
 
-function useGetAcceptedStudentsHistory(id: number) {
-    return useQuery<HistoryResult[], Error>({
+function useGetAcceptedStudentsHistory(cycleID?: number) {
+    return useQuery<StudentResult[], Error>({
         queryKey: ["history"],
-        queryFn: async () => await GetAcceptedStudentsHistory(id),
+        queryFn: async () => {
+            let result
+            cycleID && (
+                result = await GetAcceptedStudentsHistory(cycleID)
+            )
+            return result ? result : []
+        },
 
         staleTime: 6 * 60 * 60 * 1000,
         refetchOnWindowFocus: false,

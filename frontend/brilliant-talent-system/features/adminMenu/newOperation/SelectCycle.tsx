@@ -36,12 +36,11 @@ export function SelectCycle({ setCycleID }: Props) {
         <ComboboxContent>
             <ComboboxEmpty>هیچ دوره ای یافت نشد</ComboboxEmpty>
             <ComboboxList>
-            {(item: Cycle) => (
+              {[...(cycles ?? [])].reverse().map((item: Cycle) => (
                 <ComboboxItem key={item.id} value={String(item.name)}>
-                {item.name}
+                  {item.name}
                 </ComboboxItem>
-            )}
-            
+              ))}        
             </ComboboxList>
         </ComboboxContent>
         </Combobox>
