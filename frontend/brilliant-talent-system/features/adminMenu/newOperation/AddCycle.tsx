@@ -25,6 +25,7 @@ export const AddCycle = ({isOpen,setIsOpen}:Props) => {
     onSuccess: (res) => {
       console.log("res", res);
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
+      setIsOpen(false)
     },
     onError: (error) => {
       console.log("error12");

@@ -238,9 +238,9 @@ export const FileUploadDashboard = () => {
           {/* <h2>{cycleID}llll</h2> */}
           {/* <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4"> */}
           {/* </CardDescription> */}
-          <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4 flex justify-between">
+          <CardDescription className="pt-1 text-xl font-extrabold text-primary mt-4 grid grid-cols-2">
             آپلود جداول
-            <SelectCycle setCycleID={setCycleID} /> 
+            <SelectCycle setCycleID={setCycleID} allowAdd={true} /> 
           </CardDescription>
         </CardHeader>
         <CardContent>

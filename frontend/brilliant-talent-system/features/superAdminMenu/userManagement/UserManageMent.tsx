@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { usersColumns } from "./usersTable/columns";
@@ -8,78 +6,84 @@ import useGetUsers from "@/hooks/useGetUsers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditUserPasswordService } from "@/services/EditUserPasswordService";
 import { GenericDataTable } from "@/features/adminMenu/newOperation/dataTable/GenericDataTable";
+import SelectCycle from "@/features/adminMenu/newOperation/SelectCycle";
 
 export default function UserManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [cycleID , setCycleID] = useState<number>(2)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const {data , isLoading , error: serverError} = useGetUsers();
+  const {data , isLoading , error: serverError} = useGetUsers(cycleID);
   const queryClient = useQueryClient();
+
+  useEffect(()=>{
+      queryClient.invalidateQueries({ queryKey: ["users"]})
+  },[cycleID])
   
-  useEffect(() => {
-    const handleEditUser = (event: CustomEvent) => {
-      setSelectedUser(event.detail);
-      setIsEditModalOpen(true);
-    };
+  // useEffect(() => {
+  //   const handleEditUser = (event: CustomEvent) => {
+  //     setSelectedUser(event.detail);
+  //     setIsEditModalOpen(true);
+  //   };
    
-    window.addEventListener(
-      "open-edit-dialog",
-      handleEditUser as EventListener
-    );
+  //   window.addEventListener(
+  //     "open-edit-dialog",
+  //     handleEditUser as EventListener
+  //   );
 
-    return () => {
-      window.removeEventListener(
-        "open-edit-dialog",
-        handleEditUser as EventListener
-      );
-
-
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener(
+  //       "open-edit-dialog",
+  //       handleEditUser as EventListener
+  //     );
 
 
-  const editUserMutate = useMutation({
-    mutationFn: async ({
-      id,
-      password
-    }: {
-      id : number,
-      password: string;
-    }) => EditUserPasswordService(id,{
-      new_password: password
-    },"user"),
-    onSuccess: (res) => {
-      console.log("res", res);
-      setLoading(false);
-      queryClient.invalidateQueries({queryKey:["users"]});
-    },
-    onError: (error) => {
-      console.log("error",error);
-      setLoading(false);
-    },
-  });
+  //   };
+  // }, []);
 
-  const handleEditUser = async ({id , password}: {
-    id: number
-    password: string;
-  }) => {
-    if(loading){
-      return;
-    }
-    setLoading(true);
-    editUserMutate.mutate({
-      id,
-      password
-    })
-    // Simulate API call
+
+  // const editUserMutate = useMutation({
+  //   mutationFn: async ({
+  //     id,
+  //     password
+  //   }: {
+  //     id : number,
+  //     password: string;
+  //   }) => EditUserPasswordService(id,{
+  //     new_password: password
+  //   },"user"),
+  //   onSuccess: (res) => {
+  //     console.log("res", res);
+  //     setLoading(false);
+  //     queryClient.invalidateQueries({queryKey:["users"]});
+  //   },
+  //   onError: (error) => {
+  //     console.log("error",error);
+  //     setLoading(false);
+  //   },
+  // });
+
+  // const handleEditUser = async ({id , password}: {
+  //   id: number
+  //   password: string;
+  // }) => {
+  //   if(loading){
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   editUserMutate.mutate({
+  //     id,
+  //     password
+  //   })
+  //   // Simulate API call
     
-  };
+  // };
 
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-    setSelectedUser(null);
-  };
+  // const handleCloseEditModal = () => {
+  //   setIsEditModalOpen(false);
+  //   setSelectedUser(null);
+  // };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground py-4">
@@ -95,18 +99,20 @@ export default function UserManagement() {
             columns={usersColumns}
             title=""
             isLoading={isLoading}
-            isError={error}
+            // isError={error}
             searchPlaceholder="جستجوی دانشجو..."
-          />
+          >
+            <SelectCycle setCycleID={setCycleID}  />
+          </GenericDataTable>
         </CardContent>
       </Card>
 
-      <EditUserModal
+      {/* <EditUserModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         onEditUser={handleEditUser}
         user={selectedUser}
-      />
+      /> */}
     </div>
   );
 }

@@ -3,9 +3,10 @@ import { User } from "@/interfaces/user";
 import { getFetch } from "@/lib/fetch";
 import { toast } from "sonner";
 
-export async function GetUsersService(): Promise<User[]> {
+export async function GetUsersService(cycleID?: number): Promise<User[]> {
   try {
-    const result = await getFetch(APIURL + `admins/users`);
+    if (!cycleID) return []
+    const result = await getFetch(APIURL + `admins/users/${cycleID}`);
     const jsonResult = await result.json();
 
     if (result.ok) {

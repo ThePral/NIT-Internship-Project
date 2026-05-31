@@ -66,9 +66,10 @@ export function GenericDataTable<TData>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const memoizedData = React.useMemo(() => data ?? [], [data]);
 
   const table = useReactTable({
-    data: data ?? [],
+    data: memoizedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -122,17 +123,17 @@ export function GenericDataTable<TData>({
       </div>
 
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-row items-center justify-between py-4 gap-4">
-          <div className="flex flex-row items-center w-full gap-4">
+        <div className="grid grid-cols-5 items-center justify-between py-4 gap-4">
+          <div className="flex flex-row col-span-3 items-center min gap-4">
             <Input
               placeholder={searchPlaceholder}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(event.target.value)}
-              className="input input-bordered w-full sm:max-w-sm"
+              className="input input-bordered w-full"
             />
           </div>
 
-          <div className="flex items-center w-fit justify-end gap-2">
+          <div className="flex items-center col-span-2 w-full justify-end gap-2">
             {onAdd && (
               <Button
                 onClick={onAdd}

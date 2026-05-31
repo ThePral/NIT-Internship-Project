@@ -90,51 +90,51 @@ export const usersColumns: ColumnDef<any>[] = [
       <div className="text-center">{row.getValue("points")}</div>
     ),
   },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const user = row.original;
+  // {
+  //   id: "actions",
+  //   enableHiding: false,
+  //   cell: ({ row }) => {
+  //     const user = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0 hover:bg-card hover:scale-110 transition-all duration-200"
-            >
-              <MoreHorizontal className="h-4 w-4 text-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem
-              onClick={() => {
-                const event = new CustomEvent("open-edit-dialog", {
-                  detail: user,
-                });
-                window.dispatchEvent(event);
-              }}
-            >
-              <Edit className="h-4 w-4 ml-2" />
-              <p className="text-primary">ویرایش</p>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => {
-                const event = new CustomEvent("open-delete-dialog", {
-                  detail: user,
-                });
-                window.dispatchEvent(event);
-              }}
-            >
-              <Trash2Icon className="h-4 w-4 ml-2" />
-              <p className=" text-danger"> حذف</p>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
+  //     return (
+  //       <DropdownMenu>
+  //         <DropdownMenuTrigger asChild>
+  //           <Button
+  //             variant="ghost"
+  //             size="icon"
+  //             className="h-8 w-8 p-0 hover:bg-card hover:scale-110 transition-all duration-200"
+  //           >
+  //             <MoreHorizontal className="h-4 w-4 text-foreground" />
+  //           </Button>
+  //         </DropdownMenuTrigger>
+  //         <DropdownMenuContent align="end" className="w-48">
+  //           <DropdownMenuItem
+  //             onClick={() => {
+  //               const event = new CustomEvent("open-edit-dialog", {
+  //                 detail: user,
+  //               });
+  //               window.dispatchEvent(event);
+  //             }}
+  //           >
+  //             <Edit className="h-4 w-4 ml-2" />
+  //             <p className="text-primary">ویرایش</p>
+  //           </DropdownMenuItem>
+  //           <DropdownMenuSeparator />
+  //           <DropdownMenuItem
+  //             className="text-destructive focus:text-destructive"
+  //             onClick={() => {
+  //               const event = new CustomEvent("open-delete-dialog", {
+  //                 detail: user,
+  //               });
+  //               window.dispatchEvent(event);
+  //             }}
+  //           >
+  //             <Trash2Icon className="h-4 w-4 ml-2" />
+  //             <p className=" text-danger"> حذف</p>
+  //           </DropdownMenuItem>
+  //         </DropdownMenuContent>
+  //       </DropdownMenu>
+  //     );
+  //   },
+  // },
 ];
