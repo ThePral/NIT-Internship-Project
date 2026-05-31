@@ -4,22 +4,26 @@ import React, { useEffect, useState } from 'react'
 import useGetAcceptedStudents from '@/hooks/useGetAcceptedStudents'
 import { acceptedHistoryColumns } from './accceptedHistoryColumns'
 import useGetAcceptedStudentsHistory from '@/hooks/useGetAcceptedStudentsHistory'
-import { Loader } from 'lucide-react'
+import { Download, Loader, Trash2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import SelectCycle from '@/features/adminMenu/newOperation/SelectCycle'
+import ExportDropDown from '../ExportResults/ExportDropDown'
+import DeleteCycleOrResult from '@/features/adminMenu/history/DeleteCycleOrResult'
+import { Cycle } from '@/interfaces/operation'
 
 interface Props{
   cycleID:number
 }
 const AcceptedHistoryTable = () => {
-  const [cycleID , setCycleID] = useState<number>(2)
+  const [cycle , setCycle] = useState<Cycle>()
   const queryClient = useQueryClient()
-  const {data , isLoading , error } = useGetAcceptedStudentsHistory(cycleID)
+  const {data , isLoading , error } = useGetAcceptedStudentsHistory(cycle?.id)
   useEffect(()=>{
       queryClient.invalidateQueries({ queryKey: ["history"]})
-  },[cycleID])
+  },[cycle])
   return (
     <div>
+      <h1 className="text-2xl font-bold text-primary">تاریخچه</h1>
       {!isLoading ?  
           <GenericDataTable
               data={data}
@@ -29,7 +33,11 @@ const AcceptedHistoryTable = () => {
               isError={error ? true : false}
               searchPlaceholder="جستجوی دانشجو..."
           >
-            <SelectCycle setCycleID={setCycleID} />
+            <div className='flex gap-2 w-full'>
+              <SelectCycle setCycle={setCycle} />
+              {/* <ExportDropDown poll={index == 0} runID={item.id} />    */}
+              <DeleteCycleOrResult cycle={cycle}/>
+            </div>
           </GenericDataTable>
       : <Loader className='animate-spin'/>}
     </div>
