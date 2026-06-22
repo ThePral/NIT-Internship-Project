@@ -13,7 +13,7 @@ import * as path from 'path';
 import { QueueService } from 'src/queue/queue.service';
 import { RedisService } from 'src/redis/redis.service';
 
-@Injectable()
+@Injectable() // check one two
 export class AdminService {
     private readonly logger = new Logger(AdminService.name);
     
