@@ -47,12 +47,12 @@ export class AllocationService {
     const capMap = new Map<number, MinorCap>();
     for (const m of minors) {
       const total = Number(m.capacity ?? 0);
-      if (total < 3) {
-        capMap.set(m.id, { total, local: total, other: 0 });
-      } else {
-        const local = this.roundHalfUp((2 * total) / 3);
-        capMap.set(m.id, { total, local, other: total - local });
-      }
+      // if (total < 3) {
+      //   capMap.set(m.id, { total, local: total, other: 0 });
+      // } else {
+      const local = this.roundHalfUp((2 * total) / 3);
+      capMap.set(m.id, { total, local, other: total - local });
+      // }
     }
 
     this.logger.log(`Loaded ${capMap.size} minors and computed quotas.`);
@@ -113,12 +113,17 @@ export class AllocationService {
       const c = capMap.get(minorId);
       if (!c) return false;
 
-      if (c.total > 0) {
-        if (c.other > 0) {
-          c.other -= 1;
-        } else {
-          c.local -= 1;
-        }
+      // if (c.total > 0) {
+      //   if (c.other > 0) {
+      //     c.other -= 1;
+      //   } else {
+      //     c.local -= 1;
+      //   }
+      //   c.total -= 1;
+      //   return true;
+      // }
+      if (c.other > 0) {
+        c.other -= 1;
         c.total -= 1;
         return true;
       }
