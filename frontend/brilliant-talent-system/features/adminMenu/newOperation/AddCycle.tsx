@@ -1,4 +1,4 @@
-import { Button } from '@/components/'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ResponsiveModal, ResponsiveModalClose, ResponsiveModalContent, ResponsiveModalDescription, ResponsiveModalFooter, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalTrigger } from '@/components/ui/responsiveModal'
 import { AddCycleService } from '@/services/AddCycleService'
