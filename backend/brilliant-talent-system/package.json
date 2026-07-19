@@ -33,9 +33,11 @@
     "@types/redis": "^4.0.10",
     "argon2": "^0.44.0",
     "bullmq": "^5.58.5",
+    "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "exceljs": "^4.4.0",
+    "express": "^5.2.1",
     "ioredis": "^5.7.0",
     "multer": "^2.0.2",
     "passport": "^0.7.0",
@@ -78,20 +80,26 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
-  "testRegex": ".*\\.spec\\.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  },
-  "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/src/$1"
-  },
-  "collectCoverageFrom": [
-    "src/**/*.(t|j)s"
-  ],
-  "coverageDirectory": "coverage",
-  "testEnvironment": "node",
-  "setupFiles": ["<rootDir>/test/jest.setup.ts"]
-}
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.(t|j)s"
+    ],
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/test/jest.setup.ts"
+    ]
+  }
 }
