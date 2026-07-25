@@ -30,6 +30,11 @@ RUN pip3 install weasyprint --break-system-packages
 
 COPY package*.json ./
 COPY prisma ./prisma/
+# Copy fonts and make them available to the system
+COPY --from=builder /app/assets ./assets
+RUN mkdir -p /usr/share/fonts/custom && \
+    cp -r /app/assets/fonts/* /usr/share/fonts/custom/ && \
+    fc-cache -fv
 
 RUN npm ci --omit=dev
 
