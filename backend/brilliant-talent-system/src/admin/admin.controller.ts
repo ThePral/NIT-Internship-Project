@@ -155,8 +155,8 @@ export class AdminController {
         return this.adminService.buildSr4();
     }
     @Get("pdfChecker/:id")
-    async pdfChecker(@Param('id') userId: number) {
-        return this.adminService.pdfChecker(userId);
+    async pdfChecker(@Param('id') id: number) {
+        return this.adminService.pdfChecker(id);
     }
     @Get('download/sr0/:id')
     // @Header('Content-Type', 'application/pdf')

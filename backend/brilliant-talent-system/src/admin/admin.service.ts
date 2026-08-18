@@ -502,10 +502,12 @@ export class AdminService {
         );
     }
 
-    async pdfChecker(runId: number) {
+    async pdfChecker(cycleId: number) {
+
         const isPdfCreating = await this.redisService.get("pdfCreating");
-        console.log(isPdfCreating)
-        let run = await this.prisma.allocationRun.findFirst({ orderBy: { createdAt: 'desc' } });
+        console.log(cycleId)
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        console.log(run)
         if (!run) {
             return({
                 result: {
@@ -517,19 +519,19 @@ export class AdminService {
                 }
             });
         };
-        if(run.id == runId){
-            if(isPdfCreating == "true" || isPdfCreating == true){
-                return({message : "پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید",
-                    result: {
-                        sr0: false,
-                        sr1: false,
-                        sr2: false,
-                        sr3: false,
-                        sr4: false,
-                    }
-                });
-            }
-        }
+        // if(run.id == runId){
+        //     if(isPdfCreating == "true" || isPdfCreating == true){
+        //         return({message : "پی دی اف ها در حال ساخت می باشند ، لطفا صبور باشید",
+        //             result: {
+        //                 sr0: false,
+        //                 sr1: false,
+        //                 sr2: false,
+        //                 sr3: false,
+        //                 sr4: false,
+        //             }
+        //         });
+        //     }
+        // }
         
         // if(isPdfCreating == "error"){
         //     return({message : "مشکلی در ساخت پی دی اف ها به وجود آمد، لطفا دوباره تلاش کنید",
@@ -542,11 +544,14 @@ export class AdminService {
         //         }
         //     });
         // }
-        const filePath0 = path.join(process.cwd(), `./output/sr0_${runId}.pdf`);
-        const filePath1 = path.join(process.cwd(), `./output/sr1_${runId}.pdf`);
-        const filePath2 = path.join(process.cwd(), `./output/sr2_${runId}.pdf`);
-        const filePath3 = path.join(process.cwd(), `./output/sr3_${runId}.pdf`);
-        const filePath4 = path.join(process.cwd(), `./output/sr4_${runId}.pdf`);
+        const filePath0 = path.join(process.cwd(), `./output/sr0_${run.id}.pdf`);
+        console.log(filePath0)
+        console.log(fs.existsSync(filePath0))
+        console.log(fs.existsSync(`./output/sr0_${run.id}.pdf`))
+        const filePath1 = path.join(process.cwd(), `./output/sr1_${run.id}.pdf`);
+        const filePath2 = path.join(process.cwd(), `./output/sr2_${run.id}.pdf`);
+        const filePath3 = path.join(process.cwd(), `./output/sr3_${run.id}.pdf`);
+        const filePath4 = path.join(process.cwd(), `./output/sr4_${run.id}.pdf`);
         return({
             result:{
                 sr0: fs.existsSync(filePath0),
@@ -593,7 +598,12 @@ export class AdminService {
     // }
 
     async downloadsr0(cycleId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr0_${cycleId}.pdf`);
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        if(!run){
+            throw new NotFoundException()
+        }
+
+        const filePath = path.join(process.cwd(), `./output/sr0_${run.id}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -602,12 +612,17 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr0_${cycleId}.pdf"`,
+            disposition: `attachment; filename="sr0_${run.id}.pdf"`,
             type: 'application/pdf',
         });
     }
     async downloadsr1(cycleId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr1_${cycleId}.pdf`);
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        if(!run){
+                    throw new NotFoundException()
+                }
+
+        const filePath = path.join(process.cwd(), `./output/sr1_${run.id}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -616,12 +631,16 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr1_${cycleId}.pdf"`,
+            disposition: `attachment; filename="sr1_${run.id}.pdf"`,
             type: 'application/pdf',
         });
     }
     async downloadsr2(cycleId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr2_${cycleId}.pdf`);
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        if(!run){
+            throw new NotFoundException()
+        }
+        const filePath = path.join(process.cwd(), `./output/sr2_${run.id}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -630,12 +649,16 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr2_${cycleId}.pdf"`,
+            disposition: `attachment; filename="sr2_${run.id}.pdf"`,
             type: 'application/pdf',
         });
     }
     async downloadsr3(cycleId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr3_${cycleId}.pdf`);
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        if(!run){
+            throw new NotFoundException()
+        }
+        const filePath = path.join(process.cwd(), `./output/sr3_${run.id}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -644,12 +667,16 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr3_${cycleId}.pdf"`,
+            disposition: `attachment; filename="sr3_${run.id}.pdf"`,
             type: 'application/pdf',
         });
     }
     async downloadsr4(cycleId: number): Promise<StreamableFile> {
-        const filePath = path.join(process.cwd(), `./output/sr4_${cycleId}.pdf`);
+        let run = await this.prisma.allocationRun.findFirst({ where: {cycleId : cycleId} , orderBy: { createdAt: 'desc' } });
+        if(!run){
+            throw new NotFoundException()
+        }
+        const filePath = path.join(process.cwd(), `./output/sr4_${run.id}.pdf`);
         
         if (!fs.existsSync(filePath)) {
             throw new BadRequestException("فایل وجود ندارد");
@@ -658,7 +685,7 @@ export class AdminService {
         const fileStream = fs.createReadStream(filePath);
         
         return new StreamableFile(fileStream, {
-            disposition: `attachment; filename="sr4_${cycleId}.pdf"`,
+            disposition: `attachment; filename="sr4_${run.id}.pdf"`,
             type: 'application/pdf',
         });
     }

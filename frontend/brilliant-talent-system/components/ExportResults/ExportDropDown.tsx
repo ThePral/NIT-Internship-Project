@@ -97,7 +97,13 @@ const ExportDropDown = ({ cycleID }: Props) => {
 
   const PDFChecker = useMutation<any, Error>({
     
-    mutationFn: async () => {cycleID && PDFCheckerService(cycleID)},
+    mutationFn: async () => {
+  if (!cycleID) {
+    throw new Error("cycleID is undefined");
+  }
+
+  return PDFCheckerService(cycleID);
+},
     onSuccess: async ({ result: { sr0, sr1, sr2, sr3, sr4 }, message }: PDFResultCheck) => {
       console.log('pdf checked')
 
@@ -122,6 +128,7 @@ const ExportDropDown = ({ cycleID }: Props) => {
       }
     },
     onError: (error) => {
+      console.log(error)
       console.log('pdf check failed')
       toast.error('مشکلی رخ داده است')
       stopPollingPDF()

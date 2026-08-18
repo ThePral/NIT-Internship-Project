@@ -17,7 +17,7 @@ RUN npm run build
 FROM node:22.15.0 AS production
 
 WORKDIR /app
-
+RUN mkdir -p /app/output
 # System deps needed at runtime for WeasyPrint
 RUN apt-get update && apt-get install -y \
     python3 python3-pip python3-dev make g++ libssl-dev \
